@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sembilan_nih/View/login.dart';
 
 void main() {
   runApp(const MainApp());
@@ -10,11 +11,7 @@ class MainApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const MaterialApp(
-      home: Scaffold(
-        body: Center(
-          child: Text('Jethro - 220711908'),
-        ),
-      ),
+      home: LoginView(),
     );
   }
 }
