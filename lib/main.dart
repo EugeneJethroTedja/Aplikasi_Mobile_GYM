@@ -12,6 +12,13 @@ class MainApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return const MaterialApp(
       home: LoginView(),
+
+      home: Scaffold(
+        body: Center(
+          child: Text('Eugene Jethro - 220711908'),
+        ),
+      ),
+testing_enjoy
     );
   }
 }
