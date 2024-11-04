@@ -1,30 +1,27 @@
 import 'package:flutter/material.dart';
-import 'package:sembilan_nih/home.dart';
 import 'package:sembilan_nih/View/login.dart';
-testing_enjoy
+import 'package:sembilan_nih/View/home.dart';
+import 'package:sembilan_nih/View/detail_pesanan.dart';
+import 'package:sembilan_nih/View/profile_page.dart';
 
 void main() {
-  runApp(const MainApp());
+  runApp(const MyApp());
 }
 
-class MainApp extends StatelessWidget {
-  const MainApp({super.key});
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: LoginView(),
-
-      home: Scaffold(
-        body: Center(
-
-          child: Text('Putra - 220711835'),
-
-          child: Text('Eugene Jethro - 220711908'),
- testing_enjoy
-        ),
-      ),
-testing_enjoy
+    return MaterialApp(
+      title: 'Ego Gym',
+      initialRoute: '/login',
+      routes: {
+        '/login': (context) => const LoginView(),
+        '/home': (context) => const HomeView(),
+        '/detail_pesanan': (context) => const DetailPesananPage(),
+        '/profile': (context) => const ProfilePage(),
+      },
     );
   }
 }
