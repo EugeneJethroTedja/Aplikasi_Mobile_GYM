@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:sembilan_nih/View/home.dart';
 import 'package:sembilan_nih/View/register.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -122,8 +121,7 @@ class _LoginViewState extends State<LoginView> {
                         ),
                       ),
                       onPressed: () {
-                        if (usernameController.text.isEmpty &&
-                            passwordController.text.isEmpty) {
+                        if (usernameController.text.isEmpty && passwordController.text.isEmpty) {
                           showAlertDialog(context, 'Login Gagal',
                               'Belum memasukan Username dan Password!');
                         } else if (usernameController.text.isEmpty ||
@@ -132,16 +130,9 @@ class _LoginViewState extends State<LoginView> {
                               'Username atau Password yang Anda masukkan salah.');
                         } else if (_formKey.currentState!.validate()) {
                           if (dataForm != null &&
-                              dataForm!['username'] ==
-                                  usernameController.text &&
-                              dataForm!['password'] ==
-                                  passwordController.text) {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => const HomeView(),
-                              ),
-                            );
+                              dataForm!['username'] == usernameController.text &&
+                              dataForm!['password'] == passwordController.text) {
+                            Navigator.pushNamed(context, '/home');
                           } else {
                             showAlertDialog(context, 'Login Gagal',
                                 'Username atau Password yang Anda masukkan salah.');
@@ -157,8 +148,7 @@ class _LoginViewState extends State<LoginView> {
                     Align(
                       alignment: Alignment.center,
                       child: TextButton(
-                        onPressed: () {
-                        },
+                        onPressed: () {},
                         child: Text(
                           'Anda lupa password?',
                           style: TextStyle(color: darkerOrange),
