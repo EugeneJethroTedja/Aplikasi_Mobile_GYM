@@ -111,7 +111,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
           onPressed: () => Navigator.pop(context),
-          color: Colors.white,
+          color: Colors.black,
         ),
         title: Text(
           'Edit Profile',
@@ -123,7 +123,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           padding: EdgeInsets.all(16.0),
           child: Column(
             children: [
-              // Profile Picture Section
+              
               Center(
                 child: Stack(
                   children: [

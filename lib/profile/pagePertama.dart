@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:sembilan_nih/profile/pageUbahProfile.dart'; 
+import 'package:sembilan_nih/profile/pageUbahProfile.dart';
+import 'package:sembilan_nih/profile/keamananAkun.dart'; // Import kelas baru
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({Key? key}) : super(key: key);
@@ -12,23 +13,29 @@ class ProfileScreen extends StatelessWidget {
         children: [
           Container(
             width: double.infinity,
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               color: Color(0xFFCD853F),
               borderRadius: BorderRadius.only(
                 bottomLeft: Radius.circular(30),
                 bottomRight: Radius.circular(30),
               ),
             ),
-            padding: EdgeInsets.only(top: 50, bottom: 25),
+            padding: const EdgeInsets.only(top: 50, bottom: 25),
             child: Column(
               children: [
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),
                   child: Row(
                     children: [
-                      Icon(Icons.arrow_back, color: Colors.black),
-                      SizedBox(width: 16),
-                      Text(
+                      IconButton(
+                        icon: const Icon(Icons.arrow_back),
+                        iconSize: 28,
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                      ),
+                      const SizedBox(width: 16),
+                      const Text(
                         'Profile',
                         style: TextStyle(
                           color: Colors.white,
@@ -39,11 +46,11 @@ class ProfileScreen extends StatelessWidget {
                     ],
                   ),
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 Stack(
                   clipBehavior: Clip.none,
                   children: [
-                    CircleAvatar(
+                    const CircleAvatar(
                       radius: 45,
                       backgroundColor: Colors.red,
                       child: Icon(Icons.person, size: 45, color: Colors.white),
@@ -53,7 +60,6 @@ class ProfileScreen extends StatelessWidget {
                       bottom: 0,
                       child: GestureDetector(
                         onTap: () {
-                   
                           Navigator.push(
                             context,
                             MaterialPageRoute(
@@ -65,14 +71,14 @@ class ProfileScreen extends StatelessWidget {
                           width: 25,
                           height: 25,
                           decoration: BoxDecoration(
-                            color: Color(0xFFCD853F),
+                            color: const Color(0xFFCD853F),
                             shape: BoxShape.circle,
                             border: Border.all(
                               color: Colors.black,
                               width: 1.2,
                             ),
                           ),
-                          child: Center(
+                          child: const Center(
                             child: Icon(
                               Icons.edit,
                               color: Colors.white,
@@ -84,8 +90,8 @@ class ProfileScreen extends StatelessWidget {
                     ),
                   ],
                 ),
-                SizedBox(height: 12),
-                Text(
+                const SizedBox(height: 12),
+                const Text(
                   'Nama Pengguna',
                   style: TextStyle(
                     color: Colors.white,
@@ -93,8 +99,8 @@ class ProfileScreen extends StatelessWidget {
                     fontWeight: FontWeight.w500,
                   ),
                 ),
-                SizedBox(height: 4),
-                Text(
+                const SizedBox(height: 4),
+                const Text(
                   'Email Pengguna',
                   style: TextStyle(
                     color: Colors.white,
@@ -104,9 +110,8 @@ class ProfileScreen extends StatelessWidget {
               ],
             ),
           ),
-
           Padding(
-            padding: EdgeInsets.all(20),
+            padding: const EdgeInsets.all(20),
             child: Column(
               children: [
                 _buildMenuItem(
@@ -117,7 +122,14 @@ class ProfileScreen extends StatelessWidget {
                 _buildMenuItem(
                   icon: Icons.lock_outline,
                   title: 'Keamanan Akun',
-                  onTap: () {},
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const ProfileScreenAkun(),
+                      ),
+                    );
+                  },
                 ),
                 _buildMenuItem(
                   icon: Icons.settings,
@@ -148,7 +160,7 @@ class ProfileScreen extends StatelessWidget {
     required VoidCallback onTap,
   }) {
     return Container(
-      margin: EdgeInsets.only(bottom: 10),
+      margin: const EdgeInsets.only(bottom: 10),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(10),
@@ -162,7 +174,7 @@ class ProfileScreen extends StatelessWidget {
             fontSize: 16,
           ),
         ),
-        trailing: Icon(Icons.chevron_right, color: Colors.grey),
+        trailing: const Icon(Icons.chevron_right, color: Colors.grey),
         onTap: onTap,
       ),
     );
