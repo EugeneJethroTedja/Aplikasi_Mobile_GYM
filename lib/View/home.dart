@@ -1,6 +1,8 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'profile_page.dart';
+import 'package:sembilan_nih/profile/pagePertama.dart'; 
 import 'detail_pesanan.dart';
+
 
 void main() {
   runApp(const MyApp());
@@ -20,7 +22,7 @@ class MyApp extends StatelessWidget {
       routes: {
         '/': (context) => const HomeView(),
         '/detail_pesanan': (context) => const DetailPesananPage(),
-        '/profile': (context) => const ProfilePage(),
+        '/profile': (context) => const ProfileScreen(),
       },
     );
   }
