@@ -1,6 +1,11 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'profile_page.dart';
+import 'package:sembilan_nih/profile/pagePertama.dart'; 
+import 'package:sembilan_nih/View/trainer.dart';
+import 'package:sembilan_nih/View/alat.dart';
+import 'package:sembilan_nih/View/kelas.dart';
 import 'detail_pesanan.dart';
+
 
 void main() {
   runApp(const MyApp());
@@ -20,7 +25,10 @@ class MyApp extends StatelessWidget {
       routes: {
         '/': (context) => const HomeView(),
         '/detail_pesanan': (context) => const DetailPesananPage(),
-        '/profile': (context) => const ProfilePage(),
+        '/profile': (context) => const ProfileScreen(),
+        '/trainer': (context) => const TrainerScreen(),
+        '/alat': (context) => const AlatScreen(),
+        '/kelas': (context) => const KelasScreen(),
       },
     );
   }
@@ -100,7 +108,7 @@ class _HomeViewState extends State<HomeView> {
                 child: Container(
                   padding: const EdgeInsets.all(16.0),
                   decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.6), // Overlay hitam transparan
+                    color: Colors.black.withOpacity(0.6), 
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Row(
@@ -130,21 +138,26 @@ class _HomeViewState extends State<HomeView> {
                   ),
                 ),
               ),
-              const SizedBox(height: 16),
 
+              const SizedBox(height: 16),
               buildInfoCard(
-                imageUrl: 'https://via.placeholder.com/300x150',
+                image: AssetImage('assets/images/trainer.jpg'),
                 title: 'TRAINER',
+                onTap: () => Navigator.pushNamed(context, '/trainer'),
               ),
+
               const SizedBox(height: 16),
               buildInfoCard(
-                imageUrl: 'https://via.placeholder.com/300x150',
+                image: AssetImage('assets/images/alat.jpg'),
                 title: 'ALAT',
+                onTap: () => Navigator.pushNamed(context, '/alat'),
               ),
+
               const SizedBox(height: 16),
               buildInfoCard(
-                imageUrl: 'https://via.placeholder.com/300x150',
+                image: AssetImage('assets/images/kelas.jpeg'),
                 title: 'KELAS',
+                onTap: () => Navigator.pushNamed(context, '/kelas'),
               ),
             ],
           ),
@@ -153,43 +166,47 @@ class _HomeViewState extends State<HomeView> {
     );
   }
 
-  Widget buildInfoCard({required String imageUrl, required String title}) {
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
-        color: Colors.white,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            spreadRadius: 2,
-            blurRadius: 6,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Column(
-        children: [
-          ClipRRect(
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
-            child: Image.network(
-              imageUrl,
-              height: 150,
-              width: double.infinity,
-              fit: BoxFit.cover,
+  Widget buildInfoCard({required ImageProvider image, required String title, required VoidCallback onTap}) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12),
+          color: Colors.white,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.1),
+              spreadRadius: 2,
+              blurRadius: 6,
+              offset: const Offset(0, 4),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(12.0),
-            child: Text(
-              title,
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
+          ],
+        ),
+        child: Column(
+          children: [
+            ClipRRect(
+              borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
+              child: Image(
+                image: image,
+                height: 150,
+                width: double.infinity,
+                fit: BoxFit.cover,
               ),
             ),
-          ),
-        ],
+            Padding(
+              padding: const EdgeInsets.all(12.0),
+              child: Text(
+                title,
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
+
 }
