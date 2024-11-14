@@ -88,7 +88,7 @@ class _HomeViewState extends State<HomeView> {
               // Logo
               Center(
                 child: Image.asset(
-                  'assets/images/LOGO.png',
+                  'assets/images/logo.png',
                   width: 400,
                   height: 100,
                 ),
