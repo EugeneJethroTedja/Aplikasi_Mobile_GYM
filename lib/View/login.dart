@@ -60,7 +60,7 @@ class _LoginViewState extends State<LoginView> {
                       child: Column(
                         children: [
                           Image.asset(
-                            'assets/images/image.jpeg',
+                            'assets/images/logo.png',
                             width: 400,
                             height: 100,
                           ),
@@ -157,8 +157,7 @@ class _LoginViewState extends State<LoginView> {
                     Align(
                       alignment: Alignment.center,
                       child: TextButton(
-                        onPressed: () {
-                        },
+                        onPressed: () {},
                         child: Text(
                           'Anda lupa password?',
                           style: TextStyle(color: darkerOrange),
