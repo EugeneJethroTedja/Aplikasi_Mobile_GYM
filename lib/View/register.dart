@@ -65,7 +65,7 @@ class _RegisterViewState extends State<RegisterView> {
                       child: Column(
                         children: [
                           Image.asset(
-                            'assets/images/image.jpeg',
+                            'assets/images/logo.png',
                             width: 400,
                             height: 100,
                           ),
