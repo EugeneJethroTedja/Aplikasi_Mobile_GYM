@@ -6,7 +6,6 @@ import 'package:sembilan_nih/View/alat.dart';
 import 'package:sembilan_nih/View/kelas.dart';
 import 'detail_pesanan.dart';
 
-
 void main() {
   runApp(const MyApp());
 }
@@ -99,7 +98,7 @@ class _HomeViewState extends State<HomeView> {
               Container(
                 height: 150,
                 decoration: BoxDecoration(
-                  image: DecorationImage(
+                  image: const DecorationImage(
                     image: AssetImage('assets/images/alat.jpg'),
                     fit: BoxFit.cover,
                   ),
@@ -141,23 +140,23 @@ class _HomeViewState extends State<HomeView> {
 
               const SizedBox(height: 16),
               buildInfoCard(
-                image: AssetImage('assets/images/trainer.jpg'),
+                image: const AssetImage('assets/images/trainer.jpg'),
                 title: 'TRAINER',
-                onTap: () => Navigator.pushNamed(context, '/trainer'),
+                routeName: '/trainer',
               ),
 
               const SizedBox(height: 16),
               buildInfoCard(
-                image: AssetImage('assets/images/alat.jpg'),
+                image: const AssetImage('assets/images/alat.jpg'),
                 title: 'ALAT',
-                onTap: () => Navigator.pushNamed(context, '/alat'),
+                routeName: '/alat',
               ),
 
               const SizedBox(height: 16),
               buildInfoCard(
-                image: AssetImage('assets/images/kelas.jpeg'),
+                image: const AssetImage('assets/images/kelas.jpeg'),
                 title: 'KELAS',
-                onTap: () => Navigator.pushNamed(context, '/kelas'),
+                routeName: '/kelas',
               ),
             ],
           ),
@@ -166,9 +165,13 @@ class _HomeViewState extends State<HomeView> {
     );
   }
 
-  Widget buildInfoCard({required ImageProvider image, required String title, required VoidCallback onTap}) {
+  Widget buildInfoCard({
+    required ImageProvider image,
+    required String title,
+    required String routeName,
+  }) {
     return GestureDetector(
-      onTap: onTap,
+      onTap: () => Navigator.of(context).pushNamed(routeName),
       child: Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(12),
@@ -208,5 +211,4 @@ class _HomeViewState extends State<HomeView> {
       ),
     );
   }
-
 }
