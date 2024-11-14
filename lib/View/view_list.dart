@@ -1,19 +1,21 @@
 import 'package:flutter/material.dart';
-import 'package:sembilan_nih/data/datadummy.dart';
+import 'package:sembilan_nih/data/people.dart';
+
+
 
 class ListNamaView extends StatelessWidget {
   const ListNamaView({super.key});
 
   @override
-  Widget build(BuildContext context){
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Daftar Nama Trainer"),
       ),
       body: LayoutBuilder(builder: (context, constraints) {
-        if(constraints.maxWidth>600){
+        if (constraints.maxWidth > 600) {
           return const WideLayout();
-        }else{
+        } else {
           return const NarrowLayout();
         }
       }),
@@ -27,12 +29,15 @@ class NarrowLayout extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return PeopleList(
-      onPersonTap: (person) => Navigator.of(context).push(MaterialPageRoute(
-        builder: (context) => Scaffold(
-          appBar: AppBar(),
-          body: PersonDetail(person),
+      onPersonTap: (person) => Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (context) => Scaffold(
+            appBar: AppBar(),
+            body: PersonDetail(person),
+          ),
         ),
-      ),),);
+      ),
+    );
   }
 }
 
@@ -44,10 +49,9 @@ class WideLayout extends StatefulWidget {
 }
 
 class _WideLayoutState extends State<WideLayout> {
-  Datadum? _person;
-
+  Person? _person;
   @override
-  Widget build(BuildContext context){
+  Widget build(BuildContext context) {
     return Row(
       children: [
         SizedBox(
@@ -56,71 +60,72 @@ class _WideLayoutState extends State<WideLayout> {
             padding: const EdgeInsets.all(12.0),
             child: PeopleList(
               onPersonTap: (person) => setState(() => _person = person),
-            )
+            ),
           ),
         ),
         Expanded(
           flex: 3,
           child: _person == null ? const Placeholder() : PersonDetail(_person!),
-        )
+        ),
       ],
     );
   }
 }
 
 class PeopleList extends StatelessWidget {
-  final void Function(Datadum) onPersonTap;
+  final void Function(Person) onPersonTap;
   const PeopleList({super.key, required this.onPersonTap});
 
-  Widget build(BuildContext context){
+  @override
+  Widget build(BuildContext context) {
     return ListView(children: [
-      for(var person in datadummy)
+      for (var person in people)
         ListTile(
-          leading: Image.network(person.picture),
-          title: Text(person.name),
-          onTap: () => onPersonTap(person)),
+            leading: Image.network(person.picture),
+            title: Text(person.name),
+            onTap: () => onPersonTap(person)),
     ]);
   }
 }
 
 class PersonDetail extends StatelessWidget {
-  final Datadum person;
+  final Person person;
   const PersonDetail(this.person, {super.key});
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (buildContext, boxConstraints) {
-        return Center(
-          child: boxConstraints.maxHeight > 200 ? Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              MouseRegion(
-                onHover: (_) => {print("HelloWorld")},
-                child: Text(person.name),
+    return LayoutBuilder(builder: (buildContext, boxConstraints) {
+      return Center(
+        child: boxConstraints.maxHeight > 200
+            ? Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  MouseRegion(
+                    onHover: (_) => {print("Hello World")},
+                    child: Text(person.name),
+                  ),
+                  Text(person.phone),
+                  ElevatedButton(
+                    onPressed: () {},
+                    child: const Text("Contact Me"),
+                  ),
+                ],
+              )
+            : Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  MouseRegion(
+                    onHover: (_) => {print("Hello World")},
+                    child: Text(person.name),
+                  ),
+                  Text(person.phone),
+                  ElevatedButton(
+                    onPressed: () {},
+                    child: const Text("Contact Me"),
+                  ),
+                ],
               ),
-              Text(person.phone),
-              ElevatedButton(
-                onPressed: () {},
-                child: const Text("Contact Me"),
-              ),
-            ],
-          ) :
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              MouseRegion(
-                onHover: (_) => {print("Hello World")},
-                child: Text(person.name),
-              ),
-              Text(person.phone),
-              ElevatedButton(
-                onPressed: () {},
-                child: const Text("Contact Me"),
-              ),
-            ],
-          ),);
-      }
-    );
+      );
+    });
   }
 }
