@@ -41,17 +41,21 @@ class TrainerScreen extends StatelessWidget {
         fee: 'Rp 140.000',
         imageUrl: 'assets/images/trainer2.jpg',
       ),
-      // Add more trainers as needed...
     ];
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.black,
-        title: const Text('Trainer', style: TextStyle(color: Colors.white)),
+        backgroundColor: Color.fromARGB(255, 158, 95, 0),
+        title: const Text(
+          'Trainer',
+          style: TextStyle(color: Colors.white),
+        ),
         iconTheme: const IconThemeData(
-          color: Color.fromARGB(255, 158, 95, 0),
+          color: Color.fromARGB(255, 0, 0, 0),
         ),
       ),
+      // Set warna background scaffold ke hitam
+      backgroundColor: Colors.black,
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: ListView.builder(
@@ -68,6 +72,7 @@ class TrainerScreen extends StatelessWidget {
                 );
               },
               child: Card(
+                // Card tetap warna terang agar kontras dengan background hitam
                 color: const Color.fromARGB(255, 252, 241, 230),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16.0),
@@ -99,13 +104,26 @@ class TrainerScreen extends StatelessWidget {
                               style: const TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 16,
+                                color: Colors.black,
                               ),
                             ),
                             const SizedBox(height: 4),
-                            Text('Spesialis: ${trainer.specialization}'),
-                            Text('Durasi: ${trainer.duration}'),
-                            Text('Hari: ${trainer.day}'),
-                            Text('Biaya: ${trainer.fee}'),
+                            Text(
+                              'Spesialis: ${trainer.specialization}',
+                              style: const TextStyle(color: Colors.black),
+                            ),
+                            Text(
+                              'Durasi: ${trainer.duration}',
+                              style: const TextStyle(color: Colors.black),
+                            ),
+                            Text(
+                              'Hari: ${trainer.day}',
+                              style: const TextStyle(color: Colors.black),
+                            ),
+                            Text(
+                              'Biaya: ${trainer.fee}',
+                              style: const TextStyle(color: Colors.black),
+                            ),
                           ],
                         ),
                       ),
@@ -114,7 +132,8 @@ class TrainerScreen extends StatelessWidget {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => TrainerDetailScreen(trainer: trainer),
+                              builder: (context) =>
+                                  TrainerDetailScreen(trainer: trainer),
                             ),
                           );
                         },

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'daftar.dart';
 import 'trainer.dart';
+import 'chat.dart';
 
 class TrainerDetailScreen extends StatelessWidget {
   final Trainer trainer;
@@ -10,12 +12,13 @@ class TrainerDetailScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.black,
+        backgroundColor: Color.fromARGB(255, 158, 95, 0),
         title: const Text('Back', style: TextStyle(color: Colors.white)),
         iconTheme: const IconThemeData(
-          color: Color.fromARGB(255, 158, 95, 0),
+          color: Color.fromARGB(255, 0, 0, 0),
         ),
       ),
+      backgroundColor: Colors.black,
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Center(
@@ -55,31 +58,67 @@ class TrainerDetailScreen extends StatelessWidget {
                         style: const TextStyle(fontWeight: FontWeight.bold),
                       ),
                       Text(
-                        'Durasi: ${trainer.duration}',
+                        'Durasi   : ${trainer.duration}',
                         style: const TextStyle(fontWeight: FontWeight.bold),
                       ),
                       Text(
-                        'Hari: ${trainer.day}',
+                        'Hari     : ${trainer.day}',
                         style: const TextStyle(fontWeight: FontWeight.bold),
                       ),
                       Text(
-                        'Biaya: ${trainer.fee}',
+                        'Biaya    : ${trainer.fee}',
                         style: const TextStyle(fontWeight: FontWeight.bold),
                       ),
                     ],
                   ),
                   const SizedBox(height: 16),
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color.fromARGB(255, 158, 95, 0), // Use backgroundColor instead of primary
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8.0),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      // Button untuk Chat
+                      ElevatedButton.icon(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor:
+                              const Color.fromARGB(255, 158, 95, 0),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8.0),
+                          ),
+                        ),
+                        onPressed: () {
+                          // Navigasi ke halaman Chat (buat halaman chat jika belum ada)
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  ChatScreen(trainer: trainer),
+                            ),
+                          );
+                        },
+                        icon: const Icon(Icons.chat),
+                        label: const Text('Chat'),
                       ),
-                    ),
-                    onPressed: () {
-                      // Add functionality for the 'DAFTAR' button here
-                    },
-                    child: const Text('DAFTAR'),
+                      // Button untuk Daftar
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor:
+                              const Color.fromARGB(255, 158, 95, 0),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8.0),
+                          ),
+                        ),
+                        onPressed: () {
+                          // Navigasi ke halaman Daftar
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  DaftarScreen(trainer: trainer),
+                            ),
+                          );
+                        },
+                        child: const Text('DAFTAR'),
+                      ),
+                    ],
                   ),
                 ],
               ),
