@@ -9,18 +9,34 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  pdf: ^3.10.1
+  path_provider: ^2.0.14
+  open_file: ^3.2.1
   font_awesome_flutter: ^10.5.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^4.0.0
+  flutter_lints: ^5.0.0
+  camera: ^0.11.0+1
+  image_picker: ^0.8.7+3
+  qr_flutter: ^4.1.0
+  intl: ^0.17.0
 
 flutter:
   uses-material-design: true
   assets:
-    - assets/images/image.jpeg
+    - assets/images/LOGO.png
+    - assets/images/user.png
     - assets/images/trainer.jpg
     - assets/images/alat.jpg
     - assets/images/kelas.jpeg
-
+    - assets/images/trainer1.png
+    - assets/images/trainer2.jpg
+    - assets/images/icons/bni.jpg
+    - assets/images/icons/bri.jpg
+    - assets/images/icons/mandiri.jpg
+    - assets/images/icons/ovo.jpg
+    - assets/images/icons/shoppe.jpg
+    - assets/images/icons/dana.jpg
+    - assets/images/icons/gopay.jpg
