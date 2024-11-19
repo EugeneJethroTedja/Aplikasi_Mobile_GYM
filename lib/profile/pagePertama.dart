@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:sembilan_nih/profile/pageUbahProfile.dart';
-import 'package:sembilan_nih/profile/keamananAkun.dart'; // Import kelas baru
+import 'package:sembilan_nih/profile/keamananAkun.dart';
+import 'package:sembilan_nih/profile/kebijakanPrivasi.dart';
+import 'package:sembilan_nih/profile/informasiPengguna.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({Key? key}) : super(key: key);
@@ -117,7 +119,14 @@ class ProfileScreen extends StatelessWidget {
                 _buildMenuItem(
                   icon: Icons.person_outline,
                   title: 'Informasi Pengguna',
-                  onTap: () {},
+                  onTap: () {
+                    Navigator.push(
+                      context, 
+                      MaterialPageRoute(
+                        builder: (context) => const InformasiPenggunaScreen(),
+                      ),
+                    );
+                  },
                 ),
                 _buildMenuItem(
                   icon: Icons.lock_outline,
@@ -134,17 +143,33 @@ class ProfileScreen extends StatelessWidget {
                 _buildMenuItem(
                   icon: Icons.settings,
                   title: 'Edit Profile',
-                  onTap: () {},
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const EditProfileScreen(),
+                      ),
+                    );
+                  },
                 ),
                 _buildMenuItem(
                   icon: Icons.privacy_tip_outlined,
                   title: 'Kebijakan Privasi',
-                  onTap: () {},
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const PrivacyPolicyScreen(),
+                      ),
+                    );
+                  },
                 ),
                 _buildMenuItem(
                   icon: Icons.logout,
                   title: 'Log Out',
-                  onTap: () {},
+                  onTap: () {
+                    showLogoutDialog(context);
+                  },
                 ),
               ],
             ),
@@ -177,6 +202,57 @@ class ProfileScreen extends StatelessWidget {
         trailing: const Icon(Icons.chevron_right, color: Colors.grey),
         onTap: onTap,
       ),
+    );
+  }
+
+  void showLogoutDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text(
+            'Logout',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          content: const Text(
+            'Apakah Anda Yakin Ingin Keluar?',
+            textAlign: TextAlign.center,
+          ),
+          actionsAlignment: MainAxisAlignment.spaceEvenly,
+          actions: <Widget>[
+            TextButton(
+              style: TextButton.styleFrom(
+                backgroundColor: Colors.red,
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+              ),
+              onPressed: () {
+                Navigator.of(context).pop(); // Menutup dialog
+              },
+              child: const Text(
+                'Batal',
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+            TextButton(
+              style: TextButton.styleFrom(
+                backgroundColor: Colors.lightBlue,
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+              ),
+              onPressed: () {
+                // Tambahkan logika logout di sini
+                Navigator.of(context).pop(); // Menutup dialog
+              },
+              child: const Text(
+                'OK',
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 }
