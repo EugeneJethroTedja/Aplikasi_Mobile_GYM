@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:sembilan_nih/profile/pageUbahProfile.dart';
+import 'package:sembilan_nih/profile/ubahEmail.dart';
+import 'package:sembilan_nih/profile/ubahNoTelepon.dart';
+import 'package:sembilan_nih/profile/ubahPassword.dart';
 
 class ProfileScreenAkun extends StatelessWidget {
-  const ProfileScreenAkun ({Key? key}) : super(key: key);
+  const ProfileScreenAkun({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +30,7 @@ class ProfileScreenAkun extends StatelessWidget {
                     children: [
                       IconButton(
                         icon: const Icon(Icons.arrow_back),
-                        iconSize: 28, // Perbesar ukuran ikon
+                        iconSize: 28, 
                         onPressed: () {
                           Navigator.pop(context);
                         },
@@ -46,15 +48,10 @@ class ProfileScreenAkun extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 20),
-                Stack(
-                  clipBehavior: Clip.none,
-                  children: [
-                    const CircleAvatar(
-                      radius: 45,
-                      backgroundColor: Colors.red,
-                      child: Icon(Icons.person, size: 45, color: Colors.white),
-                    ),
-                  ],
+                const CircleAvatar(
+                  radius: 45,
+                  backgroundColor: Colors.red,
+                  child: Icon(Icons.person, size: 45, color: Colors.white),
                 ),
                 const SizedBox(height: 12),
                 const Text(
@@ -84,21 +81,36 @@ class ProfileScreenAkun extends StatelessWidget {
                   icon: Icons.lock_outline,
                   title: 'Ganti Password',
                   onTap: () {
-                    // Handle action for changing password
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const ChangePasswordScreen(),
+                      ),
+                    );
                   },
                 ),
                 _buildMenuItem(
                   icon: Icons.phone,
                   title: 'Ganti No Telp',
                   onTap: () {
-                    // Handle action for changing phone number
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const ChangePhoneNumberScreen(),
+                      ),
+                    );
                   },
                 ),
                 _buildMenuItem(
                   icon: Icons.email,
                   title: 'Ganti Email',
                   onTap: () {
-                    // Handle action for changing email
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const ChangeEmailScreen() ,
+                      ),
+                    );
                   },
                 ),
               ],
