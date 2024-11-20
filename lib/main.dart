@@ -13,18 +13,6 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-<<<<<<< HEAD
-    return const MaterialApp(
-      home: Scaffold(
-        body: Center(
-<<<<<<< HEAD
-          child: Text('Octavionus Samuel - 220711661'),
-=======
-          child: Text('Octavionus Samuel Kusuma Wardana-220711661'),
->>>>>>> ea110d0105f8fa95b5228827dc55c878bb137851
-        ),
-      ),
-=======
     return MaterialApp(
       title: 'Ego Gym',
       initialRoute: '/login',
@@ -34,7 +22,6 @@ class MyApp extends StatelessWidget {
         '/detail_pesanan': (context) => const DetailPesananPage(),
         '/profile': (context) => const ProfileScreen(),
       },
->>>>>>> 6d2ad2fa403fd3234eb3a42b653748b22c4f6784
     );
   }
 }
