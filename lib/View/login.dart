@@ -1,14 +1,11 @@
 import 'package:flutter/material.dart';
-//* Sesuai dengan nama project anda, awalnya akan error pada home, register, form component belum dibuat
 import 'package:sembilan_nih/View/home.dart';
 import 'package:sembilan_nih/View/register.dart';
-import 'package:sembilan_nih/component/form_component.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class LoginView extends StatefulWidget {
-  //* variabel map data dibuat bersifat nullable, karena ketika aplikasi dijalankan(dipanggil dari main, tidak ada data yang dibawa)
-  //* data memiliki nilai ketika registrasi berhasil dilakukan
-  final Map? data; 
-  //* Agar map data bisa bersifat nullable, pada constructor dibungkus dengan kurung { } agar bersifat opsional
+  final Map? data;
+
   const LoginView({super.key, this.data});
 
   @override
@@ -17,106 +14,277 @@ class LoginView extends StatefulWidget {
 
 class _LoginViewState extends State<LoginView> {
   final _formKey = GlobalKey<FormState>();
+  late TextEditingController usernameController;
+  late TextEditingController passwordController;
+  Map? dataForm;
+
+  final Color darkerOrange = const Color.fromARGB(255, 158, 95, 0);
+
+  @override
+  void initState() {
+    super.initState();
+    usernameController = TextEditingController();
+    passwordController = TextEditingController();
+    dataForm = widget.data;
+  }
+
+  @override
+  void dispose() {
+    usernameController.dispose();
+    passwordController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    //* TextEditingController
-    TextEditingController usernameController = TextEditingController();
-    TextEditingController passwordController = TextEditingController();
-    //* Widget mengacu pada instance/objek Loginview
-    Map? dataForm = widget.data;
     return Scaffold(
-      body: SafeArea(
-        child: Form(
-          key: _formKey,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              //* Username
-              inputForm((p0) {
-                if(p0 == null || p0.isEmpty) {
-                  return "username tidak boleh kosong";
-                }
-                return null;
-              },
-                  controller: usernameController,
-                  hintTxt: "Username",
-                  helperTxt: "Inputkan User yang telah didaftar",
-                  iconData: Icons.person),
-              //* Password
-              inputForm((p0) {
-                if(p0 == null || p0.isEmpty){
-                  return "password kosong";
-                }
-                return null;
-              },
-                  password: true,
-                  controller: passwordController,
-                  hintTxt: "Password",
-                  helperTxt: "Inputkan Password",
-                  iconData: Icons.password),
-              //* Baris yang berisi tombol login dan tombol mengarah kehalaman register
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  //* tombol Login
-                  ElevatedButton(
-                    //* fungsi yang dijalankan saat tombol ditekan
-                    onPressed: () {
-                      //* cek state sudah valid atau belum valid
-                      if(_formKey.currentState!.validate()) {
-                        //* jika sudah valid, cek username dan password yang diinputkan pada form telah sesuai dengan data yang dibawah
-                        //* dari halaman register atau belum
-                        if(dataForm!['username'] == usernameController.text && dataForm['password'] == passwordController.text)
-                        {
-                          //*jika sesuai navigasi ke halaman home
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) =>const HomeView()));
-                        }else{
-                          //*jika belum tampilkan alert dialog
-                          showDialog(context: context, builder:(_)=>AlertDialog(
-                            title: const Text('Password Salah'),
-                            //*isi Alert Dialog
-                            content: TextButton(
-                              //*pushRegister(context) fungsi pada baris 118-124 untuk meminimalkan nested code
-                              onPressed: () =>pushRegister(context),
-                              child: const Text('Daftar Disini !!')),
-                            actions: <Widget>[
-                              TextButton(
-                                onPressed: () => Navigator.pop(context, 'Cancel'),
-                                child: const Text('Cancel'),
-                              ),
-                              TextButton(
-                                onPressed: () => Navigator.pop(context, 'OK'),
-                                child: const Text('OK'),
-                              ),
-                            ],
-                            ),);
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Colors.black, Color(0xFF333333)],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+        ),
+        child: SafeArea(
+          child: Center(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 24.0),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Center(
+                      child: Column(
+                        children: [
+                          Image.asset(
+                            'assets/images/image.jpeg',
+                            width: 400,
+                            height: 100,
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            'Selamat Datang',
+                            style: TextStyle(
+                              color: Colors.grey[400],
+                              fontSize: 18,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 30),
+                    inputForm(
+                      (String? p0) {
+                        if (p0 == null || p0.isEmpty) {
+                          return "Username tidak boleh kosong";
                         }
-                      }
-                    },
-                    child: const Text('Login')),
-                //*tombol ke halaman register
-                TextButton(
-                  onPressed: () {
-                    Map<String, dynamic> formData = {};
-                    formData['username'] = usernameController.text;
-                    formData['password'] = passwordController.text;
-                    pushRegister(context);
-                  },
-                  child: const Text('Belum punya akun ?')),
-                ],
+                        return null;
+                      },
+                      controller: usernameController,
+                      hintTxt: "Username",
+                      helperTxt: "",
+                      iconData: Icons.person,
+                      hintColor: Colors.grey,
+                      textColor: Colors.black,
+                      backgroundColor: Colors.white,
+                      iconColor: darkerOrange,
+                      insideIcon: true,
+                    ),
+                    const SizedBox(height: 10),
+                    inputForm(
+                      (String? p0) {
+                        if (p0 == null || p0.isEmpty) {
+                          return "Password tidak boleh kosong";
+                        }
+                        return null;
+                      },
+                      controller: passwordController,
+                      hintTxt: "Password",
+                      helperTxt: "",
+                      iconData: Icons.lock,
+                      password: true,
+                      hintColor: Colors.grey,
+                      textColor: Colors.black,
+                      backgroundColor: Colors.white,
+                      iconColor: darkerOrange,
+                      insideIcon: true,
+                    ),
+                    const SizedBox(height: 20),
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: darkerOrange,
+                        minimumSize: const Size(double.infinity, 50),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                      onPressed: () {
+                        if (usernameController.text.isEmpty &&
+                            passwordController.text.isEmpty) {
+                          showAlertDialog(context, 'Login Gagal',
+                              'Belum memasukan Username dan Password!');
+                        } else if (usernameController.text.isEmpty ||
+                            passwordController.text.isEmpty) {
+                          showAlertDialog(context, 'Login Gagal',
+                              'Username atau Password yang Anda masukkan salah.');
+                        } else if (_formKey.currentState!.validate()) {
+                          if (dataForm != null &&
+                              dataForm!['username'] ==
+                                  usernameController.text &&
+                              dataForm!['password'] ==
+                                  passwordController.text) {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => const HomeView(),
+                              ),
+                            );
+                          } else {
+                            showAlertDialog(context, 'Login Gagal',
+                                'Username atau Password yang Anda masukkan salah.');
+                          }
+                        }
+                      },
+                      child: const Text(
+                        'Login',
+                        style: TextStyle(color: Colors.white, fontSize: 18),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    Align(
+                      alignment: Alignment.center,
+                      child: TextButton(
+                        onPressed: () {
+                        },
+                        child: Text(
+                          'Anda lupa password?',
+                          style: TextStyle(color: darkerOrange),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 100),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          "Belum punya akun?",
+                          style: TextStyle(color: Colors.grey[400]),
+                        ),
+                        TextButton(
+                          onPressed: () {
+                            pushRegister(context);
+                          },
+                          child: Text(
+                            'Daftar Sekarang',
+                            style: TextStyle(color: darkerOrange),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 20),
+                    Column(
+                      children: [
+                        Text(
+                          'Ayo temukan kita',
+                          style: TextStyle(color: Colors.grey[400]),
+                        ),
+                        const SizedBox(height: 10),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            IconButton(
+                              icon: const FaIcon(FontAwesomeIcons.twitter),
+                              color: darkerOrange,
+                              onPressed: () {},
+                            ),
+                            IconButton(
+                              icon: const FaIcon(FontAwesomeIcons.instagram),
+                              color: darkerOrange,
+                              onPressed: () {},
+                            ),
+                            IconButton(
+                              icon: const FaIcon(FontAwesomeIcons.tiktok),
+                              color: darkerOrange,
+                              onPressed: () {},
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
-            ],
+            ),
           ),
         ),
       ),
     );
   }
+
   void pushRegister(BuildContext context) {
-    Navigator.push(context,MaterialPageRoute(builder: (_) => const RegisterView(),),);
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => const RegisterView(),
+      ),
+    );
+  }
+
+  void showAlertDialog(BuildContext context, String title, String message) {
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: Text(
+          title,
+          style:
+              const TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+        ),
+        content: Text(message),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text(
+              'OK',
+              style: TextStyle(color: Colors.blue),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget inputForm(
+    String? Function(String?)? validator, {
+    required TextEditingController controller,
+    required String hintTxt,
+    required String helperTxt,
+    required IconData iconData,
+    bool password = false,
+    Color hintColor = Colors.grey,
+    Color textColor = Colors.black,
+    Color backgroundColor = Colors.white,
+    Color iconColor = const Color.fromARGB(255, 158, 95, 0),
+    bool insideIcon = false,
+  }) {
+    return TextFormField(
+      controller: controller,
+      validator: validator,
+      obscureText: password,
+      decoration: InputDecoration(
+        hintText: hintTxt,
+        hintStyle: TextStyle(color: hintColor),
+        fillColor: backgroundColor,
+        filled: true,
+        prefixIcon: insideIcon ? Icon(iconData, color: iconColor) : null,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: BorderSide.none,
+        ),
+      ),
+      style: TextStyle(color: textColor),
+    );
   }
 }
-

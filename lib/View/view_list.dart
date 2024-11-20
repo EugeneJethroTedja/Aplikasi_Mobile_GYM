@@ -8,14 +8,12 @@ class ListNamaView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Daftar Nama"),
+        title: const Text("Daftar Nama Trainer"),
       ),
       body: LayoutBuilder(builder: (context, constraints) {
-        if(constraints.maxWidth > 600){
-          //* Layar Lebar
+        if (constraints.maxWidth > 600) {
           return const WideLayout();
         } else {
-          //* layar horizontal
           return const NarrowLayout();
         }
       }),
@@ -25,21 +23,21 @@ class ListNamaView extends StatelessWidget {
 
 class NarrowLayout extends StatelessWidget {
   const NarrowLayout({super.key});
+
   @override
   Widget build(BuildContext context) {
     return PeopleList(
-        onPersonTap: (person) => Navigator.of(context).push(MaterialPageRoute(
-              builder: (context) => Scaffold(
-                appBar: AppBar(),
-                body: PersonDetail(person),
-
-              ),
-            ),),);
+      onPersonTap: (person) => Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (context) => Scaffold(
+            appBar: AppBar(),
+            body: PersonDetail(person),
+          ),
+        ),
+      ),
+    );
   }
 }
-
-
-
 
 class WideLayout extends StatefulWidget {
   const WideLayout({super.key});
@@ -65,7 +63,7 @@ class _WideLayoutState extends State<WideLayout> {
         ),
         Expanded(
           flex: 3,
-          child:_person == null ? const Placeholder() : PersonDetail(_person!),
+          child: _person == null ? const Placeholder() : PersonDetail(_person!),
         ),
       ],
     );
@@ -79,13 +77,11 @@ class PeopleList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView(children: [
-      //kok kalo pake  { } error ?
-      for(var person in people)
-      ListTile(
-        leading: Image.network(person.picture) ,
-        // leading: const HtmlElementView(viewType: "<img>") ,
-        title: Text(person.name),
-        onTap: () => onPersonTap(person)),
+      for (var person in people)
+        ListTile(
+            leading: Image.network(person.picture),
+            title: Text(person.name),
+            onTap: () => onPersonTap(person)),
     ]);
   }
 }
@@ -96,41 +92,38 @@ class PersonDetail extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(
-      // ignore: avoid_types_as_parameter_names
-      builder: (buildContext, boxConstraints) {
-        return Center(
-          child: boxConstraints.maxHeight > 200 ? Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              MouseRegion(
-                // ignore: avoid_print
-                onHover: (_) => {print("Hello World")},
-                child: Text(person.name),
+    return LayoutBuilder(builder: (buildContext, boxConstraints) {
+      return Center(
+        child: boxConstraints.maxHeight > 200
+            ? Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  MouseRegion(
+                    onHover: (_) => {print("Hello World")},
+                    child: Text(person.name),
+                  ),
+                  Text(person.phone),
+                  ElevatedButton(
+                    onPressed: () {},
+                    child: const Text("Contact Me"),
+                  ),
+                ],
+              )
+            : Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  MouseRegion(
+                    onHover: (_) => {print("Hello World")},
+                    child: Text(person.name),
+                  ),
+                  Text(person.phone),
+                  ElevatedButton(
+                    onPressed: () {},
+                    child: const Text("Contact Me"),
+                  ),
+                ],
               ),
-              Text(person.phone),
-              ElevatedButton(
-                onPressed: () {},
-                child: const Text("Contact Me"),
-              ),
-            ],
-          ) :
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              MouseRegion(
-                // ignore: avoid_print
-                onHover: (_) => {print("Hello World")},
-                child: Text(person.name),
-              ),
-              Text(person.phone),
-              ElevatedButton(
-                onPressed: () {},
-                child: const Text("Contact Me"),
-              ),
-            ],
-          ),);
-        }
-    );
+      );
+    });
   }
 }

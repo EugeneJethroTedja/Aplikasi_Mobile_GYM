@@ -1,241 +1,257 @@
-//* 1. Kelas Person
-class Person{
+class Person {
   final String name;
   final String phone;
   final String picture;
-  const Person(this.name,this.phone,this.picture);
+  const Person(this.name, this.phone, this.picture);
 }
 
-//*2. Variabel list dengan nama people yang memiliki data bertipe object Person, yang merupakan
-//* hasil mapping data list pada baris 14 kebawah
-final List<Person> people = 
-      _people.map((e) => Person(e['name'] as String, e['phone'] as String,e['picture'] as String)).toList(growable: false);
+final List<Person> people = _people
+    .map((e) => Person(
+        e['name'] as String, e['phone'] as String, e['picture'] as String))
+    .toList(growable: false);
 
-final List<Map<String,Object>> _people = 
-  [
-    {
-      "_id": "66fbe472ed0b1fdf628ce1a3",
-      "index": 0,
-      "guid": "e73a9527-3229-4ef0-95bb-a9cff2b71581",
-      "isActive": true,
-      "balance": "1,474.43",
-      "picture": "http://placehold.it/32x32",
-      "age": 25,
-      "eyeColor": "green",
-      "name": "Buchanan Fletcher",
-      "gender": "male",
-      "company": "ASSISTIX",
-      "email": "buchananfletcher@assistix.com",
-      "phone": "+1 (817) 502-3948",
-      "address": "386 Farragut Road, Harleigh, Colorado, 1784",
-      "about": "Labore dolore excepteur exercitation eiusmod eu officia consectetur. Tempor quis anim quis magna ex sint magna aliquip. Cupidatat ut consequat labore eiusmod id ad ut adipisicing culpa culpa. Deserunt enim deserunt duis laboris amet nulla sit deserunt eu est cupidatat. Minim reprehenderit officia labore sit aliqua magna nostrud veniam. Culpa nulla Lorem do duis occaecat dolor ipsum nostrud. Ipsum duis excepteur tempor laborum mollit elit sint.\r\n",
-      "registered": "2017-02-12T04:48:23 -07:00",
-      "latitude": 68.164147,
-      "longitude": 110.421627,
-      "tags": [
-        "adipisicing",
-        "aute",
-        "mollit",
-        "adipisicing",
-        "duis",
-        "et",
-        "pariatur"
-      ],
-      "friends": [
-        {
-          "id": 0,
-          "name": "Shawn Powers"
-        },
-        {
-          "id": 1,
-          "name": "Berta Norman"
-        },
-        {
-          "id": 2,
-          "name": "Rena Flynn"
-        }
-      ],
-      "greeting": "Hello, Buchanan Fletcher! You have 9 unread messages.",
-      "favoriteFruit": "strawberry"
-    },
-    {
-      "_id": "66fbe4724bb1f55125b2235d",
-      "index": 1,
-      "guid": "e74f899c-5dd0-4fc2-918d-e3c618c779d9",
-      "isActive": false,
-      "balance": "2,008.73",
-      "picture": "http://placehold.it/32x32",
-      "age": 34,
-      "eyeColor": "green",
-      "name": "Perry Vaughn",
-      "gender": "male",
-      "company": "GLASSTEP",
-      "email": "perryvaughn@glasstep.com",
-      "phone": "+1 (986) 458-2454",
-      "address": "889 Lenox Road, Cumminsville, Illinois, 1978",
-      "about": "Dolor proident fugiat magna irure qui nostrud velit aute nulla velit ex. Mollit amet dolore laboris ea. Et sint magna incididunt commodo consectetur consectetur. Ad culpa consectetur mollit nisi irure deserunt culpa pariatur. Qui mollit ut aliquip magna qui laborum proident qui aliquip incididunt cupidatat. Ea Lorem consectetur adipisicing ea occaecat quis voluptate non pariatur cillum labore. Amet consectetur adipisicing adipisicing mollit ipsum ad dolor labore voluptate consectetur Lorem ullamco eu.\r\n",
-      "registered": "2014-01-29T08:20:26 -07:00",
-      "latitude": 65.856536,
-      "longitude": 114.759232,
-      "tags": [
-        "magna",
-        "ut",
-        "duis",
-        "aliquip",
-        "anim",
-        "amet",
-        "laboris"
-      ],
-      "friends": [
-        {
-          "id": 0,
-          "name": "Butler Shields"
-        },
-        {
-          "id": 1,
-          "name": "Snow Hurley"
-        },
-        {
-          "id": 2,
-          "name": "Parks Medina"
-        }
-      ],
-      "greeting": "Hello, Perry Vaughn! You have 7 unread messages.",
-      "favoriteFruit": "apple"
-    },
-    {
-      "_id": "66fbe4726e2a2d235f2ed4bb",
-      "index": 2,
-      "guid": "6a913fed-a3d2-4f44-980a-c711f5f2533e",
-      "isActive": true,
-      "balance": "3,806.38",
-      "picture": "http://placehold.it/32x32",
-      "age": 20,
-      "eyeColor": "green",
-      "name": "Little Hayden",
-      "gender": "male",
-      "company": "STRALUM",
-      "email": "littlehayden@stralum.com",
-      "phone": "+1 (910) 525-2200",
-      "address": "202 Bridgewater Street, Sanders, Kentucky, 507",
-      "about": "Nulla sit laboris laborum dolor incididunt in ipsum deserunt ea elit enim enim. In pariatur labore cillum excepteur excepteur elit excepteur ipsum pariatur. Aliquip enim do adipisicing veniam qui est elit occaecat. Excepteur incididunt duis minim aute excepteur laborum adipisicing. Ad deserunt sunt tempor sint quis.\r\n",
-      "registered": "2023-02-05T09:59:54 -07:00",
-      "latitude": 67.395862,
-      "longitude": 12.720818,
-      "tags": [
-        "cupidatat",
-        "tempor",
-        "reprehenderit",
-        "cupidatat",
-        "nostrud",
-        "ullamco",
-        "irure"
-      ],
-      "friends": [
-        {
-          "id": 0,
-          "name": "Cleo Lambert"
-        },
-        {
-          "id": 1,
-          "name": "Pauline Farmer"
-        },
-        {
-          "id": 2,
-          "name": "Roxie Murray"
-        }
-      ],
-      "greeting": "Hello, Little Hayden! You have 8 unread messages.",
-      "favoriteFruit": "apple"
-    },
-    {
-      "_id": "66fbe4723496a65c3467b81f",
-      "index": 3,
-      "guid": "e9c01631-b6f4-4e0f-953b-6b3ed733bd87",
-      "isActive": true,
-      "balance": "3,554.07",
-      "picture": "http://placehold.it/32x32",
-      "age": 28,
-      "eyeColor": "green",
-      "name": "Margery Harper",
-      "gender": "female",
-      "company": "PROXSOFT",
-      "email": "margeryharper@proxsoft.com",
-      "phone": "+1 (984) 407-3749",
-      "address": "992 Rutland Road, Osage, Virgin Islands, 4800",
-      "about": "Sint pariatur nisi ea cupidatat eiusmod deserunt laborum consequat eiusmod laborum est eiusmod nostrud. Deserunt culpa adipisicing qui eu proident sint minim elit excepteur eiusmod enim est. Aute laboris sint officia occaecat ullamco minim. Cupidatat Lorem ex voluptate mollit ea elit minim cillum.\r\n",
-      "registered": "2017-05-15T10:23:27 -07:00",
-      "latitude": 35.019586,
-      "longitude": 138.871566,
-      "tags": [
-        "id",
-        "Lorem",
-        "cupidatat",
-        "tempor",
-        "esse",
-        "est",
-        "quis"
-      ],
-      "friends": [
-        {
-          "id": 0,
-          "name": "Sullivan Richard"
-        },
-        {
-          "id": 1,
-          "name": "Spencer Hewitt"
-        },
-        {
-          "id": 2,
-          "name": "Stephanie Maynard"
-        }
-      ],
-      "greeting": "Hello, Margery Harper! You have 8 unread messages.",
-      "favoriteFruit": "strawberry"
-    },
-    {
-      "_id": "66fbe472c18b40b4d460e99b",
-      "index": 4,
-      "guid": "a485e29d-fa65-4ab7-9a38-8ef37ba64d88",
-      "isActive": false,
-      "balance": "3,118.74",
-      "picture": "http://placehold.it/32x32",
-      "age": 30,
-      "eyeColor": "green",
-      "name": "Shields Gay",
-      "gender": "male",
-      "company": "PLAYCE",
-      "email": "shieldsgay@playce.com",
-      "phone": "+1 (947) 415-2378",
-      "address": "482 Lafayette Walk, Chelsea, Minnesota, 5365",
-      "about": "Aute commodo ea veniam ex aliqua occaecat reprehenderit ullamco. Cillum adipisicing proident irure ad et do consequat nostrud voluptate ex commodo amet. Minim ad fugiat do est exercitation quis incididunt et veniam nulla commodo.\r\n",
-      "registered": "2015-06-04T05:33:49 -07:00",
-      "latitude": 0.832912,
-      "longitude": -47.24825,
-      "tags": [
-        "deserunt",
-        "commodo",
-        "nisi",
-        "cillum",
-        "culpa",
-        "non",
-        "esse"
-      ],
-      "friends": [
-        {
-          "id": 0,
-          "name": "Frieda Branch"
-        },
-        {
-          "id": 1,
-          "name": "Karina Watts"
-        },
-        {
-          "id": 2,
-          "name": "Naomi Rosa"
-        }
-      ],
-      "greeting": "Hello, Shields Gay! You have 8 unread messages.",
-      "favoriteFruit": "strawberry"
-    }
-  ];
+final List<Map<String, Object>> _people = [
+  {
+    "_id": "66fc09a3e0037e034357d492",
+    "index": 0,
+    "guid": "a302268b-b275-40a4-ba11-0aa495aa0b8f",
+    "isActive": false,
+    "balance": "\$2,930.99",
+    "picture": "http://placehold.it/32x32",
+    "age": 38,
+    "eyeColor": "brown",
+    "name": "Joko Budianto",
+    "gender": "male",
+    "company": "BLURRYBUS",
+    "email": "jokoImut@blurrybus.com",
+    "phone": "+1 (916) 456-2919",
+    "address": "999 Richardson Street, Wikieup, Pennsylvania, 767",
+    "about":
+        "Laboris ex anim ad ea ad eiusmod ea do elit qui sit consectetur consectetur incididunt. Do voluptate occaecat reprehenderit sit et ullamco minim elit Lorem amet eiusmod. Consectetur irure duis nulla ad. Enim tempor et sint quis voluptate non velit ullamco sint dolore adipisicing. Laboris quis proident velit consequat aliqua ut culpa aute aliquip aute magna. Lorem excepteur ut dolor ut laborum commodo quis est cupidatat et.\r\n",
+    "registered": "2018-09-02T08:31:36 -07:00",
+    "latitude": -45.899781,
+    "longitude": 75.541258,
+    "tags": [
+      "cillum",
+      "culpa",
+      "nostrud",
+      "sit",
+      "tempor",
+      "adipisicing",
+      "ut"
+    ],
+    "friends": [
+      {"id": 0, "name": "Martin Roman"},
+      {"id": 1, "name": "Frost Chase"},
+      {"id": 2, "name": "Hoover Graham"}
+    ],
+    "greeting": "Hello, Kristy Bush! You have 2 unread messages.",
+    "favoriteFruit": "strawberry"
+  },
+  {
+    "_id": "66fc09a325ce676ec16c6852",
+    "index": 1,
+    "guid": "7ade9bb2-285a-49b7-8889-6b15d1f137c1",
+    "isActive": true,
+    "balance": "\$1,792.72",
+    "picture": "http://placehold.it/32x32",
+    "age": 26,
+    "eyeColor": "green",
+    "name": "Ilham",
+    "gender": "male",
+    "company": "ZANILLA",
+    "email": "arnoldobrien@zanilla.com",
+    "phone": "+1 (855) 506-2115",
+    "address": "963 Dekalb Avenue, Nutrioso, American Samoa, 7233",
+    "about":
+        "Consequat incididunt exercitation exercitation irure elit amet minim ipsum laboris irure magna mollit elit cupidatat. Irure fugiat ex labore commodo commodo fugiat. Ad incididunt laborum cupidatat officia anim id eiusmod amet officia et nostrud. In tempor laboris reprehenderit duis fugiat minim sunt. Proident adipisicing anim deserunt nisi. Ad incididunt nisi ullamco irure consequat sunt magna officia ipsum est irure pariatur mollit nisi.\r\n",
+    "registered": "2023-12-27T08:32:42 -07:00",
+    "latitude": -83.325693,
+    "longitude": 11.626471,
+    "tags": [
+      "et",
+      "fugiat",
+      "voluptate",
+      "aliqua",
+      "proident",
+      "proident",
+      "amet"
+    ],
+    "friends": [
+      {"id": 0, "name": "Maxine Alvarez"},
+      {"id": 1, "name": "Mitchell Maldonado"},
+      {"id": 2, "name": "Sheena King"}
+    ],
+    "greeting": "Hello, Arnold Obrien! You have 8 unread messages.",
+    "favoriteFruit": "banana"
+  },
+  {
+    "_id": "66fc09a3c1d92cb9c5aefab8",
+    "index": 2,
+    "guid": "7a8d6d96-341c-4a13-83d8-a75f930db1e6",
+    "isActive": false,
+    "balance": "\$1,969.71",
+    "picture": "http://placehold.it/32x32",
+    "age": 24,
+    "eyeColor": "green",
+    "name": "Arif Ismail",
+    "gender": "male",
+    "company": "ORBIFLEX",
+    "email": "kelleymoon@orbiflex.com",
+    "phone": "+1 (860) 472-3989",
+    "address": "857 Kingsland Avenue, Homestead, South Dakota, 2208",
+    "about":
+        "Consequat amet voluptate aute aliqua ullamco nostrud voluptate irure anim sint dolore. Labore veniam laborum cillum magna ea eu aute dolore eu consectetur nostrud commodo laboris. Esse aute ea consectetur cupidatat Lorem. Deserunt excepteur non velit ullamco sunt.\r\n",
+    "registered": "2021-08-14T11:52:43 -07:00",
+    "latitude": 33.532355,
+    "longitude": 66.305181,
+    "tags": ["qui", "occaecat", "velit", "qui", "aliqua", "magna", "laborum"],
+    "friends": [
+      {"id": 0, "name": "Mckee Foster"},
+      {"id": 1, "name": "Aline Bird"},
+      {"id": 2, "name": "Hyde Reese"}
+    ],
+    "greeting": "Hello, Kelley Moon! You have 1 unread messages.",
+    "favoriteFruit": "apple"
+  },
+  {
+    "_id": "66fc09a3efd122377ad761e4",
+    "index": 3,
+    "guid": "0b281afd-82f1-4c65-9864-d5706828db2c",
+    "isActive": true,
+    "balance": "\$2,184.58",
+    "picture": "http://placehold.it/32x32",
+    "age": 23,
+    "eyeColor": "brown",
+    "name": "Beatrice Christian",
+    "gender": "female",
+    "company": "AUSTEX",
+    "email": "beatricerusso@austex.com",
+    "phone": "+1 (975) 433-2046",
+    "address": "322 Eaton Court, Warsaw, Louisiana, 5342",
+    "about":
+        "Magna non nisi proident ullamco exercitation adipisicing nisi eu eu tempor reprehenderit culpa ex ut. Laboris reprehenderit aliqua pariatur incididunt. Aliquip incididunt enim culpa mollit ullamco eu. Excepteur occaecat ullamco aliqua veniam aliquip nostrud proident anim magna excepteur eu reprehenderit duis ipsum. Eiusmod laboris occaecat nisi eu amet aute et ut exercitation.\r\n",
+    "registered": "2014-01-29T10:57:19 -07:00",
+    "latitude": 72.756005,
+    "longitude": -140.761515,
+    "tags": [
+      "veniam",
+      "culpa",
+      "minim",
+      "voluptate",
+      "esse",
+      "proident",
+      "ullamco"
+    ],
+    "friends": [
+      {"id": 0, "name": "Jennie Cooper"},
+      {"id": 1, "name": "Shelby Kent"},
+      {"id": 2, "name": "Ayers Mcdowell"}
+    ],
+    "greeting": "Hello, Beatrice Russo! You have 3 unread messages.",
+    "favoriteFruit": "apple"
+  },
+  {
+    "_id": "66fc09a39e6dee1f57c45f67",
+    "index": 4,
+    "guid": "b5bbfc5c-ac08-470a-a576-810597f1d45d",
+    "isActive": true,
+    "balance": "\$2,098.96",
+    "picture": "http://placehold.it/32x32",
+    "age": 33,
+    "eyeColor": "brown",
+    "name": "Chandra Gemoy",
+    "gender": "female",
+    "company": "GOGOL",
+    "email": "gwenmccoy@gogol.com",
+    "phone": "+1 (907) 514-3574",
+    "address": "312 Turner Place, Tampico, Virginia, 4766",
+    "about":
+        "Voluptate est labore tempor fugiat nulla do minim laboris. Cupidatat enim eiusmod ad magna pariatur elit qui et. Nostrud pariatur non sunt consequat ea eiusmod esse eiusmod irure adipisicing ullamco officia magna amet. Nulla cillum velit ea est anim amet dolor ad exercitation.\r\n",
+    "registered": "2024-06-26T02:15:15 -07:00",
+    "latitude": 65.627267,
+    "longitude": -16.951676,
+    "tags": ["nisi", "labore", "proident", "elit", "in", "deserunt", "laboris"],
+    "friends": [
+      {"id": 0, "name": "Mccarthy Jennings"},
+      {"id": 1, "name": "Jessica Ferguson"},
+      {"id": 2, "name": "Osborne Jones"}
+    ],
+    "greeting": "Hello, Gwen Mccoy! You have 2 unread messages.",
+    "favoriteFruit": "strawberry"
+  },
+  {
+    "_id": "66fc09a31039b4de266759bc",
+    "index": 5,
+    "guid": "cc16ba72-489d-45bb-af74-51f827ba5fbe",
+    "isActive": false,
+    "balance": "\$1,002.77",
+    "picture": "http://placehold.it/32x32",
+    "age": 39,
+    "eyeColor": "brown",
+    "name": "Meadows Manning",
+    "gender": "male",
+    "company": "AUTOGRATE",
+    "email": "meadowsmanning@autograte.com",
+    "phone": "+1 (866) 536-2505",
+    "address": "528 Driggs Avenue, Indio, California, 5798",
+    "about":
+        "Cillum et nulla voluptate voluptate occaecat amet exercitation in amet ea culpa est qui. Laboris nisi dolor ea adipisicing minim voluptate in qui incididunt reprehenderit dolor. Aliquip deserunt occaecat reprehenderit consequat ullamco id elit ipsum velit fugiat. Mollit est consectetur in veniam aliquip exercitation. Labore id deserunt exercitation culpa adipisicing nulla mollit enim do Lorem laboris est tempor deserunt.\r\n",
+    "registered": "2016-10-07T06:06:04 -07:00",
+    "latitude": 13.268156,
+    "longitude": 125.569484,
+    "tags": [
+      "aute",
+      "laborum",
+      "dolor",
+      "mollit",
+      "commodo",
+      "qui",
+      "exercitation"
+    ],
+    "friends": [
+      {"id": 0, "name": "Florine Chen"},
+      {"id": 1, "name": "Corinne Jordan"},
+      {"id": 2, "name": "Chaney Ellison"}
+    ],
+    "greeting": "Hello, Meadows Manning! You have 5 unread messages.",
+    "favoriteFruit": "banana"
+  },
+  {
+    "_id": "66fc09a34af1670f6da7c8dc",
+    "index": 6,
+    "guid": "e08325b4-c379-48bb-8dd1-0429cd05a685",
+    "isActive": true,
+    "balance": "\$2,585.28",
+    "picture": "http://placehold.it/32x32",
+    "age": 26,
+    "eyeColor": "green",
+    "name": "Ila Bray",
+    "gender": "female",
+    "company": "REALYSIS",
+    "email": "ilabray@realysis.com",
+    "phone": "+1 (943) 584-3706",
+    "address": "883 Albee Square, Robbins, Nevada, 2500",
+    "about":
+        "Sint sint non laboris nulla mollit commodo qui nisi cupidatat cupidatat cillum eu laboris. Velit eu duis Lorem enim eu proident labore proident. Ullamco voluptate cillum laboris laborum irure consequat. Eu id sit mollit tempor aliquip sit et.\r\n",
+    "registered": "2022-12-22T03:18:53 -07:00",
+    "latitude": 38.838087,
+    "longitude": 91.66952,
+    "tags": [
+      "adipisicing",
+      "magna",
+      "in",
+      "incididunt",
+      "aliquip",
+      "sunt",
+      "adipisicing"
+    ],
+    "friends": [
+      {"id": 0, "name": "Allison Goodman"},
+      {"id": 1, "name": "Natalia Miranda"},
+      {"id": 2, "name": "Ophelia Mcfadden"}
+    ],
+    "greeting": "Hello, Ila Bray! You have 1 unread messages.",
+    "favoriteFruit": "banana"
+  }
+];
