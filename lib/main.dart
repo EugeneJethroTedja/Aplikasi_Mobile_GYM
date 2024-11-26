@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:sembilan_nih/View/detail_pesanan.dart';
 import 'package:sembilan_nih/trainer/trainer.dart';
 import 'package:sembilan_nih/View/alat.dart';
-import 'package:sembilan_nih/View/kelas.dart';
+import 'package:sembilan_nih/kelas/kelas.dart';
 
 void main() {
   runApp(const MyApp());
