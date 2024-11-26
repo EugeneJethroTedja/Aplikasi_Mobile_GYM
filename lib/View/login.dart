@@ -60,7 +60,7 @@ class _LoginViewState extends State<LoginView> {
                       child: Column(
                         children: [
                           Image.asset(
-                            'assets/images/logo.png',
+                            'assets/images/LOGO.png',
                             width: 400,
                             height: 100,
                           ),
