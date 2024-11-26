@@ -10,8 +10,8 @@ dependencies:
   flutter:
     sdk: flutter
   pdf: ^3.10.1
-  path_provider: ^2.0.14
-  open_file: ^3.2.1
+  path_provider: ^2.0.12
+  open_file: ^3.2.2
   font_awesome_flutter: ^10.5.0
 
 dev_dependencies:
@@ -31,8 +31,11 @@ flutter:
     - assets/images/trainer.jpg
     - assets/images/alat.jpg
     - assets/images/kelas.jpeg
+    - assets/images/mbappe.jpg
     - assets/images/trainer1.png
     - assets/images/trainer2.jpg
+    - assets/images/treadmill.jpg
+    - assets/images/smithMachine.jpg
     - assets/images/icons/bni.jpg
     - assets/images/icons/bri.jpg
     - assets/images/icons/mandiri.jpg
@@ -40,7 +43,4 @@ flutter:
     - assets/images/icons/shoppe.jpg
     - assets/images/icons/dana.jpg
     - assets/images/icons/gopay.jpg
-    - assets/images/kelasaerobik.jpg
-    - assets/images/kelaslegday.jpg
-    - assets/images/kelassixpack.jpeg
-    - assets/images/kelasupperchest.webp
+    - assets/images/fonts/Anton-Regular.ttf
