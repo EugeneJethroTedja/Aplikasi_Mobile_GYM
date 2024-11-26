@@ -12,7 +12,7 @@ class AlatDetailScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Color.fromARGB(255, 158, 95, 0),
+        backgroundColor: const Color.fromARGB(255, 158, 95, 0),
         title: const Text('Back', style: TextStyle(color: Colors.white)),
         iconTheme: const IconThemeData(
           color: Color.fromARGB(255, 0, 0, 0),
@@ -23,7 +23,7 @@ class AlatDetailScreen extends StatelessWidget {
         padding: const EdgeInsets.all(16.0),
         child: Center(
           child: Card(
-            color: const Color.fromARGB(255, 252, 241, 230),
+            color: const Color.fromARGB(255, 255, 255, 255),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(16.0),
             ),
@@ -31,6 +31,7 @@ class AlatDetailScreen extends StatelessWidget {
               padding: const EdgeInsets.all(16.0),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start, // Tambahkan rata kiri untuk seluruh konten
                 children: [
                   ClipRRect(
                     borderRadius: BorderRadius.circular(16.0),
@@ -49,20 +50,22 @@ class AlatDetailScreen extends StatelessWidget {
                       fontSize: 24,
                     ),
                   ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Deskripsi: ${alat.deskripsi}',
+                    style: const TextStyle(fontSize: 16),
+                  ),
                   const SizedBox(height: 16),
                   Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start, // Rata kiri untuk stok dan harga
                     children: [
-                      Text(
-                        'Deskripsi: ${alat.deskripsi}',
-                        style: const TextStyle(fontWeight: FontWeight.bold),
-                      ),
                       Text(
                         'Stok Terkini  : ${alat.stok}',
                         style: const TextStyle(fontWeight: FontWeight.bold),
                       ),
+                      const SizedBox(height: 4),
                       Text(
-                        'Harga     : ${alat.feeAlat}',
+                        'Harga         : ${alat.feeAlat}',
                         style: const TextStyle(fontWeight: FontWeight.bold),
                       ),
                     ],
@@ -81,7 +84,7 @@ class AlatDetailScreen extends StatelessWidget {
                           ),
                         ),
                         onPressed: () {
-                          // Navigasi ke halaman Chat (buat halaman chat jika belum ada)
+                          // Navigasi ke halaman Chat
                           Navigator.push(
                             context,
                             MaterialPageRoute(
@@ -90,10 +93,10 @@ class AlatDetailScreen extends StatelessWidget {
                             ),
                           );
                         },
-                        icon: const Icon(Icons.chat),
-                        label: const Text('Chat'),
+                        icon: const Icon(Icons.chat, color: Colors.white),
+                        label: const Text('Chat', style: TextStyle(color: Colors.white)),
                       ),
-                      // Button untuk Daftar
+                      // Button untuk Pesan
                       ElevatedButton(
                         style: ElevatedButton.styleFrom(
                           backgroundColor:
@@ -112,7 +115,7 @@ class AlatDetailScreen extends StatelessWidget {
                             ),
                           );
                         },
-                        child: const Text('Pesan'),
+                        child: const Text('Pesan', style: TextStyle(color: Colors.white)),
                       ),
                     ],
                   ),

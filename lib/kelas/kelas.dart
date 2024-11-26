@@ -63,7 +63,7 @@ class KelasScreen extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Color.fromARGB(255, 158, 95, 0),
         title: const Text(
-          'Trainer',
+          'Kelas',
           style: TextStyle(color: Colors.white),
         ),
         iconTheme: const IconThemeData(

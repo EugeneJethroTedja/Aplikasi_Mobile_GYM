@@ -25,7 +25,7 @@ class DaftarScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Card(
-              color: const Color.fromARGB(255, 252, 241, 230),
+              color: const Color.fromARGB(255, 255, 255, 255),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(16.0),
               ),
@@ -37,8 +37,8 @@ class DaftarScreen extends StatelessWidget {
                       borderRadius: BorderRadius.circular(8.0),
                       child: Image.asset(
                         trainer.imageUrl,
-                        width: 80,
-                        height: 80,
+                        width: 110,
+                        height: 110,
                         fit: BoxFit.cover,
                       ),
                     ),
@@ -65,8 +65,8 @@ class DaftarScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 16),
-            Card(
-              color: const Color.fromARGB(255, 252, 241, 230),
+             Card(
+              color: const Color.fromARGB(255, 252, 255, 255),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(16.0),
               ),
@@ -86,80 +86,54 @@ class DaftarScreen extends StatelessWidget {
                     Text('Total Harga: ${trainer.fee}'),
                     const SizedBox(height: 16),
                     const Text(
-                      'Pilih Metode Pembayaran:',
+                      'Pilih Metode Pembayaran Digital:',
                       style: TextStyle(fontSize: 16),
                     ),
-                    const SizedBox(height: 16),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Card(
-                            color: const Color.fromARGB(255, 218, 165, 132),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8.0),
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceEvenly,
-                                children: [
-                                  Image.asset(
-                                    'assets/images/icons/dana.jpg',
-                                    width: 40,
-                                  ),
-                                  Image.asset(
-                                    'assets/images/icons/ovo.jpg',
-                                    width: 40,
-                                  ),
-                                  Image.asset(
-                                    'assets/images/icons/shoppe.jpg',
-                                    width: 40,
-                                  ),
-                                  Image.asset(
-                                    'assets/images/icons/gopay.jpg',
-                                    width: 40,
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
+                    const SizedBox(height: 8),
+                    DropdownButtonFormField<String>(
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8.0),
                         ),
-                      ],
+                        filled: true,
+                        fillColor: const Color.fromARGB(255, 218, 165, 132),
+                      ),
+                      value: '-', // Default value
+                      items: ['-','Dana', 'Ovo', 'Shopee Pay', 'Gopay']
+                          .map((String value) {
+                        return DropdownMenuItem<String>(
+                          value: value,
+                          child: Text(value),
+                        );
+                      }).toList(),
+                      onChanged: (String? newValue) {
+                        // Handle perubahan pilihan dropdown digital
+                      },
                     ),
                     const SizedBox(height: 16),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Card(
-                            color: const Color.fromARGB(255, 218, 165, 132),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8.0),
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceEvenly,
-                                children: [
-                                  Image.asset(
-                                    'assets/images/icons/mandiri.jpg',
-                                    width: 40,
-                                  ),
-                                  Image.asset(
-                                    'assets/images/icons/bni.jpg',
-                                    width: 40,
-                                  ),
-                                  Image.asset(
-                                    'assets/images/icons/bri.jpg',
-                                    width: 40,
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
+                    const Text(
+                      'Pilih Metode Pembayaran Bank:',
+                      style: TextStyle(fontSize: 16),
+                    ),
+                    const SizedBox(height: 8),
+                    DropdownButtonFormField<String>(
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8.0),
                         ),
-                      ],
+                        filled: true,
+                        fillColor: const Color.fromARGB(255, 218, 165, 132),
+                      ),
+                      value: '-', // Default value
+                      items: ['-', 'Mandiri', 'BNI', 'BRI'].map((String value) {
+                        return DropdownMenuItem<String>(
+                          value: value,
+                          child: Text(value),
+                        );
+                      }).toList(),
+                      onChanged: (String? newValue) {
+                        // Handle perubahan pilihan dropdown bank
+                      },
                     ),
                   ],
                 ),
