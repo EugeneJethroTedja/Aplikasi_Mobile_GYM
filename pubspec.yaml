@@ -43,8 +43,12 @@ flutter:
     - assets/images/icons/shoppe.jpg
     - assets/images/icons/dana.jpg
     - assets/images/icons/gopay.jpg
+<<<<<<< Updated upstream
     - assets/images/kelasaerobik.jpg
     - assets/images/kelassixpack.jpeg
     - assets/images/kelaslegday.jpg
     - assets/images/kelasupperchest.webp
+=======
+    
+>>>>>>> Stashed changes
     - assets/images/fonts/Anton-Regular.ttf
