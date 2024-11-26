@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:sembilan_nih/profile/pagePertama.dart'; 
 import 'package:sembilan_nih/trainer/trainer.dart';
 import 'package:sembilan_nih/alat/alat.dart';
-import 'package:sembilan_nih/View/kelas.dart';
+import 'package:sembilan_nih/kelas/kelas.dart';
 import 'detail_pesanan.dart';
 
 void main() {
