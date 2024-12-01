@@ -3,10 +3,18 @@ import 'package:qr_flutter/qr_flutter.dart';
 import 'package:sembilan_nih/alat/alat.dart';
 import 'statusAlat.dart';
 
-class DaftarScreen extends StatelessWidget {
+class DaftarScreen extends StatefulWidget {
   final Alat alat;
 
   const DaftarScreen({super.key, required this.alat});
+
+  @override
+  _DaftarScreenState createState() => _DaftarScreenState();
+}
+
+class _DaftarScreenState extends State<DaftarScreen> {
+  String? selectedDigitalPayment = '-';
+  String? selectedBankPayment = '-';
 
   @override
   Widget build(BuildContext context) {
@@ -36,7 +44,7 @@ class DaftarScreen extends StatelessWidget {
                     ClipRRect(
                       borderRadius: BorderRadius.circular(8.0),
                       child: Image.asset(
-                        alat.imageUrl,
+                        widget.alat.imageUrl,
                         width: 110,
                         height: 110,
                         fit: BoxFit.cover,
@@ -48,15 +56,21 @@ class DaftarScreen extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            alat.nameAlat,
+                            widget.alat.nameAlat,
                             style: const TextStyle(
                                 fontWeight: FontWeight.bold, fontSize: 18),
                           ),
                           const SizedBox(height: 8),
-                          Text('${alat.deskripsi}'),
-                          const SizedBox(height: 8),  
-                          Text('Stok: ${alat.stok}', style: TextStyle(fontWeight: FontWeight.bold),),
-                          Text('Harga: ${alat.feeAlat}', style: TextStyle(fontWeight: FontWeight.bold),),
+                          Text('${widget.alat.deskripsi}'),
+                          const SizedBox(height: 8),
+                          Text(
+                            'Stok: ${widget.alat.stok}',
+                            style: const TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          Text(
+                            'Harga: ${widget.alat.feeAlat}',
+                            style: const TextStyle(fontWeight: FontWeight.bold),
+                          ),
                         ],
                       ),
                     ),
@@ -83,7 +97,7 @@ class DaftarScreen extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 8),
-                    Text('Total Harga: ${alat.feeAlat}'),
+                    Text('Total Harga: ${widget.alat.feeAlat}'),
                     const SizedBox(height: 16),
                     const Text(
                       'Pilih Metode Pembayaran Digital:',
@@ -98,17 +112,21 @@ class DaftarScreen extends StatelessWidget {
                         filled: true,
                         fillColor: const Color.fromARGB(255, 218, 165, 132),
                       ),
-                      value: '-', // Default value
-                      items: ['-','Dana', 'Ovo', 'Shopee Pay', 'Gopay']
+                      value: selectedDigitalPayment,
+                      items: ['-', 'Dana', 'Ovo', 'Shopee Pay', 'Gopay']
                           .map((String value) {
                         return DropdownMenuItem<String>(
                           value: value,
                           child: Text(value),
                         );
                       }).toList(),
-                      onChanged: (String? newValue) {
-                        // Handle perubahan pilihan dropdown digital
-                      },
+                      onChanged: selectedBankPayment == '-'
+                          ? (String? newValue) {
+                              setState(() {
+                                selectedDigitalPayment = newValue;
+                              });
+                            }
+                          : null, // Disable jika bank dipilih
                     ),
                     const SizedBox(height: 16),
                     const Text(
@@ -124,16 +142,20 @@ class DaftarScreen extends StatelessWidget {
                         filled: true,
                         fillColor: const Color.fromARGB(255, 218, 165, 132),
                       ),
-                      value: '-', // Default value
+                      value: selectedBankPayment,
                       items: ['-', 'Mandiri', 'BNI', 'BRI'].map((String value) {
                         return DropdownMenuItem<String>(
                           value: value,
                           child: Text(value),
                         );
                       }).toList(),
-                      onChanged: (String? newValue) {
-                        // Handle perubahan pilihan dropdown bank
-                      },
+                      onChanged: selectedDigitalPayment == '-'
+                          ? (String? newValue) {
+                              setState(() {
+                                selectedBankPayment = newValue;
+                              });
+                            }
+                          : null, // Disable jika digital dipilih
                     ),
                   ],
                 ),
@@ -141,27 +163,43 @@ class DaftarScreen extends StatelessWidget {
             ),
             const Spacer(),
             Align(
-              alignment: Alignment.bottomRight,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color.fromARGB(255, 158, 95, 0),
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 24.0, vertical: 12.0),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8.0),
-                  ),
-                ),
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => QRGeneratorScreen(alat: alat),
+              alignment: Alignment.bottomCenter, // Posisikan tombol di tengah bawah
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0), // Padding untuk jarak dari tepi layar
+                child: SizedBox(
+                  width: double.infinity, // Lebar mengikuti lebar container putih
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color.fromARGB(255, 158, 95, 0),
+                      padding: const EdgeInsets.symmetric(vertical: 12.0), // Padding vertikal tombol
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
                     ),
-                  );
-                },
-                child: const Text(
-                  'Bayar',
-                  style: TextStyle(color: Colors.white, fontSize: 16),
+                    onPressed: () {
+                      if (selectedDigitalPayment != '-' || selectedBankPayment != '-') {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => QRGeneratorScreen(
+                              alat: widget.alat,
+                            ),
+                          ),
+                        );
+                      } else {
+                        // Tampilkan pesan kesalahan jika belum memilih metode pembayaran
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Harap pilih metode pembayaran.'),
+                          ),
+                        );
+                      }
+                    },
+                    child: const Text(
+                      'Bayar',
+                      style: TextStyle(color: Colors.white, fontSize: 16),
+                    ),
+                  ),
                 ),
               ),
             ),
@@ -179,8 +217,9 @@ class QRGeneratorScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    String paymentData = 'Nama: ${alat.nameAlat}, Biaya: ${alat.feeAlat}, Spesialis: ${alat.deskripsi}';
-    
+    String paymentData =
+        'Nama: ${alat.nameAlat}, Biaya: ${alat.feeAlat}, Spesialis: ${alat.deskripsi}';
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color.fromARGB(255, 158, 95, 0),
@@ -191,41 +230,53 @@ class QRGeneratorScreen extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Text(
+            Text(
               'Scan QR Code untuk Pembayaran',
-              style: TextStyle(color: Colors.white, fontSize: 18),
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+              textAlign: TextAlign.center,
             ),
             const SizedBox(height: 16),
-            QrImageView(
-              data: paymentData,
-              version: QrVersions.auto,
-              size: 200.0,
-              backgroundColor: Colors.white,
+            ClipRRect(
+              borderRadius: BorderRadius.circular(16.0),
+              child: Container(
+                color: Colors.white,
+                padding: const EdgeInsets.all(8.0),
+                child: QrImageView(
+                  data: paymentData,
+                  version: QrVersions.auto,
+                  size: 200.0,
+                  gapless: false,
+                  backgroundColor: Colors.transparent,
+                ),
+              ),
             ),
-            const Spacer(),
-            Align(
-              alignment: Alignment.bottomRight,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color.fromARGB(255, 158, 95, 0),
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 24.0, vertical: 12.0),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8.0),
+            const SizedBox(height: 32),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color.fromARGB(255, 158, 95, 0),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24.0,
+                  vertical: 12.0,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
+              ),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => StatusScreen(alat: alat),
                   ),
-                ),
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => StatusScreen(alat: alat),
-                    ),
-                  );
-                },
-                child: const Text(
-                  'Lanjutkan',
-                  style: TextStyle(color: Colors.white, fontSize: 16),
-                ),
+                );
+              },
+              child: const Text(
+                'Lanjutkan',
+                style: TextStyle(color: Colors.white, fontSize: 16),
               ),
             ),
           ],

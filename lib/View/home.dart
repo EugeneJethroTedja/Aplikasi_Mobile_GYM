@@ -98,7 +98,7 @@ class _HomeViewState extends State<HomeView> {
                 height: 150,
                 decoration: BoxDecoration(
                   image: const DecorationImage(
-                    image: AssetImage('assets/images/alat.jpg'),
+                    image: AssetImage('assets/images/bangunangym.webp'),
                     fit: BoxFit.cover,
                   ),
                   borderRadius: BorderRadius.circular(8),
