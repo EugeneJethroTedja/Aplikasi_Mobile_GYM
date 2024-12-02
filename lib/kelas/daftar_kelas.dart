@@ -3,10 +3,18 @@ import 'package:qr_flutter/qr_flutter.dart';
 import 'package:sembilan_nih/kelas/kelas.dart';
 import 'status_kelas.dart';
 
-class DaftarScreen extends StatelessWidget {
+class DaftarScreen extends StatefulWidget {
   final Kelas kelas;
 
   const DaftarScreen({super.key, required this.kelas});
+
+  @override
+  _DaftarScreenState createState() => _DaftarScreenState();
+}
+
+class _DaftarScreenState extends State<DaftarScreen> {
+  String? selectedDigitalPayment = '-';
+  String? selectedBankPayment = '-';
 
   @override
   Widget build(BuildContext context) {
@@ -36,7 +44,7 @@ class DaftarScreen extends StatelessWidget {
                     ClipRRect(
                       borderRadius: BorderRadius.circular(8.0),
                       child: Image.asset(
-                        kelas.imageUrl,
+                        widget.kelas.imageUrl,
                         width: 110,
                         height: 110,
                         fit: BoxFit.cover,
@@ -48,15 +56,18 @@ class DaftarScreen extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            kelas.name,
+                            widget.kelas.name,
                             style: const TextStyle(
                                 fontWeight: FontWeight.bold, fontSize: 18),
                           ),
                           const SizedBox(height: 8),
-                          Text('Trainer: ${kelas.trainer}'),
-                          Text('Durasi: ${kelas.duration}'),
-                          Text('Hari: ${kelas.day}'),
-                          Text('Biaya: ${kelas.fee}'),
+                          Text('Trainer: ${widget.kelas.trainer}'),
+                          Text('Durasi: ${widget.kelas.duration}'),
+                          Text('Hari: ${widget.kelas.day}'),
+                          Text(
+                            'Biaya: ${widget.kelas.fee}',
+                            style: const TextStyle(fontWeight: FontWeight.bold),
+                          ),
                         ],
                       ),
                     ),
@@ -83,7 +94,7 @@ class DaftarScreen extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 8),
-                    Text('Total Harga: ${kelas.fee}'),
+                    Text('Total Harga: ${widget.kelas.fee}'),
                     const SizedBox(height: 16),
                     const Text(
                       'Pilih Metode Pembayaran Digital:',
@@ -98,17 +109,21 @@ class DaftarScreen extends StatelessWidget {
                         filled: true,
                         fillColor: const Color.fromARGB(255, 218, 165, 132),
                       ),
-                      value: '-', // Default value
-                      items: ['-','Dana', 'Ovo', 'Shopee Pay', 'Gopay']
+                      value: selectedDigitalPayment,
+                      items: ['-', 'Dana', 'Ovo', 'Shopee Pay', 'Gopay']
                           .map((String value) {
                         return DropdownMenuItem<String>(
                           value: value,
                           child: Text(value),
                         );
                       }).toList(),
-                      onChanged: (String? newValue) {
-                        // Handle perubahan pilihan dropdown digital
-                      },
+                      onChanged: selectedBankPayment == '-'
+                          ? (String? newValue) {
+                              setState(() {
+                                selectedDigitalPayment = newValue;
+                              });
+                            }
+                          : null, // Disable jika bank dipilih
                     ),
                     const SizedBox(height: 16),
                     const Text(
@@ -124,16 +139,20 @@ class DaftarScreen extends StatelessWidget {
                         filled: true,
                         fillColor: const Color.fromARGB(255, 218, 165, 132),
                       ),
-                      value: '-', // Default value
+                      value: selectedBankPayment,
                       items: ['-', 'Mandiri', 'BNI', 'BRI'].map((String value) {
                         return DropdownMenuItem<String>(
                           value: value,
                           child: Text(value),
                         );
                       }).toList(),
-                      onChanged: (String? newValue) {
-                        // Handle perubahan pilihan dropdown bank
-                      },
+                      onChanged: selectedDigitalPayment == '-'
+                          ? (String? newValue) {
+                              setState(() {
+                                selectedBankPayment = newValue;
+                              });
+                            }
+                          : null, // Disable jika digital dipilih
                     ),
                   ],
                 ),
@@ -141,27 +160,43 @@ class DaftarScreen extends StatelessWidget {
             ),
             const Spacer(),
             Align(
-              alignment: Alignment.bottomRight,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color.fromARGB(255, 158, 95, 0),
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 24.0, vertical: 12.0),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8.0),
-                  ),
-                ),
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => QRGeneratorScreen(kelas: kelas),
+              alignment: Alignment.bottomCenter,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
+                child: SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color.fromARGB(255, 158, 95, 0),
+                      padding: const EdgeInsets.symmetric(vertical: 12.0),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
                     ),
-                  );
-                },
-                child: const Text(
-                  'Bayar',
-                  style: TextStyle(color: Colors.white, fontSize: 16),
+                    onPressed: () {
+                      if (selectedDigitalPayment != '-' ||
+                          selectedBankPayment != '-') {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => QRGeneratorScreen(
+                              kelas: widget.kelas,
+                            ),
+                          ),
+                        );
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Harap pilih metode pembayaran.'),
+                          ),
+                        );
+                      }
+                    },
+                    child: const Text(
+                      'Bayar',
+                      style: TextStyle(color: Colors.white, fontSize: 16),
+                    ),
+                  ),
                 ),
               ),
             ),
@@ -179,8 +214,9 @@ class QRGeneratorScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    String paymentData = 'Nama: ${kelas.name}, Biaya: ${kelas.fee}, Spesialis: ${kelas.trainer}';
-    
+    String paymentData =
+        'Nama: ${kelas.name}, Biaya: ${kelas.fee}, Spesialis: ${kelas.trainer}';
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color.fromARGB(255, 158, 95, 0),
@@ -196,36 +232,43 @@ class QRGeneratorScreen extends StatelessWidget {
               style: TextStyle(color: Colors.white, fontSize: 18),
             ),
             const SizedBox(height: 16),
-            QrImageView(
-              data: paymentData,
-              version: QrVersions.auto,
-              size: 200.0,
-              backgroundColor: Colors.white,
+            ClipRRect(
+              borderRadius: BorderRadius.circular(16.0),
+              child: Container(
+                color: Colors.white,
+                padding: const EdgeInsets.all(8.0),
+                child: QrImageView(
+                  data: paymentData,
+                  version: QrVersions.auto,
+                  size: 200.0,
+                  gapless: false,
+                  backgroundColor: Colors.transparent,
+                ),
+              ),
             ),
-            const Spacer(),
-            Align(
-              alignment: Alignment.bottomRight,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color.fromARGB(255, 158, 95, 0),
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 24.0, vertical: 12.0),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8.0),
+            const SizedBox(height: 32),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color.fromARGB(255, 158, 95, 0),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24.0,
+                  vertical: 12.0,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
+              ),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => StatusScreen(kelas: kelas),
                   ),
-                ),
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => StatusScreen(kelas: kelas),
-                    ),
-                  );
-                },
-                child: const Text(
-                  'Lanjutkan',
-                  style: TextStyle(color: Colors.white, fontSize: 16),
-                ),
+                );
+              },
+              child: const Text(
+                'Lanjutkan',
+                style: TextStyle(color: Colors.white, fontSize: 16),
               ),
             ),
           ],
