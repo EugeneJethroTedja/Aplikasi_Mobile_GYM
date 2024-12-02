@@ -43,7 +43,6 @@ class DetailPesananPage extends StatelessWidget {
             'Detail Alat',
             'Lihat Alat yang Anda Pesan',
             'assets/images/alat.jpg',
-            // onTap: () {}, // Provide a default callback
             onTap: () {
               Navigator.push(
                 context,
@@ -59,7 +58,6 @@ class DetailPesananPage extends StatelessWidget {
             'Detail Kelas',
             'Lihat Kelas yang Anda Ikuti',
             'assets/images/kelas.jpeg',
-            // onTap: () {}, // Provide a default callback
             onTap: () {
               Navigator.push(
                 context,
@@ -79,7 +77,7 @@ class DetailPesananPage extends StatelessWidget {
     String title,
     String subtitle,
     String imageUrl,
-    {VoidCallback? onTap} // Make onTap optional
+    {VoidCallback? onTap}
   ) {
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -98,7 +96,8 @@ class DetailPesananPage extends StatelessWidget {
           style: const TextStyle(fontWeight: FontWeight.bold),
         ),
         subtitle: Text(subtitle),
-        onTap: onTap, // Call the onTap function if provided
+        // onTap: onTap
+        onTap: onTap,
       ),
     );
   }

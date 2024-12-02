@@ -14,7 +14,7 @@ class _TrainerPageState extends State<TrainerPage> {
       "price": "700.000",
       "isCompleted": false,
       "review": null,
-      "imagePath": "assets/images/trainer1.png",
+      "imagePath": "assets/images/Trainer/trainer1.png",
     },
     {
       "name": "Aaron Panji",
@@ -23,7 +23,7 @@ class _TrainerPageState extends State<TrainerPage> {
       "price": "900.000",
       "isCompleted": true,
       "review": 5,
-      "imagePath": "assets/images/trainer3.jpg",
+      "imagePath": "assets/images/Trainer/trainer3.jpg",
     },
     {
       "name": "Krisnadewa",
@@ -32,7 +32,7 @@ class _TrainerPageState extends State<TrainerPage> {
       "price": "140.000",
       "isCompleted": true,
       "review": 4,
-      "imagePath": "assets/images/trainer5.jpg",
+      "imagePath": "assets/images/Trainer/trainer5.jpg",
     },
     {
       "name": "Ade Kakak",
@@ -41,7 +41,7 @@ class _TrainerPageState extends State<TrainerPage> {
       "price": "20.000",
       "isCompleted": true,
       "review": 3,
-      "imagePath": "assets/images/trainer4.jpg",
+      "imagePath": "assets/images/Trainer/trainer4.jpg",
     },
   ];
 
