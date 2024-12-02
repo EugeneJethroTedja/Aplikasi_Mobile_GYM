@@ -228,11 +228,18 @@ class QRGeneratorScreen extends StatelessWidget {
               style: TextStyle(color: Colors.white, fontSize: 18),
             ),
             const SizedBox(height: 16),
-            QrImageView(
-              data: paymentData,
-              version: QrVersions.auto,
-              size: 200.0,
-              backgroundColor: Colors.white,
+            Container(
+              decoration: BoxDecoration(
+                color: Colors.white, // Warna latar belakang
+                borderRadius: BorderRadius.circular(16), // Sudut lengkung
+              ),
+              padding: const EdgeInsets.all(16), // Jarak di dalam container
+              child: QrImageView(
+                data: paymentData,
+                version: QrVersions.auto,
+                size: 200.0,
+                backgroundColor: Colors.white,
+              ),
             ),
             const SizedBox(height: 16),
             _buildNextButton(context),
