@@ -9,6 +9,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  http: ^0.13.4
   pdf: ^3.10.1
   path_provider: ^2.0.12
   open_file: ^3.2.2
@@ -36,6 +37,10 @@ flutter:
     - assets/images/trainer2.jpg
     - assets/images/treadmill.jpg
     - assets/images/smithMachine.jpg
+    - assets/images/kelassixpack.jpeg
+    - assets/images/kelaslegday.jpg
+    - assets/images/kelasupperchest.webp
+    - assets/images/kelasaerobik.jpg
     - assets/images/icons/bni.jpg
     - assets/images/icons/bri.jpg
     - assets/images/icons/mandiri.jpg
