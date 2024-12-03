@@ -73,7 +73,7 @@ class TrainerScreen extends StatelessWidget {
               },
               child: Card(
                 // Card tetap warna terang agar kontras dengan background hitam
-                color: const Color.fromARGB(255, 252, 241, 230),
+                color: const Color.fromARGB(255, 255, 255, 255),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16.0),
                 ),
