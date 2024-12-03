@@ -1,4 +1,6 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:sembilan_nih/View/login.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -11,10 +13,13 @@ class RegisterView extends StatefulWidget {
 
 class _RegisterViewState extends State<RegisterView> {
   final _formKey = GlobalKey<FormState>();
-  late TextEditingController usernameController;
+  late TextEditingController nameController;
   late TextEditingController emailController;
   late TextEditingController passwordController;
   late TextEditingController notelpController;
+  late TextEditingController loginUsernameController;
+  late TextEditingController loginPasswordController;
+  late TextEditingController umurController;
   String? selectedGender;
 
   final Color darkerOrange = const Color.fromARGB(255, 158, 95, 0);
@@ -22,20 +27,66 @@ class _RegisterViewState extends State<RegisterView> {
   @override
   void initState() {
     super.initState();
-    usernameController = TextEditingController();
+    nameController = TextEditingController();
     emailController = TextEditingController();
     passwordController = TextEditingController();
     notelpController = TextEditingController();
+    loginUsernameController = TextEditingController();
+    loginPasswordController = TextEditingController();
+    umurController = TextEditingController(); // Inisialisasi controller umur
   }
 
   @override
   void dispose() {
-    usernameController.dispose();
+    nameController.dispose();
     emailController.dispose();
     passwordController.dispose();
     notelpController.dispose();
+    loginUsernameController.dispose();
+    loginPasswordController.dispose();
+    umurController.dispose(); // Hapus controller umur
     super.dispose();
   }
+
+  Future<void> registerUser() async {
+    final url = Uri.parse('http://10.0.2.2:8000/api/pelanggan/register'); // Ganti dengan URL endpoint Anda
+    final response = await http.post(
+      url,
+      body: json.encode({
+        'nama_pelanggan': nameController.text,
+        'umur_pelanggan': umurController.text,
+        'email_pelanggan': emailController.text,
+        'noTelp_pelanggan': notelpController.text,
+        'gender': selectedGender,
+        'username': loginUsernameController.text,
+        'password': loginPasswordController.text,
+      }),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    );
+
+    print('Status Code: ${response.statusCode}');
+    print('Response Body: ${response.body}');
+
+    if (response.statusCode == 201) {
+      Map<String, dynamic> responseData = json.decode(response.body);
+      if (responseData['message'] == 'Pelanggan berhasil didaftarkan') {
+        // Navigasi ke halaman login jika berhasil
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => LoginView(), // Arahkan ke halaman login
+          ),
+        );
+      } else {
+        showAlertDialog(context, 'Registrasi Gagal', responseData['message']);
+      }
+    } else {
+      showAlertDialog(context, 'Registrasi Gagal', 'Terjadi kesalahan saat mendaftar ${response.body}');
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -84,12 +135,12 @@ class _RegisterViewState extends State<RegisterView> {
                     inputForm(
                       (String? p0) {
                         if (p0 == null || p0.isEmpty) {
-                          return "Username tidak boleh kosong";
+                          return "Nama tidak boleh kosong";
                         }
                         return null;
                       },
-                      controller: usernameController,
-                      hintTxt: "Username",
+                      controller: nameController,
+                      hintTxt: "Nama",
                       iconData: Icons.person,
                       hintColor: Colors.grey,
                       backgroundColor: Colors.white,
@@ -100,14 +151,16 @@ class _RegisterViewState extends State<RegisterView> {
                     inputForm(
                       (String? p0) {
                         if (p0 == null || p0.isEmpty) {
-                          return "Password tidak boleh kosong";
+                          return "Umur tidak boleh kosong";
+                        }
+                        if (int.tryParse(p0) == null || int.parse(p0) <= 0) {
+                          return 'Umur harus berupa angka positif';
                         }
                         return null;
                       },
-                      controller: passwordController,
-                      hintTxt: "Password",
-                      iconData: Icons.lock,
-                      password: true,
+                      controller: umurController,
+                      hintTxt: "Umur",
+                      iconData: Icons.cake,
                       hintColor: Colors.grey,
                       backgroundColor: Colors.white,
                       iconColor: darkerOrange,
@@ -135,8 +188,7 @@ class _RegisterViewState extends State<RegisterView> {
                     const SizedBox(height: 10),
                     DropdownButtonFormField<String>(
                       value: selectedGender,
-                      hint:
-                          Text("Gender", style: TextStyle(color: Colors.grey)),
+                      hint: Text("Gender", style: TextStyle(color: Colors.grey)),
                       decoration: InputDecoration(
                         filled: true,
                         fillColor: Colors.white,
@@ -176,6 +228,39 @@ class _RegisterViewState extends State<RegisterView> {
                       iconColor: darkerOrange,
                       insideIcon: true,
                     ),
+                    const SizedBox(height: 10),
+                    inputForm(
+                      (String? p0) {
+                        if (p0 == null || p0.isEmpty) {
+                          return "Username Login tidak boleh kosong";
+                        }
+                        return null;
+                      },
+                      controller: loginUsernameController,
+                      hintTxt: "Username Login",
+                      iconData: Icons.account_circle,
+                      hintColor: Colors.grey,
+                      backgroundColor: Colors.white,
+                      iconColor: darkerOrange,
+                      insideIcon: true,
+                    ),
+                    const SizedBox(height: 10),
+                    inputForm(
+                      (String? p0) {
+                        if (p0 == null || p0.isEmpty) {
+                          return "Password Login tidak boleh kosong";
+                        }
+                        return null;
+                      },
+                      controller: loginPasswordController,
+                      hintTxt: "Password Login",
+                      iconData: Icons.lock,
+                      password: true,
+                      hintColor: Colors.grey,
+                      backgroundColor: Colors.white,
+                      iconColor: darkerOrange,
+                      insideIcon: true,
+                    ),
                     const SizedBox(height: 20),
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
@@ -189,31 +274,17 @@ class _RegisterViewState extends State<RegisterView> {
                         if (_formKey.currentState!.validate() &&
                             selectedGender != null) {
                           if (notelpController.text.length != 12) {
-                            showAlertDialog(context, 'Registrasi Gagal',
+                            showAlertDialog(
+                                context, 'Registrasi Gagal',
                                 'Panjang Nomor Telepon Harus 12 Digit!');
                           } else {
-                            Map<String, dynamic> formData = {
-                              'username': usernameController.text,
-                              'password': passwordController.text,
-                              'email': emailController.text,
-                              'gender': selectedGender,
-                              'notelp': notelpController.text,
-                            };
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => LoginView(data: formData),
-                              ),
-                            );
+                            registerUser();
                           }
                         } else {
                           List<String> errorMessages = [];
 
-                          if (usernameController.text.isEmpty) {
-                            errorMessages.add('Username Tidak Boleh Kosong!');
-                          }
-                          if (passwordController.text.isEmpty) {
-                            errorMessages.add('Password Tidak Boleh Kosong!');
+                          if (nameController.text.isEmpty) {
+                            errorMessages.add('Nama Tidak Boleh Kosong!');
                           }
                           if (emailController.text.isEmpty) {
                             errorMessages.add('Email Tidak Boleh Kosong!');
@@ -222,78 +293,35 @@ class _RegisterViewState extends State<RegisterView> {
                             errorMessages.add('Gender Tidak Boleh Kosong!');
                           }
                           if (notelpController.text.isEmpty) {
-                            errorMessages
-                                .add('Nomor Telepon Tidak Boleh Kosong!');
+                            errorMessages.add('Nomor Telepon Tidak Boleh Kosong!');
                           }
-                          if (emailController.text.isNotEmpty &&
-                              !emailController.text.contains('@')) {
-                            errorMessages
-                                .add('Format Email Tidak Valid! (harus ada @)');
+                          if (loginUsernameController.text.isEmpty) {
+                            errorMessages.add('Username Login Tidak Boleh Kosong!');
                           }
-
-                          if (notelpController.text.length != 12 &&
-                              notelpController.text.isNotEmpty) {
-                            errorMessages
-                                .add('Panjang Nomor Telepon Harus 12 Digit!');
+                          if (loginPasswordController.text.isEmpty) {
+                            errorMessages.add('Password Login Tidak Boleh Kosong!');
                           }
 
                           if (errorMessages.isNotEmpty) {
-                            showAlertDialog(context, 'Registrasi Gagal',
-                                errorMessages.join(' && '));
+                            showAlertDialog(
+                                context, 'Registrasi Gagal',
+                                errorMessages.join('\n'));
                           }
                         }
                       },
                       child: const Text(
                         'Daftar',
-                        style: TextStyle(color: Colors.white, fontSize: 18),
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
                       ),
                     ),
-                    const SizedBox(height: 100),
-                    Text(
-                      'ayo temukan kita',
-                      style: TextStyle(color: Colors.grey[400]),
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 10),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        IconButton(
-                          icon: const FaIcon(FontAwesomeIcons.twitter),
-                          color: darkerOrange,
-                          onPressed: () {},
-                        ),
-                        IconButton(
-                          icon: const FaIcon(FontAwesomeIcons.instagram),
-                          color: darkerOrange,
-                          onPressed: () {},
-                        ),
-                        IconButton(
-                          icon: const FaIcon(FontAwesomeIcons.tiktok),
-                          color: darkerOrange,
-                          onPressed: () {},
-                        ),
-                      ],
-                    ),
+                    const SizedBox(height: 20),
                   ],
                 ),
               ),
-            ),
-          ),
-          Positioned(
-            left: 16,
-            top: 16,
-            child: Row(
-              children: [
-                IconButton(
-                  icon: Icon(Icons.arrow_back, color: darkerOrange),
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                ),
-                const SizedBox(width: 8),
-                const Text('Back', style: TextStyle(color: Colors.white)),
-              ],
             ),
           ),
         ],
@@ -304,47 +332,46 @@ class _RegisterViewState extends State<RegisterView> {
   void showAlertDialog(BuildContext context, String title, String message) {
     showDialog(
       context: context,
-      builder: (_) => AlertDialog(
-        title: Text(
-          title,
-          style:
-              const TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
-        ),
-        content: Text(message),
-        actions: <Widget>[
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text(
-              'OK',
-              style: TextStyle(color: Colors.blue),
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(title),
+          content: Text(message),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('OK'),
             ),
-          ),
-        ],
-      ),
+          ],
+        );
+      },
     );
   }
 
   Widget inputForm(
-    FormFieldValidator<String>? validator, {
+    String? Function(String?) validator, {
     required TextEditingController controller,
     required String hintTxt,
     required IconData iconData,
+    required Color hintColor,
+    required Color backgroundColor,
+    required Color iconColor,
     bool password = false,
-    Color? hintColor,
-    Color? backgroundColor,
-    Color? iconColor,
     bool insideIcon = false,
   }) {
     return TextFormField(
-      validator: validator,
       controller: controller,
+      validator: validator,
       obscureText: password,
       decoration: InputDecoration(
         filled: true,
         fillColor: backgroundColor,
+        prefixIcon: insideIcon
+            ? Icon(iconData, color: iconColor)
+            : null,
         hintText: hintTxt,
         hintStyle: TextStyle(color: hintColor),
-        prefixIcon: insideIcon ? Icon(iconData, color: iconColor) : null,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
           borderSide: BorderSide.none,

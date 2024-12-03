@@ -1,12 +1,12 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:sembilan_nih/View/home.dart';
 import 'package:sembilan_nih/View/register.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:http/http.dart' as http;
 
 class LoginView extends StatefulWidget {
-  final Map? data;
-
-  const LoginView({super.key, this.data});
+  const LoginView({super.key});
 
   @override
   State<LoginView> createState() => _LoginViewState();
@@ -16,7 +16,6 @@ class _LoginViewState extends State<LoginView> {
   final _formKey = GlobalKey<FormState>();
   late TextEditingController usernameController;
   late TextEditingController passwordController;
-  Map? dataForm;
 
   final Color darkerOrange = const Color.fromARGB(255, 158, 95, 0);
 
@@ -25,7 +24,6 @@ class _LoginViewState extends State<LoginView> {
     super.initState();
     usernameController = TextEditingController();
     passwordController = TextEditingController();
-    dataForm = widget.data;
   }
 
   @override
@@ -33,6 +31,41 @@ class _LoginViewState extends State<LoginView> {
     usernameController.dispose();
     passwordController.dispose();
     super.dispose();
+  }
+
+  Future<void> loginUser() async {
+    final url = Uri.parse('http://10.0.2.2:8000/api/pelanggan/login');
+
+    try {
+      final response = await http.post(
+        url,
+        body: json.encode({
+          'username': usernameController.text,
+          'password': passwordController.text,
+        }),
+        headers: {'Content-Type': 'application/json'},
+      );
+
+      print('Status Code: ${response.statusCode}');
+      print('Response Body: ${response.body}');
+
+      if (response.statusCode == 200) {
+        Map<String, dynamic> responseData = json.decode(response.body);
+        print(responseData);
+        if (responseData['message'] == 'Login berhasil') {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (_) => const HomeView()),
+          );
+        } else {
+          showAlertDialog(context, 'Login Gagal', responseData['message'] ?? 'Username atau password salah');
+        }
+      } else {
+        showAlertDialog(context, 'Login Gagal', 'Terjadi kesalahan saat login');
+      }
+    } catch (e) {
+      showAlertDialog(context, 'Error', 'Tidak dapat terhubung ke server');
+    }
   }
 
   @override
@@ -122,30 +155,8 @@ class _LoginViewState extends State<LoginView> {
                         ),
                       ),
                       onPressed: () {
-                        if (usernameController.text.isEmpty &&
-                            passwordController.text.isEmpty) {
-                          showAlertDialog(context, 'Login Gagal',
-                              'Belum memasukan Username dan Password!');
-                        } else if (usernameController.text.isEmpty ||
-                            passwordController.text.isEmpty) {
-                          showAlertDialog(context, 'Login Gagal',
-                              'Username atau Password yang Anda masukkan salah.');
-                        } else if (_formKey.currentState!.validate()) {
-                          if (dataForm != null &&
-                              dataForm!['username'] ==
-                                  usernameController.text &&
-                              dataForm!['password'] ==
-                                  passwordController.text) {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => const HomeView(),
-                              ),
-                            );
-                          } else {
-                            showAlertDialog(context, 'Login Gagal',
-                                'Username atau Password yang Anda masukkan salah.');
-                          }
+                        if (_formKey.currentState!.validate()) {
+                          loginUser();
                         }
                       },
                       child: const Text(
@@ -174,7 +185,12 @@ class _LoginViewState extends State<LoginView> {
                         ),
                         TextButton(
                           onPressed: () {
-                            pushRegister(context);
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => const RegisterView(),
+                              ),
+                            );
                           },
                           child: Text(
                             'Daftar Sekarang',
@@ -223,32 +239,16 @@ class _LoginViewState extends State<LoginView> {
     );
   }
 
-  void pushRegister(BuildContext context) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => const RegisterView(),
-      ),
-    );
-  }
-
   void showAlertDialog(BuildContext context, String title, String message) {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        title: Text(
-          title,
-          style:
-              const TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
-        ),
+        title: Text(title),
         content: Text(message),
         actions: <Widget>[
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text(
-              'OK',
-              style: TextStyle(color: Colors.blue),
-            ),
+            child: const Text('OK'),
           ),
         ],
       ),
