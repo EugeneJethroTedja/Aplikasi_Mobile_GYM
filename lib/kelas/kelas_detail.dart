@@ -24,10 +24,10 @@ class KelasDetailScreen extends StatelessWidget {
         child: Center(
           child: Container(
             decoration: BoxDecoration(
-              color: const Color.fromARGB(255, 252, 241, 230),
+              color: const Color.fromARGB(255, 255, 255, 255),
               borderRadius: BorderRadius.circular(16.0),
               border: Border.all(
-                color: Colors.blue, // Warna border biru
+                color: Colors.white, // Warna border biru
                 width: 2.0,
               ),
             ),
@@ -113,8 +113,9 @@ class KelasDetailScreen extends StatelessWidget {
                             ),
                           );
                         },
-                        icon: const Icon(Icons.chat),
-                        label: const Text('Pesan'),
+                        icon: const Icon(Icons.chat, color: Colors.white,),
+                        label: const Text('Pesan', style: TextStyle(color: Colors.white),),
+                    
                       ),
                       ElevatedButton(
                         style: ElevatedButton.styleFrom(
@@ -132,7 +133,7 @@ class KelasDetailScreen extends StatelessWidget {
                             ),
                           );
                         },
-                        child: const Text('Daftar'),
+                        child: const Text('Daftar', style: TextStyle(color: Colors.white),),
                       ),
                     ],
                   ),
