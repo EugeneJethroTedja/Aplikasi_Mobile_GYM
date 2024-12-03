@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:sembilan_nih/list/list_trainer.dart';
+import 'package:sembilan_nih/list/list_alat.dart';
+import 'package:sembilan_nih/list/list_kelas.dart';
 
 class DetailPesananPage extends StatelessWidget {
   const DetailPesananPage({Key? key}) : super(key: key);
@@ -25,6 +28,14 @@ class DetailPesananPage extends StatelessWidget {
             'Detail Trainer',
             'Lihat Trainer Anda',
             'assets/images/trainer.jpg',
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => TrainerPage(),
+                ),
+              );
+            },
           ),
           const SizedBox(height: 16),
           _buildDetailCard(
@@ -32,6 +43,14 @@ class DetailPesananPage extends StatelessWidget {
             'Detail Alat',
             'Lihat Alat yang Anda Pesan',
             'assets/images/alat.jpg',
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => AlatPage(),
+                ),
+              );
+            },
           ),
           const SizedBox(height: 16),
           _buildDetailCard(
@@ -39,6 +58,14 @@ class DetailPesananPage extends StatelessWidget {
             'Detail Kelas',
             'Lihat Kelas yang Anda Ikuti',
             'assets/images/kelas.jpeg',
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => KelasPage(),
+                ),
+              );
+            },
           ),
         ],
       ),
@@ -50,6 +77,7 @@ class DetailPesananPage extends StatelessWidget {
     String title,
     String subtitle,
     String imageUrl,
+    {VoidCallback? onTap}
   ) {
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -68,9 +96,8 @@ class DetailPesananPage extends StatelessWidget {
           style: const TextStyle(fontWeight: FontWeight.bold),
         ),
         subtitle: Text(subtitle),
-        onTap: () {
-          // Add
-        },
+        // onTap: onTap
+        onTap: onTap,
       ),
     );
   }

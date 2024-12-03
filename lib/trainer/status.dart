@@ -32,6 +32,14 @@ class _StatusScreenState extends State<StatusScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            // Logo di atas
+            Image.asset(
+              'assets/images/LOGO.png',
+              width: 350,
+              height: 100,
+              fit: BoxFit.contain, // Menampilkan gambar secara proporsional
+            ),
+            const SizedBox(height: 16),
             Card(
               color: const Color.fromARGB(255, 252, 241, 230),
               shape: RoundedRectangleBorder(
@@ -41,24 +49,17 @@ class _StatusScreenState extends State<StatusScreen> {
                 padding: const EdgeInsets.all(16.0),
                 child: Row(
                   children: [
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(8.0),
-                      child: Image.asset(
-                        'assets/images/LOGO.png',
-                        width: 40,
-                        height: 40,
-                        fit: BoxFit.cover,
+                    // Teks status
+                    Expanded(
+                      child: Text(
+                        'Status: $status',
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18,
+                        ),
                       ),
                     ),
-                    const SizedBox(width: 16),
-                    Text(
-                      'Status: $status',
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18,
-                      ),
-                    ),
-                    const Spacer(),
+                    // Ikon atau tombol tergantung status
                     status == 'pending'
                         ? IconButton(
                             icon: const Icon(Icons.refresh),
@@ -71,7 +72,7 @@ class _StatusScreenState extends State<StatusScreen> {
                         : ElevatedButton(
                             style: ElevatedButton.styleFrom(
                               backgroundColor: const Color.fromARGB(255, 158, 95, 0),
-                              padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
+                              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(8.0),
                               ),
@@ -82,7 +83,7 @@ class _StatusScreenState extends State<StatusScreen> {
                                 soldProducts,         // Produk yang dijual
                                 "123456789",          // ID Transaksi
                                 "Shopeepay",          // Metode pembayaran
-                                97900,              // Total harga
+                                97900,                // Total harga
                                 'assets/images/LOGO.png', // Path logo
                               );
                             },

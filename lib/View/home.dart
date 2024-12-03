@@ -2,8 +2,8 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:sembilan_nih/profile/pagePertama.dart'; 
 import 'package:sembilan_nih/trainer/trainer.dart';
-import 'package:sembilan_nih/View/alat.dart';
-import 'package:sembilan_nih/View/kelas.dart';
+import 'package:sembilan_nih/alat/alat.dart';
+import 'package:sembilan_nih/kelas/kelas.dart';
 import 'detail_pesanan.dart';
 
 void main() {
@@ -87,7 +87,7 @@ class _HomeViewState extends State<HomeView> {
             children: [
               Center(
                 child: Image.asset(
-                  'assets/images/logo.png',
+                  'assets/images/LOGO.png',
                   width: 400,
                   height: 100,
                 ),
@@ -98,7 +98,7 @@ class _HomeViewState extends State<HomeView> {
                 height: 150,
                 decoration: BoxDecoration(
                   image: const DecorationImage(
-                    image: AssetImage('assets/images/alat.jpg'),
+                    image: AssetImage('assets/images/bangunangym.webp'),
                     fit: BoxFit.cover,
                   ),
                   borderRadius: BorderRadius.circular(8),

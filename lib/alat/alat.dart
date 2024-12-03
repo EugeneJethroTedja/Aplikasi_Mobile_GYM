@@ -26,7 +26,7 @@ class AlatScreen extends StatelessWidget {
       Alat(
         nameAlat: 'Treadmill',
         deskripsi:
-            'Treadmill adalah suatu alat yang umumnya digunakan untuk berjalan, berlari, atau menanjak tanpa berpindah tempat. Tenaga yang dihasilkan dan terkumpul dari gerakan berulang ini biasanya digunakan untuk melakukan pekerjaan sehari-hari.',
+            'Treadmill adalah suatu alat yang umumnya digunakan untuk berjalan, berlari, atau menanjak tanpa berpindah tempat.',
         stok: '10',
         feeAlat: 'Rp 500.000/Jam',
         imageUrl: 'assets/images/treadmill.jpg',
@@ -127,6 +127,32 @@ class AlatScreen extends StatelessWidget {
                           ),
                         ],
                       ),
+                      const SizedBox(height: 8),
+                      Row(children: [
+                        Spacer(),
+                          ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor:
+                                const Color.fromARGB(255, 158, 95, 0),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8.0),
+                            ),
+                          ),
+                          onPressed: () {
+                            Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        AlatDetailScreen(alat: alat),
+                                  ),
+                                );
+                          },
+                          child: const Text(
+                            'Pesan Sekarang',
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        ),
+                      ],),
                     ],
                   ),
                 ),

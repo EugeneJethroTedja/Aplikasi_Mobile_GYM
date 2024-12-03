@@ -12,7 +12,7 @@ class TrainerDetailScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Color.fromARGB(255, 158, 95, 0),
+        backgroundColor: const Color.fromARGB(255, 158, 95, 0),
         title: const Text('Back', style: TextStyle(color: Colors.white)),
         iconTheme: const IconThemeData(
           color: Color.fromARGB(255, 0, 0, 0),
@@ -23,7 +23,7 @@ class TrainerDetailScreen extends StatelessWidget {
         padding: const EdgeInsets.all(16.0),
         child: Center(
           child: Card(
-            color: const Color.fromARGB(255, 252, 241, 230),
+            color: const Color.fromARGB(255, 252, 255, 255),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(16.0),
             ),
@@ -31,6 +31,7 @@ class TrainerDetailScreen extends StatelessWidget {
               padding: const EdgeInsets.all(16.0),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start, // Rata kiri
                 children: [
                   ClipRRect(
                     borderRadius: BorderRadius.circular(16.0),
@@ -42,6 +43,7 @@ class TrainerDetailScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 16),
+                  // Nama trainer
                   Text(
                     trainer.name,
                     style: const TextStyle(
@@ -50,28 +52,25 @@ class TrainerDetailScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Spesialis: ${trainer.specialization}',
-                        style: const TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      Text(
-                        'Durasi   : ${trainer.duration}',
-                        style: const TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      Text(
-                        'Hari     : ${trainer.day}',
-                        style: const TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      Text(
-                        'Biaya    : ${trainer.fee}',
-                        style: const TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                    ],
+                  // Detail trainer
+                  Text(
+                    'Spesialis: ${trainer.specialization}',
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  Text(
+                    'Durasi   : ${trainer.duration}',
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  Text(
+                    'Hari     : ${trainer.day}',
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  Text(
+                    'Biaya    : ${trainer.fee}',
+                    style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 16),
+                  // Tombol Chat dan Daftar
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -85,7 +84,7 @@ class TrainerDetailScreen extends StatelessWidget {
                           ),
                         ),
                         onPressed: () {
-                          // Navigasi ke halaman Chat (buat halaman chat jika belum ada)
+                          // Navigasi ke halaman Chat
                           Navigator.push(
                             context,
                             MaterialPageRoute(
@@ -94,8 +93,8 @@ class TrainerDetailScreen extends StatelessWidget {
                             ),
                           );
                         },
-                        icon: const Icon(Icons.chat),
-                        label: const Text('Chat'),
+                        icon: const Icon(Icons.chat, color: Colors.white,),
+                        label: const Text('Chat', style: TextStyle(color: Colors.white),),
                       ),
                       // Button untuk Daftar
                       ElevatedButton(
@@ -116,7 +115,7 @@ class TrainerDetailScreen extends StatelessWidget {
                             ),
                           );
                         },
-                        child: const Text('DAFTAR'),
+                        child: const Text('DAFTAR', style: TextStyle(color: Colors.white),),
                       ),
                     ],
                   ),

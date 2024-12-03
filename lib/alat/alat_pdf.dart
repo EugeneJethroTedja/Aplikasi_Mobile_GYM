@@ -6,7 +6,6 @@ import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter/foundation.dart';
-import 'dart:html' as html;
 import 'package:open_file/open_file.dart';
 
 Future<pw.Font> loadFont(String fontPath) async {
@@ -151,23 +150,13 @@ Future<void> generatePdf(
     final bytes = await pdf.save();
 
     // Logika penyimpanan
-    if (kIsWeb) {
-      final blob = html.Blob([bytes], 'application/pdf');
-      final url = html.Url.createObjectUrlFromBlob(blob);
-      final anchor = html.AnchorElement(href: url)
-        ..target = '_blank'
-        ..download = "invoice_ego_gym.pdf"
-        ..click();
-      html.Url.revokeObjectUrl(url);
-    } else {
-      final directory = await getTemporaryDirectory();
-      final file = File('${directory.path}/invoice_ego_gym.pdf');
-      await file.writeAsBytes(bytes);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("PDF berhasil disimpan: ${file.path}")),
-      );
-      OpenFile.open(file.path);
-    }
+    final directory = await getTemporaryDirectory();
+    final file = File('${directory.path}/invoice_ego_gym.pdf');
+    await file.writeAsBytes(bytes);
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text("PDF berhasil disimpan: ${file.path}")),
+    );
+    OpenFile.open(file.path);
   } catch (e) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text("Gagal membuat PDF: $e")),
