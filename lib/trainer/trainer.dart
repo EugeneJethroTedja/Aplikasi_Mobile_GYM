@@ -6,9 +6,9 @@ import 'trainer_detail.dart';
 class Trainer {
   final String name;
   final String specialization;
-  final String duration;
+  final int duration;
   final String day;
-  final String fee;
+  final int fee;
   final String imageUrl;
 
   Trainer({
@@ -25,9 +25,9 @@ class Trainer {
       name: json['nama_trainer'] ?? '',
       specialization: json['spesialis'] ?? '',
       duration: json['durasi'] ?? '',
-      day: json['hari'] ?? '',
+      day: json['tanggal'] ?? '',
       fee: json['biaya'] ?? '',
-      imageUrl: json['image_url'] ?? 'assets/images/trainer1.png',
+      imageUrl: json['imageUrl'] ?? 'assets/images/trainer1.png',
     );
   }
 }
@@ -55,6 +55,8 @@ class _TrainerScreenState extends State<TrainerScreen> {
         Uri.parse('http://10.0.2.2:8000/api/trainer/'),
       );
 
+      print("Response: ${response.body}");
+
       if (response.statusCode == 200) {
         List<dynamic> data = json.decode(response.body);
         setState(() {
@@ -62,10 +64,17 @@ class _TrainerScreenState extends State<TrainerScreen> {
           isLoading = false;
         });
       } else {
-        setState(() => isLoading = false);
+        setState(() {
+          isLoading = false;
+          trainers = [];
+        });
       }
     } catch (e) {
-      setState(() => isLoading = false);
+      print("Error fetching trainers: $e");
+      setState(() {
+        isLoading = false;
+        trainers = [];
+      });
     }
   }
 
