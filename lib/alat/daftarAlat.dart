@@ -1,0 +1,287 @@
+import 'package:flutter/material.dart';
+import 'package:qr_flutter/qr_flutter.dart';
+import 'package:sembilan_nih/alat/alat.dart';
+import 'statusAlat.dart';
+
+class DaftarScreen extends StatefulWidget {
+  final Alat alat;
+
+  const DaftarScreen({super.key, required this.alat});
+
+  @override
+  _DaftarScreenState createState() => _DaftarScreenState();
+}
+
+class _DaftarScreenState extends State<DaftarScreen> {
+  String? selectedDigitalPayment = '-';
+  String? selectedBankPayment = '-';
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: const Color.fromARGB(255, 158, 95, 0),
+        title: const Text('Pesanan', style: TextStyle(color: Colors.white)),
+        iconTheme: const IconThemeData(
+          color: Color.fromARGB(255, 0, 0, 0),
+        ),
+      ),
+      backgroundColor: Colors.black,
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Card(
+              color: const Color.fromARGB(255, 255, 255, 255),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16.0),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Row(
+                  children: [
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(8.0),
+                      child: Image.asset(
+                        widget.alat.imageUrl,
+                        width: 110,
+                        height: 110,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            widget.alat.nameAlat,
+                            style: const TextStyle(
+                                fontWeight: FontWeight.bold, fontSize: 18),
+                          ),
+                          const SizedBox(height: 8),
+                          Text('${widget.alat.deskripsi}'),
+                          const SizedBox(height: 8),
+                          Text(
+                            'Stok: ${widget.alat.stok}',
+                            style: const TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          Text(
+                            'Harga: ${widget.alat.feeAlat}',
+                            style: const TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+            Card(
+              color: const Color.fromARGB(255, 255, 255, 255),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16.0),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Pembayaran',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text('Total Harga: ${widget.alat.feeAlat}'),
+                    const SizedBox(height: 16),
+                    const Text(
+                      'Pilih Metode Pembayaran Digital:',
+                      style: TextStyle(fontSize: 16),
+                    ),
+                    const SizedBox(height: 8),
+                    DropdownButtonFormField<String>(
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8.0),
+                        ),
+                        filled: true,
+                        fillColor: const Color.fromARGB(255, 218, 165, 132),
+                      ),
+                      value: selectedDigitalPayment,
+                      items: ['-', 'Dana', 'Ovo', 'Shopee Pay', 'Gopay']
+                          .map((String value) {
+                        return DropdownMenuItem<String>(
+                          value: value,
+                          child: Text(value),
+                        );
+                      }).toList(),
+                      onChanged: selectedBankPayment == '-'
+                          ? (String? newValue) {
+                              setState(() {
+                                selectedDigitalPayment = newValue;
+                              });
+                            }
+                          : null, // Disable jika bank dipilih
+                    ),
+                    const SizedBox(height: 16),
+                    const Text(
+                      'Pilih Metode Pembayaran Bank:',
+                      style: TextStyle(fontSize: 16),
+                    ),
+                    const SizedBox(height: 8),
+                    DropdownButtonFormField<String>(
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8.0),
+                        ),
+                        filled: true,
+                        fillColor: const Color.fromARGB(255, 218, 165, 132),
+                      ),
+                      value: selectedBankPayment,
+                      items: ['-', 'Mandiri', 'BNI', 'BRI'].map((String value) {
+                        return DropdownMenuItem<String>(
+                          value: value,
+                          child: Text(value),
+                        );
+                      }).toList(),
+                      onChanged: selectedDigitalPayment == '-'
+                          ? (String? newValue) {
+                              setState(() {
+                                selectedBankPayment = newValue;
+                              });
+                            }
+                          : null, // Disable jika digital dipilih
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const Spacer(),
+            Align(
+              alignment: Alignment.bottomCenter, // Posisikan tombol di tengah bawah
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0), // Padding untuk jarak dari tepi layar
+                child: SizedBox(
+                  width: double.infinity, // Lebar mengikuti lebar container putih
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color.fromARGB(255, 158, 95, 0),
+                      padding: const EdgeInsets.symmetric(vertical: 12.0), // Padding vertikal tombol
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
+                    ),
+                    onPressed: () {
+                      if (selectedDigitalPayment != '-' || selectedBankPayment != '-') {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => QRGeneratorScreen(
+                              alat: widget.alat,
+                            ),
+                          ),
+                        );
+                      } else {
+                        // Tampilkan pesan kesalahan jika belum memilih metode pembayaran
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Harap pilih metode pembayaran.'),
+                          ),
+                        );
+                      }
+                    },
+                    child: const Text(
+                      'Bayar',
+                      style: TextStyle(color: Colors.white, fontSize: 16),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class QRGeneratorScreen extends StatelessWidget {
+  final Alat alat;
+
+  const QRGeneratorScreen({super.key, required this.alat});
+
+  @override
+  Widget build(BuildContext context) {
+    String paymentData =
+        'Nama: ${alat.nameAlat}, Biaya: ${alat.feeAlat}, Spesialis: ${alat.deskripsi}';
+
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: const Color.fromARGB(255, 158, 95, 0),
+        title: const Text('Kode QR', style: TextStyle(color: Colors.white)),
+      ),
+      backgroundColor: Colors.black,
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              'Scan QR Code untuk Pembayaran',
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 16),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(16.0),
+              child: Container(
+                color: Colors.white,
+                padding: const EdgeInsets.all(8.0),
+                child: QrImageView(
+                  data: paymentData,
+                  version: QrVersions.auto,
+                  size: 200.0,
+                  gapless: false,
+                  backgroundColor: Colors.transparent,
+                ),
+              ),
+            ),
+            const SizedBox(height: 32),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color.fromARGB(255, 158, 95, 0),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24.0,
+                  vertical: 12.0,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
+              ),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => StatusScreen(alat: alat),
+                  ),
+                );
+              },
+              child: const Text(
+                'Lanjutkan',
+                style: TextStyle(color: Colors.white, fontSize: 16),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}

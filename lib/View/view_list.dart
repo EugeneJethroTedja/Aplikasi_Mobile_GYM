@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:sembilan_nih/data/people.dart';
 
+
+
 class ListNamaView extends StatelessWidget {
   const ListNamaView({super.key});
 

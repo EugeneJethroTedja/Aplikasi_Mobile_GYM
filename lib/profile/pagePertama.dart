@@ -1,14 +1,67 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sembilan_nih/profile/pageUbahProfile.dart';
 import 'package:sembilan_nih/profile/keamananAkun.dart';
 import 'package:sembilan_nih/profile/kebijakanPrivasi.dart';
 import 'package:sembilan_nih/profile/informasiPengguna.dart';
 
-class ProfileScreen extends StatelessWidget {
+class ProfileScreen extends StatefulWidget {
   const ProfileScreen({Key? key}) : super(key: key);
 
   @override
+  State<ProfileScreen> createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<ProfileScreen> {
+  Map<String, dynamic>? userData;
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    validateAndFetchUserData();
+  }
+
+  Future<void> validateAndFetchUserData() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final loggedInUserId = prefs.getInt('userId');
+
+      if (loggedInUserId == null) {
+        throw Exception('ID pengguna tidak ditemukan di session.');
+      }
+
+      final response = await http.get(
+        Uri.parse('http://10.0.2.2:8000/api/pelanggan/$loggedInUserId'),
+      );
+
+      if (response.statusCode == 200) {
+        setState(() {
+          userData = json.decode(response.body)['data'];
+          isLoading = false;
+        });
+      } else {
+        throw Exception('Gagal mengambil data pengguna');
+      }
+    } catch (e) {
+      setState(() {
+        userData = {'error': e.toString()};
+        isLoading = false;
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
+    if (isLoading) {
+      return const Scaffold(
+        backgroundColor: Colors.black,
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
+
     return Scaffold(
       backgroundColor: Colors.black,
       body: Column(
@@ -93,18 +146,18 @@ class ProfileScreen extends StatelessWidget {
                   ],
                 ),
                 const SizedBox(height: 12),
-                const Text(
-                  'Nama Pengguna',
-                  style: TextStyle(
+                Text(
+                  userData?['username'] ?? 'Username',
+                  style: const TextStyle(
                     color: Colors.white,
                     fontSize: 18,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
                 const SizedBox(height: 4),
-                const Text(
-                  'Email Pengguna',
-                  style: TextStyle(
+                Text(
+                  userData?['email_pelanggan'] ?? 'Email Pengguna',
+                  style: const TextStyle(
                     color: Colors.white,
                     fontSize: 14,
                   ),
@@ -119,13 +172,24 @@ class ProfileScreen extends StatelessWidget {
                 _buildMenuItem(
                   icon: Icons.person_outline,
                   title: 'Informasi Pengguna',
-                  onTap: () {
-                    Navigator.push(
-                      context, 
-                      MaterialPageRoute(
-                        builder: (context) => const InformasiPenggunaScreen(),
-                      ),
-                    );
+                  onTap: () async {
+                    final prefs = await SharedPreferences.getInstance();
+                    final userId = prefs.getInt('userId');
+
+                    if (userId != null) {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => InformasiPenggunaScreen(userId: userId),
+                        ),
+                      );
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Gagal membuka informasi pengguna. ID tidak ditemukan.'),
+                        ),
+                      );
+                    }
                   },
                 ),
                 _buildMenuItem(
@@ -229,7 +293,7 @@ class ProfileScreen extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 24),
               ),
               onPressed: () {
-                Navigator.of(context).pop(); // Menutup dialog
+                Navigator.of(context).pop();
               },
               child: const Text(
                 'Batal',
@@ -241,9 +305,11 @@ class ProfileScreen extends StatelessWidget {
                 backgroundColor: Colors.lightBlue,
                 padding: const EdgeInsets.symmetric(horizontal: 24),
               ),
-              onPressed: () {
-                // Tambahkan logika logout di sini
-                Navigator.of(context).pop(); // Menutup dialog
+              onPressed: () async {
+                final prefs = await SharedPreferences.getInstance();
+                await prefs.remove('userId'); // Hapus userId dari SharedPreferences
+                Navigator.of(context).pop();
+                // Tambahkan navigasi ke halaman login di sini
               },
               child: const Text(
                 'OK',
