@@ -31,20 +31,19 @@ class _DaftarScreenState extends State<DaftarScreen> {
         'digital_payment': selectedDigitalPayment ?? '-',
         'bank_payment': selectedBankPayment ?? '-',
         'id_trainer': widget.trainer.id,
+        'id_alat': null,
+        'id_kelas': null,
       };
 
       print('Submitting order with data: ${jsonEncode(orderData)}');
 
       final response = await http.post(
-        Uri.parse('http://10.0.2.2:8000/api/pemesanan/create'), 
+        Uri.parse('http://10.0.2.2:8000/api/pemesanan/create'),
         headers: {'Content-Type': 'application/json'},
         body: json.encode(orderData),
       );
 
-      // Log the response status code and body in JSON format
-      print('Response status: ${response.statusCode}');
-      print('Response body: ${jsonEncode(json.decode(response.body))}');
-
+      // Pastikan body response adalah JSON
       if (response.statusCode == 201) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Pemesanan berhasil!')),
@@ -56,12 +55,11 @@ class _DaftarScreenState extends State<DaftarScreen> {
           ),
         );
       } else {
-        setState(() {
-          // Log the error response in JSON format
-          print('Error response: ${jsonEncode(json.decode(response.body))}');
-        });
+        // Menangani error dengan response yang sesuai
+        final responseData = json.decode(response.body);
+        print('Error response: $responseData');
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Gagal menyimpan pemesanan: ${response.body}')),
+          SnackBar(content: Text('Gagal menyimpan pemesanan: ${responseData['message']}')),
         );
       }
     } catch (e) {
@@ -71,6 +69,7 @@ class _DaftarScreenState extends State<DaftarScreen> {
       );
     }
   }
+
 
   @override
   Widget build(BuildContext context) {
