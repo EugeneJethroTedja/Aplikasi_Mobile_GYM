@@ -1,8 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+
+// class AlatPage extends StatefulWidget {
+//   @override
+//   _AlatPageState createState() => _AlatPageState();
+// }
 
 class AlatPage extends StatefulWidget {
+  const AlatPage({super.key});
+
   @override
-  _AlatPageState createState() => _AlatPageState();
+  State<AlatPage> createState() => _AlatPageState();
 }
 
 class _AlatPageState extends State<AlatPage> {
@@ -11,8 +19,7 @@ class _AlatPageState extends State<AlatPage> {
       "name": "Treadmill",
       "specialty": "2",
       "date": "28-08-2024",
-      "price": "500.000",
-      "isCompleted": false,
+      "price": "500000",
       "review": null,
       "imagePath": "assets/images/Alat/treadmill-figma.jpg",
     },
@@ -20,8 +27,7 @@ class _AlatPageState extends State<AlatPage> {
       "name": "Lat Pulldown",
       "specialty": "3",
       "date": "15-08-2024",
-      "price": "300.000",
-      "isCompleted": true,
+      "price": "300000",
       "review": 4,
       "imagePath": "assets/images/Alat/lat-pulldown.jpg",
     },
@@ -29,8 +35,7 @@ class _AlatPageState extends State<AlatPage> {
       "name": "Smith Machine",
       "specialty": "2",
       "date": "07-08-2024",
-      "price": "250.000",
-      "isCompleted": true,
+      "price": "250000",
       "review": 3,
       "imagePath": "assets/images/Alat/smith-machine.png",
     },
@@ -38,8 +43,7 @@ class _AlatPageState extends State<AlatPage> {
       "name": "Barbel",
       "specialty": "5",
       "date": "28-07-2024",
-      "price": "375.000",
-      "isCompleted": true,
+      "price": "375000",
       "review": 4,
       "imagePath": "assets/images/Alat/barbel.png",
     },
@@ -49,7 +53,6 @@ class _AlatPageState extends State<AlatPage> {
     setState(() {
       for (var trainer in trainers) {
         if (trainer['name'] == trainerName) {
-          trainer['isCompleted'] = true;
           trainer['review'] = review;
           break;
         }
@@ -80,7 +83,6 @@ class _AlatPageState extends State<AlatPage> {
               trainer['date'],
               trainer['price'],
               trainer['imagePath'],
-              trainer['isCompleted'],
               trainer['review'],
             );
           }).toList(),
@@ -95,8 +97,10 @@ class _AlatPageState extends State<AlatPage> {
       String date,
       String price,
       String imagePath,
-      bool isCompleted,
       int? review) {
+
+    String formattedPrice = NumberFormat('#,###', 'id_ID').format(int.parse(price));
+    
     return Card(
       color: Colors.white,
       margin: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
@@ -150,14 +154,14 @@ class _AlatPageState extends State<AlatPage> {
                         ),
                       ),
                       Text(
-                        "Biaya        : Rp. $price",
+                        "Biaya        : Rp. $formattedPrice",
                         style: const TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
                           color: Colors.black87,
                         ),
                       ),
-                      if (isCompleted && review != null)
+                      if (review != null)
                         Padding(
                           padding: const EdgeInsets.only(bottom: 5),
                           child: Text(
@@ -178,7 +182,7 @@ class _AlatPageState extends State<AlatPage> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                if (isCompleted && review != null)
+                if (review != null)
                   Row(
                     children: [
                       const Icon(
@@ -204,7 +208,7 @@ class _AlatPageState extends State<AlatPage> {
                     color: Colors.black87,
                     )),
                     const SizedBox(height: 10),
-                if (!isCompleted)
+                if (review == null)
                   ElevatedButton(
                     onPressed: () {
                       Navigator.push(
