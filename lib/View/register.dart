@@ -58,9 +58,9 @@ class _RegisterViewState extends State<RegisterView> {
         'umur_pelanggan': umurController.text,
         'email_pelanggan': emailController.text,
         'noTelp_pelanggan': notelpController.text,
-        'gender': selectedGender,
         'username': loginUsernameController.text,
         'password': loginPasswordController.text,
+        'gender': selectedGender,
       }),
       headers: {
         'Content-Type': 'application/json',

@@ -1,7 +1,9 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:qr_flutter/qr_flutter.dart';
-import 'package:sembilan_nih/trainer/trainer.dart';
+import 'package:http/http.dart' as http;
+import 'trainer.dart';
 import 'status.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 
 class DaftarScreen extends StatefulWidget {
   final Trainer trainer;
@@ -15,6 +17,47 @@ class DaftarScreen extends StatefulWidget {
 class _DaftarScreenState extends State<DaftarScreen> {
   String? selectedDigitalPayment = '-';
   String? selectedBankPayment = '-';
+
+  Future<void> submitOrder() async {
+    try {
+      final orderData = {
+        'trainer_name': widget.trainer.name,
+        'specialization': widget.trainer.specialization,
+        'duration': widget.trainer.duration.toString(),
+        'day': widget.trainer.day,
+        'fee': widget.trainer.fee.toString(),
+        'digital_payment': selectedDigitalPayment ?? '-',
+        'bank_payment': selectedBankPayment ?? '-',
+      };
+
+      final response = await http.post(
+        Uri.parse('http://10.0.2.2:8000/api/pemesanan/create'), 
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode(orderData),
+      );
+
+      if (response.statusCode == 200) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Pemesanan berhasil!')),
+        );
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => QRGeneratorScreen(trainer: widget.trainer),
+          ),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Gagal menyimpan pemesanan.')),
+        );
+      }
+    } catch (e) {
+      print('Error: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Terjadi kesalahan.')),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -153,10 +196,7 @@ class _DaftarScreenState extends State<DaftarScreen> {
           ),
           value: selectedValue,
           items: items.map((String value) {
-            return DropdownMenuItem<String>(
-              value: value,
-              child: Text(value),
-            );
+            return DropdownMenuItem<String>(value: value, child: Text(value));
           }).toList(),
           onChanged: onChanged,
         ),
@@ -177,12 +217,7 @@ class _DaftarScreenState extends State<DaftarScreen> {
         ),
         onPressed: () {
           if (selectedDigitalPayment != '-' || selectedBankPayment != '-') {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => QRGeneratorScreen(trainer: widget.trainer),
-              ),
-            );
+            submitOrder();
           } else {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
@@ -230,15 +265,15 @@ class QRGeneratorScreen extends StatelessWidget {
             const SizedBox(height: 16),
             Container(
               decoration: BoxDecoration(
-                color: Colors.white, // Warna latar belakang
-                borderRadius: BorderRadius.circular(16), // Sudut lengkung
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16), 
               ),
-              padding: const EdgeInsets.all(16), // Jarak di dalam container
+              padding: const EdgeInsets.all(16), 
               child: QrImageView(
-                data: paymentData,
+                data: paymentData,  
                 version: QrVersions.auto,
-                size: 200.0,
-                backgroundColor: Colors.white,
+                size: 200.0,  
+                backgroundColor: Colors.white,  
               ),
             ),
             const SizedBox(height: 16),
