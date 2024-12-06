@@ -31,7 +31,7 @@ class TrainerDetailScreen extends StatelessWidget {
               padding: const EdgeInsets.all(16.0),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start, // Rata kiri
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   ClipRRect(
                     borderRadius: BorderRadius.circular(16.0),
@@ -70,11 +70,9 @@ class TrainerDetailScreen extends StatelessWidget {
                     style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 16),
-                  // Tombol Chat dan Daftar
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      // Button untuk Chat
                       ElevatedButton.icon(
                         style: ElevatedButton.styleFrom(
                           backgroundColor:
@@ -84,7 +82,6 @@ class TrainerDetailScreen extends StatelessWidget {
                           ),
                         ),
                         onPressed: () {
-                          // Navigasi ke halaman Chat
                           Navigator.push(
                             context,
                             MaterialPageRoute(
@@ -96,7 +93,6 @@ class TrainerDetailScreen extends StatelessWidget {
                         icon: const Icon(Icons.chat, color: Colors.white,),
                         label: const Text('Chat', style: TextStyle(color: Colors.white),),
                       ),
-                      // Button untuk Daftar
                       ElevatedButton(
                         style: ElevatedButton.styleFrom(
                           backgroundColor:
@@ -106,7 +102,6 @@ class TrainerDetailScreen extends StatelessWidget {
                           ),
                         ),
                         onPressed: () {
-                          // Navigasi ke halaman Daftar
                           Navigator.push(
                             context,
                             MaterialPageRoute(
