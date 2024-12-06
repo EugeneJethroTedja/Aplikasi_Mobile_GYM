@@ -4,10 +4,10 @@ import 'package:http/http.dart' as http;
 import 'trainer.dart';
 import 'status.dart';
 import 'package:qr_flutter/qr_flutter.dart';
+import 'dart:convert';
 
 class DaftarScreen extends StatefulWidget {
   final Trainer trainer;
-
   const DaftarScreen({super.key, required this.trainer});
 
   @override
@@ -20,15 +20,20 @@ class _DaftarScreenState extends State<DaftarScreen> {
 
   Future<void> submitOrder() async {
     try {
+      final now = DateTime.now();
+      final dateStr = "${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}";
+
       final orderData = {
-        'trainer_name': widget.trainer.name,
-        'specialization': widget.trainer.specialization,
-        'duration': widget.trainer.duration.toString(),
-        'day': widget.trainer.day,
-        'fee': widget.trainer.fee.toString(),
+        'id_layanan': 6,
+        'id_pelanggan': 13,
+        'biaya_pesanan': widget.trainer.fee,
+        'tanggal_pesanan': dateStr,
         'digital_payment': selectedDigitalPayment ?? '-',
         'bank_payment': selectedBankPayment ?? '-',
+        'id_trainer': widget.trainer.id,
       };
+
+      print('Submitting order with data: ${jsonEncode(orderData)}');
 
       final response = await http.post(
         Uri.parse('http://10.0.2.2:8000/api/pemesanan/create'), 
@@ -36,7 +41,11 @@ class _DaftarScreenState extends State<DaftarScreen> {
         body: json.encode(orderData),
       );
 
-      if (response.statusCode == 200) {
+      // Log the response status code and body in JSON format
+      print('Response status: ${response.statusCode}');
+      print('Response body: ${jsonEncode(json.decode(response.body))}');
+
+      if (response.statusCode == 201) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Pemesanan berhasil!')),
         );
@@ -47,12 +56,16 @@ class _DaftarScreenState extends State<DaftarScreen> {
           ),
         );
       } else {
+        setState(() {
+          // Log the error response in JSON format
+          print('Error response: ${jsonEncode(json.decode(response.body))}');
+        });
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Gagal menyimpan pemesanan.')),
+          SnackBar(content: Text('Gagal menyimpan pemesanan: ${response.body}')),
         );
       }
     } catch (e) {
-      print('Error: $e');
+      print('Error submitting order: $e');
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Terjadi kesalahan.')),
       );
