@@ -43,7 +43,6 @@ class TrainerDetailScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  // Nama trainer
                   Text(
                     trainer.name,
                     style: const TextStyle(
@@ -52,7 +51,6 @@ class TrainerDetailScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  // Detail trainer
                   Text(
                     'Spesialis: ${trainer.specialization}',
                     style: const TextStyle(fontWeight: FontWeight.bold),
