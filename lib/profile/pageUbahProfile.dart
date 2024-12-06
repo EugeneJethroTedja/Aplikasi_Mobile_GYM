@@ -1,220 +1,210 @@
 import 'package:flutter/material.dart';
-import 'package:camera/camera.dart';
-import 'dart:io';
-import 'package:image_picker/image_picker.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class EditProfileScreen extends StatefulWidget {
-  const EditProfileScreen({Key? key}) : super(key: key);
+  final int? userId; // Parameter opsional untuk ID pengguna
+
+  const EditProfileScreen({Key? key, this.userId}) : super(key: key);
 
   @override
   State<EditProfileScreen> createState() => _EditProfileScreenState();
 }
 
 class _EditProfileScreenState extends State<EditProfileScreen> {
-  String? _imagePath;
+  final _formKey = GlobalKey<FormState>();
+  final usernameController = TextEditingController();
+  final emailController = TextEditingController();
+  final phoneController = TextEditingController();
+  final addressController = TextEditingController();
+  final genderController = TextEditingController();
+  final heightController = TextEditingController();
+  final weightController = TextEditingController();
+  final ageController = TextEditingController();
 
-  void _showPhotoOptions(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(15)),
-      ),
-      builder: (context) {
-        return Container(
-          padding: EdgeInsets.symmetric(vertical: 20),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              SizedBox(height: 8),
-              _buildOptionButton(
-                context: context,
-                title: 'Ambil Foto',
-                onTap: () async {
-                  Navigator.pop(context);
-                  final result = await Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => CameraView(),
-                    ),
-                  );
-                  if (result != null) {
-                    setState(() {
-                      _imagePath = result;
-                    });
-                  }
-                },
-              ),
-              _buildOptionButton(
-                context: context,
-                title: 'Pilih Dari Gallery',
-                onTap: () async {
-                  Navigator.pop(context);
-                  final pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
-                  if (pickedFile != null) {
-                    setState(() {
-                      _imagePath = pickedFile.path;
-                    });
-                  }
-                },
-              ),
-              _buildOptionButton(
-                context: context,
-                title: 'Hapus Foto',
-                onTap: () {
-                  Navigator.pop(context);
-                  setState(() {
-                    _imagePath = null;
-                  });
-                },
-              ),
-              Divider(height: 1),
-              _buildOptionButton(
-                context: context,
-                title: 'Batal',
-                onTap: () => Navigator.pop(context),
-              ),
-            ],
-          ),
-        );
-      },
-    );
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _validateAndFetchUserData();
   }
 
-  Widget _buildOptionButton({
-    required BuildContext context,
-    required String title,
-    required VoidCallback onTap,
-  }) {
-    return InkWell(
-      onTap: onTap,
-      child: Container(
-        width: double.infinity,
-        padding: EdgeInsets.symmetric(vertical: 15),
-        child: Text(
-          title,
-          style: TextStyle(
-            color: Colors.blue,
-            fontSize: 16,
-          ),
-          textAlign: TextAlign.center,
-        ),
-      ),
-    );
+  Future<void> _validateAndFetchUserData() async {
+    try {
+      debugPrint('Memulai pengambilan data pengguna.');
+
+      final prefs = await SharedPreferences.getInstance();
+      final loggedInUserId = prefs.getInt('userId');
+      debugPrint('ID pengguna ditemukan di SharedPreferences: $loggedInUserId');
+
+      if (loggedInUserId == null) {
+        throw Exception('ID pengguna tidak ditemukan.');
+      }
+
+      final userId = widget.userId ?? loggedInUserId;
+      debugPrint('Menggunakan ID pengguna untuk fetch data: $userId');
+
+      final apiUrl = 'http://10.0.2.2:8000/api/pelanggan/$userId';
+      debugPrint('API URL: $apiUrl');
+
+      final response = await http.get(Uri.parse(apiUrl));
+      debugPrint('Response Status: ${response.statusCode}');
+      debugPrint('Response Body: ${response.body}');
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body)['data'];
+        debugPrint('Data pengguna berhasil diambil: $data');
+
+        setState(() {
+          usernameController.text = data['username'] ?? '';
+          emailController.text = data['email_pelanggan'] ?? '';
+          phoneController.text = data['noTelp_pelanggan']?.toString() ?? '';
+          addressController.text = data['alamat'] ?? '';
+          genderController.text = data['gender'] ?? '';
+          heightController.text = data['tinggi_badan']?.toString() ?? '';
+          weightController.text = data['berat_badan']?.toString() ?? '';
+          ageController.text = data['umur_pelanggan']?.toString() ?? '';
+          isLoading = false;
+        });
+      } else {
+        throw Exception('Gagal mengambil data pengguna.');
+      }
+    } catch (e) {
+      debugPrint('Error: $e');
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
+  Future<void> _updateProfile() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final userId = widget.userId ?? prefs.getInt('userId');
+      debugPrint('ID pengguna untuk update: $userId');
+
+      if (userId == null || userId <= 0) {
+        throw Exception('ID pengguna tidak valid.');
+      }
+
+      final url = Uri.parse('http://10.0.2.2:8000/api/pelanggan/update/$userId');
+      debugPrint('URL untuk update: $url');
+
+      final body = {
+        'username': usernameController.text,
+        'email_pelanggan': emailController.text,
+        'noTelp_pelanggan': phoneController.text,
+        'alamat': addressController.text,
+        'gender': genderController.text,
+        'tinggi_badan': int.tryParse(heightController.text) ?? 0,
+        'berat_badan': int.tryParse(weightController.text) ?? 0,
+        'umur_pelanggan': int.tryParse(ageController.text) ?? 0,
+      };
+      debugPrint('Body yang dikirim: ${json.encode(body)}');
+
+      final response = await http.put(
+        url,
+        body: json.encode(body),
+        headers: {'Content-Type': 'application/json'},
+      );
+
+      debugPrint('Response Status: ${response.statusCode}');
+      debugPrint('Response Body: ${response.body}');
+
+      if (response.statusCode == 200) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Profile updated successfully')),
+        );
+        Navigator.pop(context);
+      } else {
+        throw Exception('Failed to update profile.');
+      }
+    } catch (e) {
+      debugPrint('Error updating profile: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to update profile: $e')),
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    if (isLoading) {
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
+
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
-        backgroundColor: Color(0xFFCE815E),
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back),
-          onPressed: () => Navigator.pop(context),
-          color: Colors.black,
-        ),
-        title: Text(
-          'Edit Profile',
-          style: TextStyle(color: Colors.white),
-        ),
+        backgroundColor: const Color(0xFFCE815E),
+        title: const Text('Edit Profile'),
       ),
       body: SingleChildScrollView(
-        child: Padding(
-          padding: EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16.0),
+        child: Form(
+          key: _formKey,
           child: Column(
             children: [
-              
-              Center(
-                child: Stack(
-                  children: [
-                    CircleAvatar(
-                      radius: 40,
-                      backgroundColor: Colors.grey[300],
-                      child: _imagePath != null
-                          ? ClipOval(
-                              child: Image.file(
-                                File(_imagePath!),
-                                width: 80,
-                                height: 80,
-                                fit: BoxFit.cover,
-                              ),
-                            )
-                          : Icon(
-                              Icons.person_outline,
-                              size: 40,
-                              color: Colors.grey[600],
-                            ),
-                    ),
-                    Positioned(
-                      right: -10,
-                      bottom: -10,
-                      child: IconButton(
-                        icon: Icon(
-                          Icons.add_circle,
-                          color: Color(0xFFCE815E),
-                          size: 30,
-                        ),
-                        onPressed: () => _showPhotoOptions(context),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(height: 20),
-              // Form Fields
               _buildInputField(
+                controller: usernameController,
                 icon: Icons.person_outline,
-                label: 'Username : Nama Pengguna',
+                label: 'Username',
               ),
               _buildInputField(
+                controller: emailController,
                 icon: Icons.email_outlined,
-                label: 'Email : Email Pengguna',
+                label: 'Email',
               ),
               _buildInputField(
+                controller: phoneController,
                 icon: Icons.phone_outlined,
-                label: 'No Telp : 082134538271',
+                label: 'No Telp',
               ),
               _buildInputField(
+                controller: addressController,
                 icon: Icons.location_on_outlined,
-                label: 'Alamat : Alamat Pengguna',
+                label: 'Alamat',
               ),
               _buildInputField(
+                controller: genderController,
                 icon: Icons.person,
-                label: 'Jenis Kelamin : Laki - laki',
+                label: 'Jenis Kelamin',
               ),
               _buildInputField(
+                controller: heightController,
                 icon: Icons.height,
-                label: 'Tinggi badan : 198 cm',
+                label: 'Tinggi Badan',
+                isNumber: true,
               ),
               _buildInputField(
+                controller: weightController,
                 icon: Icons.monitor_weight_outlined,
-                label: 'Berat badan : 87 kg',
+                label: 'Berat Badan',
+                isNumber: true,
               ),
               _buildInputField(
+                controller: ageController,
                 icon: Icons.cake_outlined,
-                label: 'Usia : 70 tahun',
+                label: 'Usia',
+                isNumber: true,
               ),
-              SizedBox(height: 20),
-              // Save Button
-              Container(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: () {
-                    // Save functionality
-                  },
-                  child: Text(
-                    'SIMPAN',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(0xFFCE815E),
-                    padding: EdgeInsets.symmetric(vertical: 15),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: () {
+                  if (_formKey.currentState!.validate()) {
+                    _updateProfile();
+                  }
+                },
+                child: const Text('SIMPAN'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFFCE815E),
+                  padding: const EdgeInsets.symmetric(vertical: 15),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
                   ),
                 ),
               ),
@@ -226,103 +216,36 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   }
 
   Widget _buildInputField({
+    required TextEditingController controller,
     required IconData icon,
     required String label,
+    bool isNumber = false,
   }) {
     return Container(
-      margin: EdgeInsets.only(bottom: 12),
+      margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(8),
       ),
-      child: TextField(
+      child: TextFormField(
+        controller: controller,
+        keyboardType: isNumber ? TextInputType.number : TextInputType.text,
         decoration: InputDecoration(
-          prefixIcon: Icon(
-            icon,
-            color: Colors.grey,
-          ),
+          prefixIcon: Icon(icon, color: Colors.grey),
           hintText: label,
-          hintStyle: TextStyle(
-            color: Colors.grey[400],
-          ),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(8),
             borderSide: BorderSide.none,
           ),
           filled: true,
           fillColor: Colors.white,
-          contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         ),
-      ),
-    );
-  }
-}
-
-class CameraView extends StatefulWidget {
-  @override
-  _CameraViewState createState() => _CameraViewState();
-}
-
-class _CameraViewState extends State<CameraView> {
-  late Future<void> _initializeCameraFuture;
-  late CameraController _cameraController;
-
-  @override
-  void initState() {
-    super.initState();
-    _initializeCamera();
-  }
-
-  Future<void> _initializeCamera() async {
-    try {
-      final cameras = await availableCameras();
-      final firstCamera = cameras.first;
-
-      _cameraController = CameraController(
-        firstCamera,
-        ResolutionPreset.medium,
-      );
-
-      _initializeCameraFuture = _cameraController.initialize();
-      setState(() {});
-    } catch (e) {
-      debugPrint('Error initializing camera: $e');
-    }
-  }
-
-  @override
-  void dispose() {
-    _cameraController.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Take a Picture')),
-      body: FutureBuilder<void>(
-        future: _initializeCameraFuture,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.done) {
-            return CameraPreview(_cameraController);
-          } else {
-            return const Center(child: CircularProgressIndicator());
+        validator: (value) {
+          if (value == null || value.isEmpty) {
+            return 'Field cannot be empty';
           }
+          return null;
         },
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          try {
-            await _initializeCameraFuture;
-            final image = await _cameraController.takePicture();
-            if (!mounted) return;
-
-            Navigator.pop(context, image.path);
-          } catch (e) {
-            debugPrint('Error: $e');
-          }
-        },
-        child: const Icon(Icons.camera_alt),
       ),
     );
   }
