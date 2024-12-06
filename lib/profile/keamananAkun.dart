@@ -1,13 +1,66 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sembilan_nih/profile/ubahEmail.dart';
 import 'package:sembilan_nih/profile/ubahNoTelepon.dart';
 import 'package:sembilan_nih/profile/ubahPassword.dart';
 
-class ProfileScreenAkun extends StatelessWidget {
+class ProfileScreenAkun extends StatefulWidget {
   const ProfileScreenAkun({Key? key}) : super(key: key);
 
   @override
+  State<ProfileScreenAkun> createState() => _ProfileScreenAkunState();
+}
+
+class _ProfileScreenAkunState extends State<ProfileScreenAkun> {
+  Map<String, dynamic>? userData;
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    validateAndFetchUserData();
+  }
+
+  Future<void> validateAndFetchUserData() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final loggedInUserId = prefs.getInt('userId');
+
+      if (loggedInUserId == null) {
+        throw Exception('ID pengguna tidak ditemukan di session.');
+      }
+
+      final response = await http.get(
+        Uri.parse('http://10.0.2.2:8000/api/pelanggan/$loggedInUserId'),
+      );
+
+      if (response.statusCode == 200) {
+        setState(() {
+          userData = json.decode(response.body)['data'];
+          isLoading = false;
+        });
+      } else {
+        throw Exception('Gagal mengambil data pengguna');
+      }
+    } catch (e) {
+      setState(() {
+        userData = {'error': e.toString()};
+        isLoading = false;
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
+    if (isLoading) {
+      return const Scaffold(
+        backgroundColor: Colors.black,
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
+
     return Scaffold(
       backgroundColor: Colors.black,
       body: Column(
@@ -30,7 +83,7 @@ class ProfileScreenAkun extends StatelessWidget {
                     children: [
                       IconButton(
                         icon: const Icon(Icons.arrow_back),
-                        iconSize: 28, 
+                        iconSize: 28,
                         onPressed: () {
                           Navigator.pop(context);
                         },
@@ -54,18 +107,18 @@ class ProfileScreenAkun extends StatelessWidget {
                   child: Icon(Icons.person, size: 45, color: Colors.white),
                 ),
                 const SizedBox(height: 12),
-                const Text(
-                  'Nama Pengguna',
-                  style: TextStyle(
+                Text(
+                  userData?['username'] ?? 'Username',
+                  style: const TextStyle(
                     color: Colors.white,
                     fontSize: 18,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
                 const SizedBox(height: 4),
-                const Text(
-                  'Email Pengguna',
-                  style: TextStyle(
+                Text(
+                  userData?['email_pelanggan'] ?? 'Email Pengguna',
+                  style: const TextStyle(
                     color: Colors.white,
                     fontSize: 14,
                   ),
@@ -108,7 +161,7 @@ class ProfileScreenAkun extends StatelessWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const ChangeEmailScreen() ,
+                        builder: (context) => const ChangeEmailScreen(),
                       ),
                     );
                   },
