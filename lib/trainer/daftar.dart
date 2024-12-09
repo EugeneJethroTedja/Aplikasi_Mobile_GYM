@@ -4,7 +4,6 @@ import 'package:http/http.dart' as http;
 import 'trainer.dart';
 import 'status.dart';
 import 'package:qr_flutter/qr_flutter.dart';
-import 'dart:convert';
 
 class DaftarScreen extends StatefulWidget {
   final Trainer trainer;
@@ -249,10 +248,51 @@ class QRGeneratorScreen extends StatelessWidget {
 
   const QRGeneratorScreen({super.key, required this.trainer});
 
+  Future<void> submitTransaction(BuildContext context) async {
+    try {
+      final now = DateTime.now();
+      final dateStr = "${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}";
+
+      final transactionData = {
+        'id_pemesanan': 9,
+        'tanggal_transaksi': dateStr,
+        'total_tagihan': trainer.fee,
+      };
+
+      final response = await http.post(
+        Uri.parse('http://10.0.2.2:8000/api/transaksi/create'),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode(transactionData),
+      );
+
+      if (response.statusCode == 201) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Transaksi berhasil!')),
+        );
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => StatusScreen(trainer: trainer),
+          ),
+        );
+      } else {
+        final responseData = json.decode(response.body);
+        print('Error response: $responseData');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Gagal menyimpan transaksi: ${responseData['message']}')),
+        );
+      }
+    } catch (e) {
+      print('Error submitting transaction: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Terjadi kesalahan.')),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    String paymentData =
-        'Nama: ${trainer.name}, Biaya: ${trainer.fee}, Spesialis: ${trainer.specialization}';
+    String paymentData = 'Nama: ${trainer.name}, Biaya: ${trainer.fee}, Spesialis: ${trainer.specialization}';
 
     return Scaffold(
       appBar: AppBar(
@@ -275,44 +315,35 @@ class QRGeneratorScreen extends StatelessWidget {
             Container(
               decoration: BoxDecoration(
                 color: Colors.white,
-                borderRadius: BorderRadius.circular(16), 
+                borderRadius: BorderRadius.circular(16),
               ),
-              padding: const EdgeInsets.all(16), 
+              padding: const EdgeInsets.all(16),
               child: QrImageView(
-                data: paymentData,  
+                data: paymentData,
                 version: QrVersions.auto,
-                size: 200.0,  
-                backgroundColor: Colors.white,  
+                size: 200.0,
+                backgroundColor: Colors.white,
               ),
             ),
             const SizedBox(height: 16),
-            _buildNextButton(context),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF9E5F00),
+                padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
+              ),
+              onPressed: () {
+                submitTransaction(context);
+              },
+              child: const Text(
+                'Lanjutkan',
+                style: TextStyle(color: Colors.white, fontSize: 16),
+              ),
+            ),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _buildNextButton(BuildContext context) {
-    return ElevatedButton(
-      style: ElevatedButton.styleFrom(
-        backgroundColor: const Color(0xFF9E5F00),
-        padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8.0),
-        ),
-      ),
-      onPressed: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => StatusScreen(trainer: trainer),
-          ),
-        );
-      },
-      child: const Text(
-        'Lanjutkan',
-        style: TextStyle(color: Colors.white, fontSize: 16),
       ),
     );
   }
