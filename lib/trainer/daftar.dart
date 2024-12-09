@@ -1,11 +1,12 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:qr_flutter/qr_flutter.dart';
-import 'package:sembilan_nih/trainer/trainer.dart';
+import 'package:http/http.dart' as http;
+import 'trainer.dart';
 import 'status.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 
 class DaftarScreen extends StatefulWidget {
   final Trainer trainer;
-
   const DaftarScreen({super.key, required this.trainer});
 
   @override
@@ -15,6 +16,56 @@ class DaftarScreen extends StatefulWidget {
 class _DaftarScreenState extends State<DaftarScreen> {
   String? selectedDigitalPayment = '-';
   String? selectedBankPayment = '-';
+
+  Future<void> submitOrder() async {
+    try {
+      final now = DateTime.now();
+      final dateStr = "${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}";
+
+      final orderData = {
+        'id_layanan': 6,
+        'id_pelanggan': 13,
+        'biaya_pesanan': widget.trainer.fee,
+        'tanggal_pesanan': dateStr,
+        'digital_payment': selectedDigitalPayment ?? '-',
+        'bank_payment': selectedBankPayment ?? '-',
+        'id_trainer': widget.trainer.id,
+        'id_alat': null,
+        'id_kelas': null,
+      };
+
+      print('Submitting order with data: ${jsonEncode(orderData)}');
+
+      final response = await http.post(
+        Uri.parse('http://10.0.2.2:8000/api/pemesanan/create'),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode(orderData),
+      );
+
+      if (response.statusCode == 201) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Pemesanan berhasil!')),
+        );
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => QRGeneratorScreen(trainer: widget.trainer),
+          ),
+        );
+      } else {
+        final responseData = json.decode(response.body);
+        print('Error response: $responseData');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Gagal menyimpan pemesanan: ${responseData['message']}')),
+        );
+      }
+    } catch (e) {
+      print('Error submitting order: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Terjadi kesalahan.')),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -153,10 +204,7 @@ class _DaftarScreenState extends State<DaftarScreen> {
           ),
           value: selectedValue,
           items: items.map((String value) {
-            return DropdownMenuItem<String>(
-              value: value,
-              child: Text(value),
-            );
+            return DropdownMenuItem<String>(value: value, child: Text(value));
           }).toList(),
           onChanged: onChanged,
         ),
@@ -177,12 +225,7 @@ class _DaftarScreenState extends State<DaftarScreen> {
         ),
         onPressed: () {
           if (selectedDigitalPayment != '-' || selectedBankPayment != '-') {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => QRGeneratorScreen(trainer: widget.trainer),
-              ),
-            );
+            submitOrder();
           } else {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
@@ -205,10 +248,51 @@ class QRGeneratorScreen extends StatelessWidget {
 
   const QRGeneratorScreen({super.key, required this.trainer});
 
+  Future<void> submitTransaction(BuildContext context) async {
+    try {
+      final now = DateTime.now();
+      final dateStr = "${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}";
+
+      final transactionData = {
+        'id_pemesanan': 9,
+        'tanggal_transaksi': dateStr,
+        'total_tagihan': trainer.fee,
+      };
+
+      final response = await http.post(
+        Uri.parse('http://10.0.2.2:8000/api/transaksi/create'),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode(transactionData),
+      );
+
+      if (response.statusCode == 201) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Transaksi berhasil!')),
+        );
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => StatusScreen(trainer: trainer),
+          ),
+        );
+      } else {
+        final responseData = json.decode(response.body);
+        print('Error response: $responseData');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Gagal menyimpan transaksi: ${responseData['message']}')),
+        );
+      }
+    } catch (e) {
+      print('Error submitting transaction: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Terjadi kesalahan.')),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    String paymentData =
-        'Nama: ${trainer.name}, Biaya: ${trainer.fee}, Spesialis: ${trainer.specialization}';
+    String paymentData = 'Nama: ${trainer.name}, Biaya: ${trainer.fee}, Spesialis: ${trainer.specialization}';
 
     return Scaffold(
       appBar: AppBar(
@@ -230,10 +314,10 @@ class QRGeneratorScreen extends StatelessWidget {
             const SizedBox(height: 16),
             Container(
               decoration: BoxDecoration(
-                color: Colors.white, // Warna latar belakang
-                borderRadius: BorderRadius.circular(16), // Sudut lengkung
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
               ),
-              padding: const EdgeInsets.all(16), // Jarak di dalam container
+              padding: const EdgeInsets.all(16),
               child: QrImageView(
                 data: paymentData,
                 version: QrVersions.auto,
@@ -242,33 +326,24 @@ class QRGeneratorScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 16),
-            _buildNextButton(context),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF9E5F00),
+                padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
+              ),
+              onPressed: () {
+                submitTransaction(context);
+              },
+              child: const Text(
+                'Lanjutkan',
+                style: TextStyle(color: Colors.white, fontSize: 16),
+              ),
+            ),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _buildNextButton(BuildContext context) {
-    return ElevatedButton(
-      style: ElevatedButton.styleFrom(
-        backgroundColor: const Color(0xFF9E5F00),
-        padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8.0),
-        ),
-      ),
-      onPressed: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => StatusScreen(trainer: trainer),
-          ),
-        );
-      },
-      child: const Text(
-        'Lanjutkan',
-        style: TextStyle(color: Colors.white, fontSize: 16),
       ),
     );
   }

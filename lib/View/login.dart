@@ -4,6 +4,7 @@ import 'package:sembilan_nih/View/home.dart';
 import 'package:sembilan_nih/View/register.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({super.key});
@@ -34,40 +35,55 @@ class _LoginViewState extends State<LoginView> {
   }
 
   Future<void> loginUser() async {
-    final url = Uri.parse('http://10.0.2.2:8000/api/pelanggan/login');
+  final url = Uri.parse('http://10.0.2.2:8000/api/pelanggan/login');
 
-    try {
-      final response = await http.post(
-        url,
-        body: json.encode({
-          'username': usernameController.text,
-          'password': passwordController.text,
-        }),
-        headers: {'Content-Type': 'application/json'},
-      );
+  try {
+    final response = await http.post(
+      url,
+      body: json.encode({
+        'username': usernameController.text,
+        'password': passwordController.text,
+      }),
+      headers: {'Content-Type': 'application/json'},
+    );
 
-      print('Status Code: ${response.statusCode}');
-      print('Response Body: ${response.body}');
+    print('Status Code: ${response.statusCode}');
+    print('Response Body: ${response.body}');
 
-      if (response.statusCode == 200) {
-        Map<String, dynamic> responseData = json.decode(response.body);
-        print(responseData);
-        if (responseData['message'] == 'Login berhasil') {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (_) => const HomeView()),
-          );
+    if (response.statusCode == 200) {
+      Map<String, dynamic> responseData = json.decode(response.body);
+      print(responseData);
+
+      if (responseData['message'] == 'Login berhasil') {
+        // Ambil ID pengguna dari respons API
+        final userId = responseData['data']['id_pelanggan']; // Sesuaikan dengan struktur respons API
+        print('ID pengguna yang login: $userId');
+
+        if (userId != null) {
+          // Simpan ID pengguna ke SharedPreferences
+          final prefs = await SharedPreferences.getInstance();
+          await prefs.setInt('userId', userId);
+          print('ID pengguna berhasil disimpan di SharedPreferences.');
         } else {
-          showAlertDialog(context, 'Login Gagal', responseData['message'] ?? 'Username atau password salah');
+          throw Exception('ID pengguna tidak ditemukan di respons API.');
         }
-      } else {
-        showAlertDialog(context, 'Login Gagal', 'Terjadi kesalahan saat login');
-      }
-    } catch (e) {
-      showAlertDialog(context, 'Error', 'Tidak dapat terhubung ke server');
-    }
-  }
 
+        // Navigasi ke HomeView setelah login berhasil
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => const HomeView()),
+        );
+      } else {
+        showAlertDialog(context, 'Login Gagal', responseData['message'] ?? 'Username atau password salah');
+      }
+    } else {
+      showAlertDialog(context, 'Login Gagal', 'Terjadi kesalahan saat login');
+    }
+  } catch (e) {
+    print('Error saat login: $e');
+    showAlertDialog(context, 'Error', 'Tidak dapat terhubung ke server');
+  }
+}
   @override
   Widget build(BuildContext context) {
     return Scaffold(

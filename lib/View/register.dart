@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:sembilan_nih/View/login.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class RegisterView extends StatefulWidget {
   const RegisterView({super.key});
@@ -57,12 +58,13 @@ class _RegisterViewState extends State<RegisterView> {
         'umur_pelanggan': umurController.text,
         'email_pelanggan': emailController.text,
         'noTelp_pelanggan': notelpController.text,
-        'gender': selectedGender,
         'username': loginUsernameController.text,
         'password': loginPasswordController.text,
+        'gender': selectedGender,
       }),
       headers: {
         'Content-Type': 'application/json',
+        'Accept' : 'application/json',
       },
     );
 
