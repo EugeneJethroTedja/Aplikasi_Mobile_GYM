@@ -1,8 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+
+// class KelasPage extends StatefulWidget {
+//   @override
+//   _KelasPageState createState() => _KelasPageState();
+// }
 
 class KelasPage extends StatefulWidget {
+  const KelasPage({super.key});
+
   @override
-  _KelasPageState createState() => _KelasPageState();
+  State<KelasPage> createState() => _KelasPageState();
 }
 
 class _KelasPageState extends State<KelasPage> {
@@ -11,8 +19,7 @@ class _KelasPageState extends State<KelasPage> {
       "name": "Body Combat",
       "specialty": "Alif",
       "date": "28-10-2024",
-      "price": "89.000",
-      "isCompleted": false,
+      "price": "89000",
       "review": null,
       "imagePath": "assets/images/Kelas/body-combat.png",
     },
@@ -20,8 +27,7 @@ class _KelasPageState extends State<KelasPage> {
       "name": "Upper Chest",
       "specialty": "John Cena",
       "date": "15-10-2024",
-      "price": "96.000",
-      "isCompleted": true,
+      "price": "96000",
       "review": 4,
       "imagePath": "assets/images/Kelas/upper-chest.png",
     },
@@ -29,8 +35,7 @@ class _KelasPageState extends State<KelasPage> {
       "name": "Aerobik",
       "specialty": "Ade Rai",
       "date": "07-10-2024",
-      "price": "78.000",
-      "isCompleted": true,
+      "price": "78000",
       "review": 3,
       "imagePath": "assets/images/Kelas/aerobik.png",
     },
@@ -38,8 +43,7 @@ class _KelasPageState extends State<KelasPage> {
       "name": "Muay Thai",
       "specialty": "John Wick",
       "date": "28-09-2024",
-      "price": "109.000",
-      "isCompleted": true,
+      "price": "109000",
       "review": 5,
       "imagePath": "assets/images/Kelas/muay-thai.png",
     },
@@ -49,7 +53,6 @@ class _KelasPageState extends State<KelasPage> {
     setState(() {
       for (var trainer in trainers) {
         if (trainer['name'] == trainerName) {
-          trainer['isCompleted'] = true;
           trainer['review'] = review;
           break;
         }
@@ -80,7 +83,6 @@ class _KelasPageState extends State<KelasPage> {
               trainer['date'],
               trainer['price'],
               trainer['imagePath'],
-              trainer['isCompleted'],
               trainer['review'],
             );
           }).toList(),
@@ -95,8 +97,10 @@ class _KelasPageState extends State<KelasPage> {
       String date,
       String price,
       String imagePath,
-      bool isCompleted,
       int? review) {
+
+    String formattedPrice = NumberFormat('#,###', 'id_ID').format(int.parse(price));
+
     return Card(
       color: Colors.white,
       margin: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
@@ -150,14 +154,14 @@ class _KelasPageState extends State<KelasPage> {
                         ),
                       ),
                       Text(
-                        "Biaya        : Rp. $price",
+                        "Biaya        : Rp. $formattedPrice",
                         style: const TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
                           color: Colors.black87,
                         ),
                       ),
-                      if (isCompleted && review != null)
+                      if (review != null)
                         Padding(
                           padding: const EdgeInsets.only(bottom: 5),
                           child: Text(
@@ -178,7 +182,7 @@ class _KelasPageState extends State<KelasPage> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                if (isCompleted && review != null)
+                if (review != null)
                   Row(
                     children: [
                       const Icon(
@@ -204,7 +208,7 @@ class _KelasPageState extends State<KelasPage> {
                     color: Colors.black87,
                     )),
                     const SizedBox(height: 10),
-                if (!isCompleted)
+                if (review == null)
                   ElevatedButton(
                     onPressed: () {
                       Navigator.push(
