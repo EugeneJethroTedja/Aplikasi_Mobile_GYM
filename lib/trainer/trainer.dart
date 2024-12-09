@@ -51,6 +51,7 @@ class TrainerScreen extends StatefulWidget {
 class _TrainerScreenState extends State<TrainerScreen> {
   List<Trainer> trainers = [];
   bool isLoading = true;
+  int _selectedIndex = 1;
 
   @override
   void initState() {
@@ -84,6 +85,19 @@ class _TrainerScreenState extends State<TrainerScreen> {
         isLoading = false;
         trainers = [];
       });
+    }
+  }
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+    if (index == 0) {
+      Navigator.of(context).pushNamed('/detail_pesanan');
+    } else if (index == 2) {
+      Navigator.of(context).pushNamed('/profile');
+    } else {
+      Navigator.of(context).pushNamed('/home');
     }
   }
 
@@ -189,6 +203,27 @@ class _TrainerScreenState extends State<TrainerScreen> {
                       },
                     ),
             ),
+      bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: const Color.fromARGB(255, 158, 95, 0),
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.list, color: Colors.black),
+            label: 'Pesanan',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home, color: Colors.black),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person, color: Colors.black),
+            label: 'Profile',
+          ),
+        ],
+        currentIndex: _selectedIndex,
+        selectedItemColor: Colors.black,
+        unselectedItemColor: Colors.black54,
+        onTap: _onItemTapped,
+      ),
     );
   }
 }

@@ -24,7 +24,7 @@ class MyApp extends StatelessWidget {
         scaffoldBackgroundColor: Colors.black,
       ),
       routes: {
-        '/': (context) => const HomeView(),
+        '/home': (context) => const HomeView(),
         '/detail_pesanan': (context) => const DetailPesananPage(),
         '/profile': (context) => const ProfileScreen(),
         '/trainer': (context) => const TrainerScreen(),
@@ -129,6 +129,8 @@ class _HomeViewState extends State<HomeView> {
       Navigator.of(context).pushNamed('/detail_pesanan');
     } else if (index == 2) {
       Navigator.of(context).pushNamed('/profile');
+    } else {
+      Navigator.of(context).pushNamed('/home');
     }
   }
 
