@@ -43,7 +43,6 @@ class _DaftarScreenState extends State<DaftarScreen> {
         body: json.encode(orderData),
       );
 
-      // Pastikan body response adalah JSON
       if (response.statusCode == 201) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Pemesanan berhasil!')),
@@ -55,7 +54,6 @@ class _DaftarScreenState extends State<DaftarScreen> {
           ),
         );
       } else {
-        // Menangani error dengan response yang sesuai
         final responseData = json.decode(response.body);
         print('Error response: $responseData');
         ScaffoldMessenger.of(context).showSnackBar(
@@ -69,7 +67,6 @@ class _DaftarScreenState extends State<DaftarScreen> {
       );
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
