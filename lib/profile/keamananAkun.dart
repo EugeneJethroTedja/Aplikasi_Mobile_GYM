@@ -37,14 +37,25 @@ class _ProfileScreenAkunState extends State<ProfileScreenAkun> {
       );
 
       if (response.statusCode == 200) {
+        final data = json.decode(response.body)['data'];
+        
+        final profilePicture = data['profile_picture'];
+        data['profile_picture'] =
+            profilePicture != null && !profilePicture.startsWith('storage/')
+                ? 'storage/$profilePicture'
+                : profilePicture;
+
+        debugPrint('Profile picture URL: ${data['profile_picture']}');
+
         setState(() {
-          userData = json.decode(response.body)['data'];
+          userData = data;
           isLoading = false;
         });
       } else {
         throw Exception('Gagal mengambil data pengguna');
       }
     } catch (e) {
+      debugPrint('Error di validateAndFetchUserData: $e');
       setState(() {
         userData = {'error': e.toString()};
         isLoading = false;
@@ -101,10 +112,39 @@ class _ProfileScreenAkunState extends State<ProfileScreenAkun> {
                   ),
                 ),
                 const SizedBox(height: 20),
-                const CircleAvatar(
+                CircleAvatar(
                   radius: 45,
-                  backgroundColor: Colors.red,
-                  child: Icon(Icons.person, size: 45, color: Colors.white),
+                  backgroundColor: Colors.grey[300],
+                  child: userData?['profile_picture'] != null
+                      ? ClipOval(
+                          child: Image.network(
+                            'http://10.0.2.2:8000/uploads/profile_pictures/${userData?['profile_picture']?.split('/').last}',
+                            width: 90,
+                            height: 90,
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) {
+                              debugPrint('Error loading image: $error');
+                              return const Icon(
+                                Icons.person,
+                                size: 45,
+                                color: Colors.white,
+                              );
+                            },
+                            loadingBuilder: (context, child, loadingProgress) {
+                              if (loadingProgress == null) return child;
+                              return const Center(
+                                child: CircularProgressIndicator(
+                                  color: Colors.white,
+                                ),
+                              );
+                            },
+                          ),
+                        )
+                      : const Icon(
+                          Icons.person,
+                          size: 45,
+                          color: Colors.white,
+                        ),
                 ),
                 const SizedBox(height: 12),
                 Text(
