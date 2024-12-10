@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'trainer.dart'; // Pastikan Trainer class didefinisikan dengan benar
-import 'trainer_pdf.dart'; // Import untuk generatePdf()
+import 'trainer.dart'; 
+import 'trainer_pdf.dart'; 
 
 class StatusScreen extends StatefulWidget {
   final Trainer trainer;
@@ -74,6 +74,11 @@ class _StatusScreenState extends State<StatusScreen> {
               isLoading = false;
             });
           }
+        if (data.containsKey('data') && data['data'].containsKey('bank_payment')) {
+          setState(() {
+            paymentMethod = data['data']['bank_payment'];
+            isLoading = false;
+          });
         } else {
           setState(() {
             paymentMethod = 'Data pemesanan tidak ditemukan';
@@ -116,6 +121,11 @@ class _StatusScreenState extends State<StatusScreen> {
             const SizedBox(height: 16),
             isLoading
                 ? const CircularProgressIndicator()
+              fit: BoxFit.contain, 
+            ),
+            const SizedBox(height: 16),
+            isLoading
+                ? CircularProgressIndicator() 
                 : Card(
                     color: const Color.fromARGB(255, 252, 241, 230),
                     shape: RoundedRectangleBorder(
@@ -155,6 +165,9 @@ class _StatusScreenState extends State<StatusScreen> {
                                   ),
                                   onPressed: () async {
                                     print('Products: $soldProducts');
+                                    String transactionId = "123456789"; 
+                                    int totalPrice = widget.trainer.fee; 
+
                                     if (paymentMethod.isNotEmpty) {
                                       await generatePdf(
                                         context,

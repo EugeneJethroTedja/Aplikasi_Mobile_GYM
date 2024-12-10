@@ -47,6 +47,7 @@ class KelasScreen extends StatefulWidget {
 class _KelasScreenState extends State<KelasScreen> {
   List<Kelas> kelases = [];
   bool isLoading = true;
+  int _selectedIndex = 1;
 
   @override
   void initState() {
@@ -79,6 +80,19 @@ class _KelasScreenState extends State<KelasScreen> {
         isLoading = false;
         kelases = [];
       });
+    }
+  }
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+    if (index == 0) {
+      Navigator.of(context).pushNamed('/detail_pesanan');
+    } else if (index == 1) {
+      Navigator.of(context).pushNamed('/home');
+    } else if (index == 2) {
+      Navigator.of(context).pushNamed('/profile');
     }
   }
 
@@ -184,6 +198,27 @@ class _KelasScreenState extends State<KelasScreen> {
                       },
                     ),
             ),
+      bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: const Color.fromARGB(255, 158, 95, 0),
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.list, color: Colors.black),
+            label: 'Pesanan',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home, color: Colors.black),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person, color: Colors.black),
+            label: 'Profile',
+          ),
+        ],
+        currentIndex: _selectedIndex,
+        selectedItemColor: Colors.black,
+        unselectedItemColor: Colors.black54,
+        onTap: _onItemTapped,
+      ),
     );
   }
 }

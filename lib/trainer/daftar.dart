@@ -5,6 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'trainer.dart';
 import 'status.dart';
 import 'package:qr_flutter/qr_flutter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class DaftarScreen extends StatefulWidget {
   final Trainer trainer;
@@ -30,14 +31,13 @@ class _DaftarScreenState extends State<DaftarScreen> {
         );
         return;
       }
-
       final now = DateTime.now();
       final dateStr =
           "${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')} ${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}:${now.second.toString().padLeft(2, '0')}";
       await prefs.setString('dateStr', dateStr);
 
       final orderData = {
-        'id_layanan': 6,
+        'id_layanan': 4,
         'id_pelanggan': loggedInUserId,
         'biaya_pesanan': widget.trainer.fee,
         'tanggal_pesanan': dateStr,
@@ -233,29 +233,35 @@ class _DaftarScreenState extends State<DaftarScreen> {
 
   Widget _buildProceedButton(BuildContext context) {
     return Align(
-      alignment: Alignment.bottomRight,
-      child: ElevatedButton(
-        style: ElevatedButton.styleFrom(
-          backgroundColor: const Color(0xFF9E5F00),
-          padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8.0),
-          ),
-        ),
-        onPressed: () {
-          if (selectedDigitalPayment != '-' || selectedBankPayment != '-') {
-            submitOrder();
-          } else {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Harap pilih metode pembayaran.'),
+      alignment: Alignment.bottomCenter, // Posisikan tombol di tengah bawah
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0), // Padding untuk jarak dari tepi layar
+        child: SizedBox(
+          width: double.infinity, // Lebar mengikuti lebar container putih
+          child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF9E5F00), // Warna tombol sama
+              padding: const EdgeInsets.symmetric(vertical: 12.0), // Padding vertikal tombol
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8.0),
               ),
-            );
-          }
-        },
-        child: const Text(
-          'Bayar',
-          style: TextStyle(color: Colors.white, fontSize: 16),
+            ),
+            onPressed: () {
+              if (selectedDigitalPayment != '-' || selectedBankPayment != '-') {
+                submitOrder();
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Harap pilih metode pembayaran.'),
+                  ),
+                );
+              }
+            },
+            child: const Text(
+              'Bayar',
+              style: TextStyle(color: Colors.white, fontSize: 16),
+            ),
+          ),
         ),
       ),
     );

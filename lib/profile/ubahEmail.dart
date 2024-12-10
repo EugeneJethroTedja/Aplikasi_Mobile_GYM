@@ -30,7 +30,6 @@ class _ChangeEmailScreenState extends State<ChangeEmailScreen> {
 
   Future<void> _updateEmail() async {
     try {
-      // Ambil ID pengguna dari SharedPreferences
       final prefs = await SharedPreferences.getInstance();
       final userId = prefs.getInt('userId');
       if (userId == null) {
