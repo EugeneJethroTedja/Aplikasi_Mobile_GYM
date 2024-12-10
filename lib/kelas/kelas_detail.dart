@@ -3,10 +3,30 @@ import 'daftar_kelas.dart';
 import 'kelas.dart';
 import 'chat_kelas.dart';
 
-class KelasDetailScreen extends StatelessWidget {
+class KelasDetailScreen extends StatefulWidget {
   final Kelas kelas;
 
   const KelasDetailScreen({super.key, required this.kelas});
+
+  @override
+  _KelasDetailScreenState createState() => _KelasDetailScreenState();
+}
+
+class _KelasDetailScreenState extends State<KelasDetailScreen> {
+  int _selectedIndex = 1;
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+    if (index == 0) {
+      Navigator.of(context).pushNamed('/detail_pesanan');
+    } else if (index == 1) {
+      Navigator.of(context).pushNamed('/home');
+    } else if (index == 2) {
+      Navigator.of(context).pushNamed('/profile');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -40,7 +60,7 @@ class KelasDetailScreen extends StatelessWidget {
                   ClipRRect(
                     borderRadius: BorderRadius.circular(16.0),
                     child: Image.asset(
-                      kelas.imageUrl,
+                      widget.kelas.imageUrl,
                       width: double.infinity,
                       height: 200,
                       fit: BoxFit.cover,
@@ -48,7 +68,7 @@ class KelasDetailScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    kelas.name,
+                    widget.kelas.name,
                     style: const TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 24,
@@ -56,42 +76,32 @@ class KelasDetailScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Kelas full sixpack menghadirkan banyak sekali manfaat tidak hanya dari fasilitas yang kita miliki namun kita juga menghadirkan trainer berpengalaman yang siap memberikan ilmu-ilmu yang berguna untuk badan Anda.',
-                    style: TextStyle(fontSize: 16, color: Colors.black),
+                    'Trainer: ${widget.kelas.trainer}',
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
                   ),
-                  const SizedBox(height: 16),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Trainer: ${kelas.trainer}',
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                        ),
-                      ),
-                      Text(
-                        'Durasi : ${kelas.duration}',
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                        ),
-                      ),
-                      Text(
-                        'Hari    : ${kelas.day}',
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                        ),
-                      ),
-                      Text(
-                        'Harga : ${kelas.fee}',
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                        ),
-                      ),
-                    ],
+                  Text(
+                    'Durasi : ${widget.kelas.duration}',
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
+                  Text(
+                    'Hari    : ${widget.kelas.day}',
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
+                  Text(
+                    'Harga : ${widget.kelas.fee}',
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
                   ),
                   const SizedBox(height: 16),
                   Row(
@@ -109,13 +119,13 @@ class KelasDetailScreen extends StatelessWidget {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => ChatScreen(kelas: kelas),
+                              builder: (context) =>
+                                  ChatScreen(kelas: widget.kelas),
                             ),
                           );
                         },
-                        icon: const Icon(Icons.chat, color: Colors.white,),
-                        label: const Text('Pesan', style: TextStyle(color: Colors.white),),
-                    
+                        icon: const Icon(Icons.chat, color: Colors.white),
+                        label: const Text('Pesan', style: TextStyle(color: Colors.white)),
                       ),
                       ElevatedButton(
                         style: ElevatedButton.styleFrom(
@@ -129,11 +139,12 @@ class KelasDetailScreen extends StatelessWidget {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => DaftarScreen(kelas: kelas),
+                              builder: (context) =>
+                                  DaftarScreen(kelas: widget.kelas),
                             ),
                           );
                         },
-                        child: const Text('Daftar', style: TextStyle(color: Colors.white),),
+                        child: const Text('Daftar', style: TextStyle(color: Colors.white)),
                       ),
                     ],
                   ),
@@ -142,6 +153,27 @@ class KelasDetailScreen extends StatelessWidget {
             ),
           ),
         ),
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: const Color.fromARGB(255, 158, 95, 0),
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.list, color: Colors.black),
+            label: 'Pesanan',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home, color: Colors.black),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person, color: Colors.black),
+            label: 'Profile',
+          ),
+        ],
+        currentIndex: _selectedIndex,
+        selectedItemColor: Colors.black,
+        unselectedItemColor: Colors.black54,
+        onTap: _onItemTapped,
       ),
     );
   }

@@ -3,10 +3,30 @@ import 'daftar.dart';
 import 'trainer.dart';
 import 'chat.dart';
 
-class TrainerDetailScreen extends StatelessWidget {
+class TrainerDetailScreen extends StatefulWidget {
   final Trainer trainer;
 
   const TrainerDetailScreen({super.key, required this.trainer});
+
+  @override
+  _TrainerDetailScreenState createState() => _TrainerDetailScreenState();
+}
+
+class _TrainerDetailScreenState extends State<TrainerDetailScreen> {
+  int _selectedIndex = 1;
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+    if (index == 0) {
+      Navigator.of(context).pushNamed('/detail_pesanan');
+    } else if (index == 2) {
+      Navigator.of(context).pushNamed('/profile');
+    } else if (index == 1){
+      Navigator.of(context).pushNamed('/home');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -36,37 +56,35 @@ class TrainerDetailScreen extends StatelessWidget {
                   ClipRRect(
                     borderRadius: BorderRadius.circular(16.0),
                     child: Image.asset(
-                      trainer.imageUrl,
+                      widget.trainer.imageUrl,
                       width: double.infinity,
                       height: 200,
                       fit: BoxFit.cover,
                     ),
                   ),
                   const SizedBox(height: 16),
-                  // Nama trainer
                   Text(
-                    trainer.name,
+                    widget.trainer.name,
                     style: const TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 24,
                     ),
                   ),
                   const SizedBox(height: 16),
-                  // Detail trainer
                   Text(
-                    'Spesialis: ${trainer.specialization}',
+                    'Spesialis: ${widget.trainer.specialization}',
                     style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
                   Text(
-                    'Durasi   : ${trainer.duration}',
+                    'Durasi   : ${widget.trainer.duration}',
                     style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
                   Text(
-                    'Hari     : ${trainer.day}',
+                    'Hari     : ${widget.trainer.day}',
                     style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
                   Text(
-                    'Biaya    : ${trainer.fee}',
+                    'Biaya    : ${widget.trainer.fee}',
                     style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 16),
@@ -86,12 +104,13 @@ class TrainerDetailScreen extends StatelessWidget {
                             context,
                             MaterialPageRoute(
                               builder: (context) =>
-                                  ChatScreen(trainer: trainer),
+                                  ChatScreen(trainer: widget.trainer),
                             ),
                           );
                         },
-                        icon: const Icon(Icons.chat, color: Colors.white,),
-                        label: const Text('Chat', style: TextStyle(color: Colors.white),),
+                        icon: const Icon(Icons.chat, color: Colors.white),
+                        label: const Text('Chat',
+                            style: TextStyle(color: Colors.white)),
                       ),
                       ElevatedButton(
                         style: ElevatedButton.styleFrom(
@@ -106,11 +125,12 @@ class TrainerDetailScreen extends StatelessWidget {
                             context,
                             MaterialPageRoute(
                               builder: (context) =>
-                                  DaftarScreen(trainer: trainer),
+                                  DaftarScreen(trainer: widget.trainer),
                             ),
                           );
                         },
-                        child: const Text('DAFTAR', style: TextStyle(color: Colors.white),),
+                        child: const Text('DAFTAR',
+                            style: TextStyle(color: Colors.white)),
                       ),
                     ],
                   ),
@@ -119,6 +139,27 @@ class TrainerDetailScreen extends StatelessWidget {
             ),
           ),
         ),
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: const Color.fromARGB(255, 158, 95, 0),
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.list, color: Colors.black),
+            label: 'Pesanan',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home, color: Colors.black),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person, color: Colors.black),
+            label: 'Profile',
+          ),
+        ],
+        currentIndex: _selectedIndex,
+        selectedItemColor: Colors.black,
+        unselectedItemColor: Colors.black54,
+        onTap: _onItemTapped,
       ),
     );
   }
