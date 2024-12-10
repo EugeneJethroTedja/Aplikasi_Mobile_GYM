@@ -10,6 +10,7 @@ import 'package:sembilan_nih/list/list_trainer.dart';
 import 'package:sembilan_nih/list/list_alat.dart';
 import 'package:sembilan_nih/list/list_kelas.dart';
 
+
 void main() {
   runApp(const MyApp());
 }
