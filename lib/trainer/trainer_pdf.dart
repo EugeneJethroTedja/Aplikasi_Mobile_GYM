@@ -31,7 +31,6 @@ Future<void> generatePdf(
       ),
     );
 
-    // Build PDF
     pdf.addPage(
       pw.MultiPage(
         pageTheme: pdfTheme,

@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'alat_detail.dart';
 
 class Alat {
+  final int id;
   final String nameAlat;
   final String deskripsi;
   final int stok;
@@ -11,6 +12,7 @@ class Alat {
   final String imageUrl;
 
   Alat({
+    required this.id,
     required this.nameAlat,
     required this.deskripsi,
     required this.stok,
@@ -20,10 +22,11 @@ class Alat {
 
   factory Alat.fromJson(Map<String, dynamic> json) {
     return Alat(
-      nameAlat: json['namaAlat'] ?? '',
+      id: json['id_alat'] ?? '',
+      nameAlat: json['nameAlat'] ?? '',
       deskripsi: json['deskripsi'] ?? '',
-      stok: json['stok'] ?? '',
-      feeAlat: json['feeAlat'] ?? '',
+      stok: json['stok'] ?? 0,
+      feeAlat: json['feeAlat'] ?? 0,
       imageUrl: json['imageUrl'] ?? 'assets/images/treadmill.jpg',
     );
   }
@@ -39,6 +42,7 @@ class AlatScreen extends StatefulWidget {
 class _AlatScreenState extends State<AlatScreen> {
   List<Alat> alats = [];
   bool isLoading = true;
+  int _selectedIndex = 1;
 
   @override
   void initState() {
@@ -75,6 +79,19 @@ class _AlatScreenState extends State<AlatScreen> {
     }
   }
 
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+    if (index == 0) {
+      Navigator.of(context).pushNamed('/detail_pesanan');
+    } else if (index == 1) {
+      Navigator.of(context).pushNamed('/home');
+    } else if (index == 2) {
+      Navigator.of(context).pushNamed('/profile');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -90,7 +107,8 @@ class _AlatScreenState extends State<AlatScreen> {
               padding: const EdgeInsets.all(16.0),
               child: alats.isEmpty
                   ? const Center(
-                      child: Text('Tidak ada alat tersedia', style: TextStyle(color: Colors.white)),
+                      child: Text('Tidak ada alat tersedia',
+                          style: TextStyle(color: Colors.white)),
                     )
                   : ListView.builder(
                       itemCount: alats.length,
@@ -100,7 +118,8 @@ class _AlatScreenState extends State<AlatScreen> {
                           onTap: () => Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => AlatDetailScreen(alat: alat),
+                              builder: (context) =>
+                                  AlatDetailScreen(alat: alat),
                             ),
                           ),
                           child: Card(
@@ -142,7 +161,8 @@ class _AlatScreenState extends State<AlatScreen> {
                                   ),
                                   const SizedBox(height: 8),
                                   Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
                                     children: [
                                       Text(
                                         'Stok Terkini: ${alat.stok}',
@@ -168,16 +188,19 @@ class _AlatScreenState extends State<AlatScreen> {
                                       Spacer(),
                                       ElevatedButton(
                                         style: ElevatedButton.styleFrom(
-                                          backgroundColor: const Color.fromARGB(255, 158, 95, 0),
+                                          backgroundColor: const Color.fromARGB(
+                                              255, 158, 95, 0),
                                           shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(8.0),
+                                            borderRadius:
+                                                BorderRadius.circular(8.0),
                                           ),
                                         ),
                                         onPressed: () {
                                           Navigator.push(
                                             context,
                                             MaterialPageRoute(
-                                              builder: (context) => AlatDetailScreen(alat: alat),
+                                              builder: (context) =>
+                                                  AlatDetailScreen(alat: alat),
                                             ),
                                           );
                                         },
@@ -196,6 +219,27 @@ class _AlatScreenState extends State<AlatScreen> {
                       },
                     ),
             ),
+      bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: const Color.fromARGB(255, 158, 95, 0),
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.list, color: Colors.black),
+            label: 'Pesanan',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home, color: Colors.black),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person, color: Colors.black),
+            label: 'Profile',
+          ),
+        ],
+        currentIndex: _selectedIndex,
+        selectedItemColor: Colors.black,
+        unselectedItemColor: Colors.black54,
+        onTap: _onItemTapped,
+      ),
     );
   }
 }

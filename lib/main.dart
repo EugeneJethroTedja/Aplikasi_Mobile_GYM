@@ -30,7 +30,7 @@ class MyApp extends StatelessWidget {
         '/trainer': (context) => const TrainerScreen(),
         '/alat': (context) => const AlatScreen(),
         '/kelas': (context) => const KelasScreen(),
-        '/history_trainer': (context) => const TrainerPage(),
+        '/histori': (context) => const TrainerPage(),
         '/history_alat': (context) => const AlatPage(),
         '/history_kelas': (context) => const KelasPage(),
       },

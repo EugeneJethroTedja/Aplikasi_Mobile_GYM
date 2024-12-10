@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'trainer.dart'; // Pastikan Trainer class didefinisikan dengan benar
-import 'trainer_pdf.dart'; // Import untuk generatePdf()
+import 'trainer.dart'; 
+import 'trainer_pdf.dart'; 
 
 class StatusScreen extends StatefulWidget {
   final Trainer trainer;
@@ -44,7 +44,6 @@ class _StatusScreenState extends State<StatusScreen> {
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
 
-        // Cek apakah 'data' berisi 'bank_payment'
         if (data.containsKey('data') && data['data'].containsKey('bank_payment')) {
           setState(() {
             paymentMethod = data['data']['bank_payment'];
@@ -88,11 +87,11 @@ class _StatusScreenState extends State<StatusScreen> {
               'assets/images/LOGO.png',
               width: 350,
               height: 100,
-              fit: BoxFit.contain, // Menampilkan gambar secara proporsional
+              fit: BoxFit.contain, 
             ),
             const SizedBox(height: 16),
             isLoading
-                ? CircularProgressIndicator() // Menampilkan indikator loading jika data belum ada
+                ? CircularProgressIndicator() 
                 : Card(
                     color: const Color.fromARGB(255, 252, 241, 230),
                     shape: RoundedRectangleBorder(
@@ -112,7 +111,6 @@ class _StatusScreenState extends State<StatusScreen> {
                               ),
                             ),
                           ),
-                          // Ikon atau tombol tergantung status
                           status == 'pending'
                               ? IconButton(
                                   icon: const Icon(Icons.refresh),
@@ -131,11 +129,9 @@ class _StatusScreenState extends State<StatusScreen> {
                                     ),
                                   ),
                                   onPressed: () async {
-                                    // Mengambil data dari trainer
-                                    String transactionId = "123456789"; // ID transaksi, bisa dinamis
-                                    int totalPrice = widget.trainer.fee; // Total biaya sesuai biaya trainer
+                                    String transactionId = "123456789"; 
+                                    int totalPrice = widget.trainer.fee; 
 
-                                    // Menunggu paymentMethod tersedia
                                     if (paymentMethod.isNotEmpty) {
                                       await generatePdf(
                                         context,
