@@ -12,7 +12,7 @@ class KelasDetailScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Color.fromARGB(255, 158, 95, 0),
+        backgroundColor: const Color.fromARGB(255, 158, 95, 0),
         title: const Text('Back', style: TextStyle(color: Colors.white)),
         iconTheme: const IconThemeData(
           color: Color.fromARGB(255, 0, 0, 0),
@@ -22,14 +22,10 @@ class KelasDetailScreen extends StatelessWidget {
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Center(
-          child: Container(
-            decoration: BoxDecoration(
-              color: const Color.fromARGB(255, 255, 255, 255),
+          child: Card(
+            color: const Color.fromARGB(255, 252, 255, 255),
+            shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(16.0),
-              border: Border.all(
-                color: Colors.white, // Warna border biru
-                width: 2.0,
-              ),
             ),
             child: Padding(
               padding: const EdgeInsets.all(16.0),
@@ -47,60 +43,41 @@ class KelasDetailScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 16),
+                  
                   Text(
-                    kelas.name,
+                    kelas.nameKelas,
                     style: const TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 24,
                     ),
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 16),
+                  
+                  // Detail Kelas
                   Text(
-                    'Kelas full sixpack menghadirkan banyak sekali manfaat tidak hanya dari fasilitas yang kita miliki namun kita juga menghadirkan trainer berpengalaman yang siap memberikan ilmu-ilmu yang berguna untuk badan Anda.',
-                    style: TextStyle(fontSize: 16, color: Colors.black),
+                    'Trainer  : ${kelas.trainer}',
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  Text(
+                    'Durasi   : ${kelas.durationKelas}',
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  Text(
+                    'Hari     : ${kelas.dayKelas}',
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  Text(
+                    'Harga    : ${kelas.feeKelas}',
+                    style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 16),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Trainer: ${kelas.trainer}',
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                        ),
-                      ),
-                      Text(
-                        'Durasi : ${kelas.duration}',
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                        ),
-                      ),
-                      Text(
-                        'Hari    : ${kelas.day}',
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                        ),
-                      ),
-                      Text(
-                        'Harga : ${kelas.fee}',
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
+                  
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       ElevatedButton.icon(
                         style: ElevatedButton.styleFrom(
-                          backgroundColor:
-                              const Color.fromARGB(255, 158, 95, 0),
+                          backgroundColor: const Color.fromARGB(255, 158, 95, 0),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(8.0),
                           ),
@@ -113,14 +90,16 @@ class KelasDetailScreen extends StatelessWidget {
                             ),
                           );
                         },
-                        icon: const Icon(Icons.chat, color: Colors.white,),
-                        label: const Text('Pesan', style: TextStyle(color: Colors.white),),
-                    
+                        icon: const Icon(Icons.chat, color: Colors.white),
+                        label: const Text(
+                          'Chat',
+                          style: TextStyle(color: Colors.white),
+                        ),
                       ),
+
                       ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          backgroundColor:
-                              const Color.fromARGB(255, 158, 95, 0),
+                          backgroundColor: const Color.fromARGB(255, 158, 95, 0),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(8.0),
                           ),
@@ -133,7 +112,10 @@ class KelasDetailScreen extends StatelessWidget {
                             ),
                           );
                         },
-                        child: const Text('Daftar', style: TextStyle(color: Colors.white),),
+                        child: const Text(
+                          'DAFTAR',
+                          style: TextStyle(color: Colors.white),
+                        ),
                       ),
                     ],
                   ),

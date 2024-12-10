@@ -21,14 +21,14 @@ class ChatScreen extends StatelessWidget {
         padding: const EdgeInsets.all(16.0),
         children: [
           buildMessageBubble(
-              kelas.name,
+              kelas.nameKelas,
               "Selamat Pagi/Siang/Sore/Malam ada yang bisa saya bantu?",
               true,
               kelas.imageUrl),
           buildMessageBubble("Putra", "Saya ingin mendaftar kelas kak, caranya bagaimana ya?",
               false, 'assets/images/user.png'),
           buildMessageBubble(
-              kelas.name,
+              kelas.nameKelas,
               "Kakak bisa langsung pencet daftar saja untuk mendapatkan kelas buruan keburu kehabisan.",
               true,
               kelas.imageUrl),
@@ -47,7 +47,7 @@ class ChatScreen extends StatelessWidget {
         mainAxisAlignment:
             isSender ? MainAxisAlignment.start : MainAxisAlignment.end,
         children: [
-          if (isSender) // Avatar hanya untuk pengirim
+          if (isSender) 
             ClipRRect(
               borderRadius: BorderRadius.circular(8.0),
               child: Image.asset(
@@ -57,7 +57,7 @@ class ChatScreen extends StatelessWidget {
                 fit: BoxFit.cover,
               ),
             ),
-          if (!isSender) const SizedBox(width: 8.0), // Tambahkan spasi di sisi kiri pesan
+          if (!isSender) const SizedBox(width: 8.0),
           Flexible(
             child: Container(
               padding: const EdgeInsets.all(12.0),
@@ -80,7 +80,7 @@ class ChatScreen extends StatelessWidget {
               ),
             ),
           ),
-          if (!isSender) // Avatar hanya untuk penerima
+          if (!isSender) 
             ClipRRect(
               borderRadius: BorderRadius.circular(8.0),
               child: Image.asset(

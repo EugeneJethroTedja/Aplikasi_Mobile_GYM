@@ -20,10 +20,11 @@ class _DaftarScreenState extends State<DaftarScreen> {
   Future<void> submitOrder() async {
     try {
       final now = DateTime.now();
-      final dateStr = "${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}";
+      final dateStr =
+          "${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}";
 
       final orderData = {
-        'id_layanan': 6,
+        'id_layanan': 4,
         'id_pelanggan': 13,
         'biaya_pesanan': widget.trainer.fee,
         'tanggal_pesanan': dateStr,
@@ -56,7 +57,9 @@ class _DaftarScreenState extends State<DaftarScreen> {
         final responseData = json.decode(response.body);
         print('Error response: $responseData');
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Gagal menyimpan pemesanan: ${responseData['message']}')),
+          SnackBar(
+              content: Text(
+                  'Gagal menyimpan pemesanan: ${responseData['message']}')),
         );
       }
     } catch (e) {
@@ -160,22 +163,26 @@ class _DaftarScreenState extends State<DaftarScreen> {
               title: 'Pilih Metode Pembayaran Digital:',
               items: ['-', 'Dana', 'Ovo', 'Shopee Pay', 'Gopay'],
               selectedValue: selectedDigitalPayment,
-              onChanged: selectedBankPayment == '-' ? (String? newValue) {
-                setState(() {
-                  selectedDigitalPayment = newValue;
-                });
-              } : null,
+              onChanged: selectedBankPayment == '-'
+                  ? (String? newValue) {
+                      setState(() {
+                        selectedDigitalPayment = newValue;
+                      });
+                    }
+                  : null,
             ),
             const SizedBox(height: 16),
             _buildDropdown(
               title: 'Pilih Metode Pembayaran Bank:',
               items: ['-', 'Mandiri', 'BNI', 'BRI'],
               selectedValue: selectedBankPayment,
-              onChanged: selectedDigitalPayment == '-' ? (String? newValue) {
-                setState(() {
-                  selectedBankPayment = newValue;
-                });
-              } : null,
+              onChanged: selectedDigitalPayment == '-'
+                  ? (String? newValue) {
+                      setState(() {
+                        selectedBankPayment = newValue;
+                      });
+                    }
+                  : null,
             ),
           ],
         ),
@@ -251,7 +258,8 @@ class QRGeneratorScreen extends StatelessWidget {
   Future<void> submitTransaction(BuildContext context) async {
     try {
       final now = DateTime.now();
-      final dateStr = "${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}";
+      final dateStr =
+          "${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}";
 
       final transactionData = {
         'id_pemesanan': 9,
@@ -279,7 +287,9 @@ class QRGeneratorScreen extends StatelessWidget {
         final responseData = json.decode(response.body);
         print('Error response: $responseData');
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Gagal menyimpan transaksi: ${responseData['message']}')),
+          SnackBar(
+              content: Text(
+                  'Gagal menyimpan transaksi: ${responseData['message']}')),
         );
       }
     } catch (e) {
@@ -292,7 +302,8 @@ class QRGeneratorScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    String paymentData = 'Nama: ${trainer.name}, Biaya: ${trainer.fee}, Spesialis: ${trainer.specialization}';
+    String paymentData =
+        'Nama: ${trainer.name}, Biaya: ${trainer.fee}, Spesialis: ${trainer.specialization}';
 
     return Scaffold(
       appBar: AppBar(
@@ -329,7 +340,8 @@ class QRGeneratorScreen extends StatelessWidget {
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF9E5F00),
-                padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 24.0, vertical: 12.0),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8.0),
                 ),
