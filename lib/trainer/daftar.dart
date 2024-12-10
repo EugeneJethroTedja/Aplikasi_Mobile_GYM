@@ -24,16 +24,10 @@ class _DaftarScreenState extends State<DaftarScreen> {
     try {
       final prefs = await SharedPreferences.getInstance();
       final loggedInUserId = prefs.getInt('userId');
-
-      if (loggedInUserId == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Anda harus login terlebih dahulu.')),
-        );
-        return;
-      }
       final now = DateTime.now();
       final dateStr =
           "${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')} ${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}:${now.second.toString().padLeft(2, '0')}";
+          
       await prefs.setString('dateStr', dateStr);
 
       final orderData = {
@@ -57,6 +51,11 @@ class _DaftarScreenState extends State<DaftarScreen> {
       );
 
       if (response.statusCode == 201) {
+        final responseData = json.decode(response.body);
+        final orderId = responseData['data']['id_pemesanan']; 
+        await prefs.setInt('orderId', orderId);
+        await prefs.setInt('trainerId', widget.trainer.id); 
+        
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Pemesanan berhasil!')),
         );
@@ -74,8 +73,7 @@ class _DaftarScreenState extends State<DaftarScreen> {
         print('Error response: $responseData');
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-              content: Text(
-                  'Gagal menyimpan pemesanan: ${responseData['message']}')),
+              content: Text('Gagal menyimpan pemesanan: ${responseData['message']}')),
         );
       }
     } catch (e) {
@@ -233,15 +231,15 @@ class _DaftarScreenState extends State<DaftarScreen> {
 
   Widget _buildProceedButton(BuildContext context) {
     return Align(
-      alignment: Alignment.bottomCenter, // Posisikan tombol di tengah bawah
+      alignment: Alignment.bottomCenter,
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0), // Padding untuk jarak dari tepi layar
+        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
         child: SizedBox(
-          width: double.infinity, // Lebar mengikuti lebar container putih
+          width: double.infinity, 
           child: ElevatedButton(
             style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF9E5F00), // Warna tombol sama
-              padding: const EdgeInsets.symmetric(vertical: 12.0), // Padding vertikal tombol
+              backgroundColor: const Color(0xFF9E5F00), 
+              padding: const EdgeInsets.symmetric(vertical: 12.0), 
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(8.0),
               ),
@@ -317,6 +315,11 @@ class QRGeneratorScreen extends StatelessWidget {
         );
 
         if (response.statusCode == 201) {
+          final responseData = json.decode(response.body);
+          final transactionId = responseData['data']['id_transaksi']; // Pastikan ID transaksi disertakan dalam response
+          final prefs = await SharedPreferences.getInstance();
+          await prefs.setInt('transactionId', transactionId); // Menyimpan ID transaksi
+
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('Transaksi berhasil!')),
           );
