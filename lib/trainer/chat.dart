@@ -1,16 +1,36 @@
 import 'package:flutter/material.dart';
 import 'package:sembilan_nih/trainer/trainer.dart';
 
-class ChatScreen extends StatelessWidget {
+class ChatScreen extends StatefulWidget {
   final Trainer trainer;
 
   const ChatScreen({super.key, required this.trainer});
 
   @override
+  _ChatScreenState createState() => _ChatScreenState();
+}
+
+class _ChatScreenState extends State<ChatScreen> {
+  int _selectedIndex = 1;
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+    if (index == 0) {
+      Navigator.of(context).pushNamed('/detail_pesanan');
+    } else if (index == 2) {
+      Navigator.of(context).pushNamed('/profile');
+    } else if (index == 1){
+      Navigator.of(context).pushNamed('/home');
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Color.fromARGB(255, 158, 95, 0),
+        backgroundColor: const Color.fromARGB(255, 158, 95, 0),
         title: const Text('Room Chat', style: TextStyle(color: Colors.white)),
         iconTheme: const IconThemeData(
           color: Color.fromARGB(255, 0, 0, 0),
@@ -21,20 +41,41 @@ class ChatScreen extends StatelessWidget {
         padding: const EdgeInsets.all(16.0),
         children: [
           buildMessageBubble(
-              trainer.name,
+              widget.trainer.name,
               "Selamat Pagi/Siang/Sore/Malam ada yang bisa saya bantu?",
               true,
-              trainer.imageUrl),
+              widget.trainer.imageUrl),
           buildMessageBubble("Putra", "Saya ingin menyewa jasa trainer, caranya bagaimana ya?",
               false, 'assets/images/user.png'),
           buildMessageBubble(
-              trainer.name,
+              widget.trainer.name,
               "Kakak bisa langsung daftar saja untuk mendapatkan layanan trainer.",
               true,
-              trainer.imageUrl),
+              widget.trainer.imageUrl),
           buildMessageBubble("Putra", "Baik kak, terima kasih untuk informasinya.",
               false, 'assets/images/user.png'),
         ],
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: const Color.fromARGB(255, 158, 95, 0),
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.list, color: Colors.black),
+            label: 'Pesanan',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home, color: Colors.black),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person, color: Colors.black),
+            label: 'Profile',
+          ),
+        ],
+        currentIndex: _selectedIndex,
+        selectedItemColor: Colors.black,
+        unselectedItemColor: Colors.black54,
+        onTap: _onItemTapped,
       ),
     );
   }
@@ -47,7 +88,7 @@ class ChatScreen extends StatelessWidget {
         mainAxisAlignment:
             isSender ? MainAxisAlignment.start : MainAxisAlignment.end,
         children: [
-          if (isSender) // Avatar hanya untuk pengirim
+          if (isSender)
             ClipRRect(
               borderRadius: BorderRadius.circular(8.0),
               child: Image.asset(
@@ -57,7 +98,8 @@ class ChatScreen extends StatelessWidget {
                 fit: BoxFit.cover,
               ),
             ),
-          if (!isSender) const SizedBox(width: 8.0), // Tambahkan spasi di sisi kiri pesan
+          if (!isSender)
+            const SizedBox(width: 8.0),
           Flexible(
             child: Container(
               padding: const EdgeInsets.all(12.0),
@@ -66,9 +108,8 @@ class ChatScreen extends StatelessWidget {
                 borderRadius: BorderRadius.circular(16.0),
               ),
               child: Column(
-                crossAxisAlignment: isSender
-                    ? CrossAxisAlignment.start
-                    : CrossAxisAlignment.end,
+                crossAxisAlignment:
+                    isSender ? CrossAxisAlignment.start : CrossAxisAlignment.end,
                 children: [
                   Text(
                     sender,
@@ -80,7 +121,7 @@ class ChatScreen extends StatelessWidget {
               ),
             ),
           ),
-          if (!isSender) // Avatar hanya untuk penerima
+          if (!isSender)
             ClipRRect(
               borderRadius: BorderRadius.circular(8.0),
               child: Image.asset(
