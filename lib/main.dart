@@ -6,6 +6,9 @@ import 'package:sembilan_nih/View/detail_pesanan.dart';
 import 'package:sembilan_nih/trainer/trainer.dart';
 import 'package:sembilan_nih/alat/alat.dart';
 import 'package:sembilan_nih/kelas/kelas.dart';
+import 'package:sembilan_nih/list/list_trainer.dart';
+import 'package:sembilan_nih/list/list_alat.dart';
+import 'package:sembilan_nih/list/list_kelas.dart';
 
 
 void main() {
@@ -28,6 +31,9 @@ class MyApp extends StatelessWidget {
         '/trainer': (context) => const TrainerScreen(),
         '/alat': (context) => const AlatScreen(),
         '/kelas': (context) => const KelasScreen(),
+        '/histori': (context) => const TrainerPage(),
+        '/history_alat': (context) => const AlatPage(),
+        '/history_kelas': (context) => const KelasPage(),
       },
     );
   }

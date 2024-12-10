@@ -9,10 +9,17 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  http: ^0.13.4
   pdf: ^3.10.1
   path_provider: ^2.0.12
   open_file: ^3.2.2
   font_awesome_flutter: ^10.5.0
+  shared_preferences: ^2.0.0
+  path: ^1.8.0
+  http_parser: ^4.0.0
+  geolocator: ^9.0.2
+  geocoding: ^2.1.1
+  
 
 dev_dependencies:
   flutter_test:
@@ -21,7 +28,7 @@ dev_dependencies:
   camera: ^0.11.0+1
   image_picker: ^0.8.7+3
   qr_flutter: ^4.1.0
-  intl: ^0.17.0
+  intl: ^0.18.0
 
 flutter:
   uses-material-design: true
@@ -62,3 +69,4 @@ flutter:
     - assets/images/Kelas/body-combat.png
     - assets/images/Kelas/muay-thai.png
     - assets/images/Kelas/upper-chest.png
+    - assets/images/bangunangym.webp

@@ -1,60 +1,125 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
+
+class Alat {
+  final int idHistori;
+  final String name;
+  final String specialty;
+  final String date;
+  final double price;
+  final String imagePath;
+  int? review;
+
+  Alat({
+    required this.idHistori,
+    required this.name,
+    required this.specialty,
+    required this.date,
+    required this.price,
+    required this.imagePath,
+    this.review,
+  });
+
+  factory Alat.fromJson(Map<String, dynamic> json) {
+    return Alat(
+      idHistori: json['id_histori'],
+      name: json['nama'] ?? '',
+      specialty: json['spesialis'] ?? '',
+      date: json['tanggal'] ?? '',
+      price: (json['harga'] ?? 0).toDouble(),
+      imagePath: json['imageUrl'] ?? 'assets/images/Alat/default.png',
+      review: json['review'] != null ? int.tryParse(json['review'].toString()) : null,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      "id_histori": idHistori,
+      "nama": name,
+      "spesialis": specialty,
+      "tanggal": date,
+      "harga": price,
+      "imageUrl": imagePath,
+      "review": review,
+    };
+  }
+}
 
 class AlatPage extends StatefulWidget {
+  const AlatPage({Key? key}) : super(key: key);
+
   @override
-  _AlatPageState createState() => _AlatPageState();
+  State<AlatPage> createState() => _AlatPageState();
 }
 
 class _AlatPageState extends State<AlatPage> {
-  List<Map<String, dynamic>> trainers = [
-    {
-      "name": "Treadmill",
-      "specialty": "2",
-      "date": "28-08-2024",
-      "price": "500.000",
-      "isCompleted": false,
-      "review": null,
-      "imagePath": "assets/images/Alat/treadmill-figma.jpg",
-    },
-    {
-      "name": "Lat Pulldown",
-      "specialty": "3",
-      "date": "15-08-2024",
-      "price": "300.000",
-      "isCompleted": true,
-      "review": 4,
-      "imagePath": "assets/images/Alat/lat-pulldown.jpg",
-    },
-    {
-      "name": "Smith Machine",
-      "specialty": "2",
-      "date": "07-08-2024",
-      "price": "250.000",
-      "isCompleted": true,
-      "review": 3,
-      "imagePath": "assets/images/Alat/smith-machine.png",
-    },
-    {
-      "name": "Barbel",
-      "specialty": "5",
-      "date": "28-07-2024",
-      "price": "375.000",
-      "isCompleted": true,
-      "review": 4,
-      "imagePath": "assets/images/Alat/barbel.png",
-    },
-  ];
+  List<Alat> trainers = [];
+  bool isLoading = true;
 
-  void updateTrainerReview(String trainerName, int review) {
-    setState(() {
-      for (var trainer in trainers) {
-        if (trainer['name'] == trainerName) {
-          trainer['isCompleted'] = true;
-          trainer['review'] = review;
-          break;
-        }
+  @override
+  void initState() {
+    super.initState();
+    fetchTrainers();
+  }
+
+  Future<void> fetchTrainers() async {
+    try {
+      final response = await http.get(Uri.parse('http://10.0.2.2:8000/api/histori/'));
+      if (response.statusCode == 200) {
+        List<dynamic> data = json.decode(response.body);
+        setState(() {
+          trainers = data.map((json) => Alat.fromJson(json)).toList();
+        });
+      } else {
+        debugPrint('Failed to load alats: ${response.statusCode}');
       }
-    });
+    } catch (e) {
+      debugPrint('Error fetching alats: $e');
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
+  Future<void> updateAlatReviewOnServer(int idHistori, int review) async {
+    try {
+      final response = await http.put(
+        Uri.parse('http://10.0.2.2:8000/api/histori/update/$idHistori'),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({'review': review}), // Kirim hanya `review`
+      );
+
+      if (response.statusCode == 200) {
+        debugPrint('Review updated successfully.');
+      } else {
+        debugPrint('Failed to update review: ${response.statusCode}, Response: ${response.body}');
+      }
+    } catch (e) {
+      debugPrint('Error updating review: $e');
+    }
+  }
+
+  void updateAlatReview(int idHistori, int review) async {
+    try {
+      // Temukan alat berdasarkan `idHistori`
+      final alat = trainers.firstWhere((t) => t.idHistori == idHistori);
+
+      // Simpan nilai asli untuk rollback jika gagal
+      final originalReview = alat.review;
+
+      // Perbarui UI secara lokal
+      setState(() {
+        alat.review = review;
+      });
+
+      // Kirim permintaan ke server
+      await updateAlatReviewOnServer(idHistori, review);
+    } catch (e) {
+      debugPrint('Error updating review: $e');
+    }
   }
 
   @override
@@ -66,37 +131,36 @@ class _AlatPageState extends State<AlatPage> {
         title: const Text('Alat Anda'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.pop(context);
-          },
+          onPressed: () => Navigator.pop(context),
         ),
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: trainers.map((trainer) {
-            return _buildTrainerCard(
-              trainer['name'],
-              trainer['specialty'],
-              trainer['date'],
-              trainer['price'],
-              trainer['imagePath'],
-              trainer['isCompleted'],
-              trainer['review'],
-            );
-          }).toList(),
-        ),
-      ),
+      body: isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : trainers.isEmpty
+              ? const Center(
+                  child: Text(
+                    'Tidak ada alat tersedia',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                )
+              : ListView.builder(
+                  itemCount: trainers.length,
+                  itemBuilder: (context, index) {
+                    final alat = trainers[index];
+                    return _buildAlatCard(
+                      alat,
+                      onReviewUpdate: (rating) {
+                        updateAlatReview(alat.idHistori, rating);
+                      },
+                    );
+                  },
+                ),
     );
   }
 
-  Widget _buildTrainerCard(
-      String name,
-      String specialty,
-      String date,
-      String price,
-      String imagePath,
-      bool isCompleted,
-      int? review) {
+  Widget _buildAlatCard(Alat alat, {required Function(int) onReviewUpdate}) {
+    String formattedPrice = NumberFormat('#,###', 'id_ID').format(alat.price);
+
     return Card(
       color: Colors.white,
       margin: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
@@ -104,17 +168,15 @@ class _AlatPageState extends State<AlatPage> {
         borderRadius: BorderRadius.circular(16),
       ),
       child: Padding(
-        // padding: const EdgeInsets.all(12.0),
         padding: const EdgeInsets.fromLTRB(12, 12, 12, 12),
         child: Column(
-          // crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               children: [
                 ClipRRect(
                   borderRadius: BorderRadius.circular(16),
                   child: Image.asset(
-                    imagePath,
+                    alat.imagePath,
                     width: 110,
                     height: 110,
                     fit: BoxFit.cover,
@@ -126,7 +188,7 @@ class _AlatPageState extends State<AlatPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        name,
+                        alat.name,
                         style: const TextStyle(
                           fontSize: 21,
                           fontWeight: FontWeight.bold,
@@ -134,7 +196,7 @@ class _AlatPageState extends State<AlatPage> {
                         ),
                       ),
                       Text(
-                        "Durasi       : $specialty" + " Jam",
+                        "Spesialisasi: ${alat.specialty}",
                         style: const TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
@@ -142,32 +204,17 @@ class _AlatPageState extends State<AlatPage> {
                         ),
                       ),
                       Text(
-                        "Tanggal    : $date",
-                        style: const TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.black87,
-                        ),
+                        "Tanggal: ${alat.date}",
+                        style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: Colors.black87),
                       ),
                       Text(
-                        "Biaya        : Rp. $price",
-                        style: const TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.black87,
-                        ),
+                        "Harga: Rp. $formattedPrice",
+                        style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: Colors.black87),
                       ),
-                      if (isCompleted && review != null)
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 5),
-                          child: Text(
-                          "Review     : $review/5",
-                            style: const TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.black87,
-                            ),
-                          ),
+                      if (alat.review != null)
+                        Text(
+                          "Review: ${alat.review}/5",
+                          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: Colors.black87),
                         ),
                     ],
                   ),
@@ -178,47 +225,33 @@ class _AlatPageState extends State<AlatPage> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                if (isCompleted && review != null)
+                if (alat.review != null)
                   Row(
-                    children: [
-                      const Icon(
-                        Icons.check_circle,
-                        color: Colors.green,
-                        size: 18,
-                      ),
-                      const SizedBox(width: 5),
+                    children: const [
+                      Icon(Icons.check_circle, color: Colors.green, size: 18),
+                      SizedBox(width: 5),
                       Text(
                         "Selesai",
-                        style: const TextStyle(
-                          fontSize: 14,
-                          color: Colors.green,
-                          fontWeight: FontWeight.bold,
-                        ),
+                        style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
                       ),
                     ],
                   )
                 else
-                  Text('Berlaku Hingga $date', style: const TextStyle(
+                  Text('Berlaku Hingga ${alat.date}', style: const TextStyle(
                     fontSize: 14, 
                     fontWeight: FontWeight.w600,
                     color: Colors.black87,
                     )),
                     const SizedBox(height: 10),
-                if (!isCompleted)
+                if (alat.review == null)
                   ElevatedButton(
                     onPressed: () {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (context) => ReviewPage(
-                            trainerName: name,
-                            specialty: specialty,
-                            date: date,
-                            price: price,
-                            imagePath: imagePath,
-                            onReviewSubmitted: (rating) {
-                              updateTrainerReview(name, rating);
-                            },
+                            alat: alat,
+                            onReviewSubmitted: onReviewUpdate,
                           ),
                         ),
                       );
@@ -249,22 +282,10 @@ class _AlatPageState extends State<AlatPage> {
 }
 
 class ReviewPage extends StatefulWidget {
-  final String trainerName;
-  final String specialty;
-  final String date;
-  final String price;
-  final String imagePath;
+  final Alat alat;
   final Function(int) onReviewSubmitted;
 
-  const ReviewPage({
-    Key? key,
-    required this.trainerName,
-    required this.specialty,
-    required this.date,
-    required this.price,
-    required this.imagePath,
-    required this.onReviewSubmitted,
-  }) : super(key: key);
+  const ReviewPage({Key? key, required this.alat, required this.onReviewSubmitted}) : super(key: key);
 
   @override
   _ReviewPageState createState() => _ReviewPageState();
@@ -279,7 +300,7 @@ class _ReviewPageState extends State<ReviewPage> {
       backgroundColor: Colors.black,
       appBar: AppBar(
         backgroundColor: const Color.fromARGB(255, 158, 95, 0),
-        title: const Text('Alat Anda'),
+        title: const Text("Review Alat"),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
@@ -287,10 +308,10 @@ class _ReviewPageState extends State<ReviewPage> {
           },
         ),
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            Card(
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Card(
               color: Colors.white,
               margin: const EdgeInsets.symmetric(horizontal: 14, vertical: 20),
               shape: RoundedRectangleBorder(
@@ -305,7 +326,7 @@ class _ReviewPageState extends State<ReviewPage> {
                         ClipRRect(
                           borderRadius: BorderRadius.circular(16),
                           child: Image.asset(
-                            widget.imagePath,
+                            widget.alat.imagePath,
                             width: 130,
                             height: 130,
                             fit: BoxFit.cover,
@@ -317,7 +338,7 @@ class _ReviewPageState extends State<ReviewPage> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                widget.trainerName,
+                                widget.alat.name,
                                 style: const TextStyle(
                                   fontSize: 21,
                                   fontWeight: FontWeight.bold,
@@ -326,7 +347,7 @@ class _ReviewPageState extends State<ReviewPage> {
                               ),
                               const SizedBox(height: 4),
                               Text(
-                                "Durasi       : ${widget.specialty} Jam",
+                                "Spesialis: ${widget.alat.specialty}",
                                 style: const TextStyle(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w600,
@@ -334,7 +355,7 @@ class _ReviewPageState extends State<ReviewPage> {
                                 ),
                               ),
                               Text(
-                                "Tanggal    : ${widget.date}",
+                                "Tanggal  : ${widget.alat.date}",
                                 style: const TextStyle(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w600,
@@ -342,7 +363,7 @@ class _ReviewPageState extends State<ReviewPage> {
                                 ),
                               ),
                               Text(
-                                "Biaya        : Rp. ${widget.price}",
+                                "Harga     : Rp. ${widget.alat.price}",
                                 style: const TextStyle(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w600,
@@ -412,10 +433,8 @@ class _ReviewPageState extends State<ReviewPage> {
                 ),
               ),
             ),
-          ],
-        ),
+        ],
       ),
     );
   }
 }
-

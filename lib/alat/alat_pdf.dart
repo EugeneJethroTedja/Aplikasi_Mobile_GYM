@@ -1,64 +1,68 @@
 import 'dart:io';
-import 'dart:typed_data';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart' show rootBundle;
+import 'package:flutter/services.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
+import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:flutter/foundation.dart';
 import 'package:open_file/open_file.dart';
-
-Future<pw.Font> loadFont(String fontPath) async {
-  final fontData = await rootBundle.load(fontPath);
-  return pw.Font.ttf(fontData.buffer.asByteData());
-}
 
 Future<void> generatePdf(
   BuildContext context,
-  List<List<String>> products,
+  List<List<String>> products, 
   String transactionId,
-  String paymentMethod,
-  double total,
-  String logoPath,
+  String paymentMethod,        
+  int total,                
+  String logoPath,             
 ) async {
   final pdf = pw.Document();
+  final now = DateTime.now();
+  final formattedDate = DateFormat('yyyy-MM-dd HH:mm:ss').format(now);
 
   try {
-    // Muat font Anton-Regular
-    final antonFont = await loadFont('assets/images/fonts/Anton-Regular.ttf');
 
-    // Muat logo
     final logoBytes = (await rootBundle.load(logoPath)).buffer.asUint8List();
     final imageLogo = pw.MemoryImage(logoBytes);
 
+    final pdfTheme = pw.PageTheme(
+      pageFormat: PdfPageFormat.a4,
+      margin: const pw.EdgeInsets.all(32),
+      buildBackground: (context) => pw.Container(
+      ),
+    );
+
+    // Build PDF
     pdf.addPage(
       pw.MultiPage(
-        theme: pw.ThemeData.withFont(
-          base: antonFont,
-          bold: antonFont,
+        pageTheme: pdfTheme,
+        header: (context) => pw.Row(
+          mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+          children: [
+            pw.Image(imageLogo, height: 80),
+            pw.Text(
+              "Nama Customer",
+              style: pw.TextStyle(fontSize: 18, fontWeight: pw.FontWeight.bold),
+            ),
+          ],
+        ),
+        footer: (context) => pw.Text(
+          "Created At $formattedDate",
+          style: pw.TextStyle(fontSize: 12, color: PdfColors.grey),
         ),
         build: (context) => [
           pw.Column(
             crossAxisAlignment: pw.CrossAxisAlignment.start,
             children: [
-              pw.Center(
-                child: pw.Image(imageLogo, height: 80),
-              ),
               pw.SizedBox(height: 16),
               pw.Text(
                 "Terima Kasih telah melakukan transaksi di EGO GYM.",
-                style:
-                    pw.TextStyle(fontSize: 16, fontWeight: pw.FontWeight.bold),
-                textAlign: pw.TextAlign.center,
+                style: pw.TextStyle(fontSize: 16),
               ),
               pw.SizedBox(height: 16),
               pw.Text(
                 "Rincian Pembelian",
-                style:
-                    pw.TextStyle(fontSize: 18, fontWeight: pw.FontWeight.bold),
-                textAlign: pw.TextAlign.center,
+                style: pw.TextStyle(fontSize: 18, fontWeight: pw.FontWeight.bold),
               ),
-              pw.SizedBox(height: 8),
               pw.Table(
                 border: pw.TableBorder.all(),
                 children: [
@@ -67,35 +71,19 @@ Future<void> generatePdf(
                     children: [
                       pw.Padding(
                         padding: const pw.EdgeInsets.all(8.0),
-                        child: pw.Text(
-                          "ITEM",
-                          style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
-                          textAlign: pw.TextAlign.center,
-                        ),
+                        child: pw.Text("ITEM", style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
                       ),
                       pw.Padding(
                         padding: const pw.EdgeInsets.all(8.0),
-                        child: pw.Text(
-                          "QTY",
-                          style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
-                          textAlign: pw.TextAlign.center,
-                        ),
+                        child: pw.Text("QTY", style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
                       ),
                       pw.Padding(
                         padding: const pw.EdgeInsets.all(8.0),
-                        child: pw.Text(
-                          "MENIT",
-                          style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
-                          textAlign: pw.TextAlign.center,
-                        ),
+                        child: pw.Text("STOK", style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
                       ),
                       pw.Padding(
                         padding: const pw.EdgeInsets.all(8.0),
-                        child: pw.Text(
-                          "HARGA",
-                          style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
-                          textAlign: pw.TextAlign.center,
-                        ),
+                        child: pw.Text("HARGA", style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
                       ),
                     ],
                   ),
@@ -105,10 +93,7 @@ Future<void> generatePdf(
                           .map(
                             (data) => pw.Padding(
                               padding: const pw.EdgeInsets.all(8.0),
-                              child: pw.Text(
-                                data,
-                                textAlign: pw.TextAlign.center,
-                              ),
+                              child: pw.Text(data),
                             ),
                           )
                           .toList(),
@@ -117,21 +102,17 @@ Future<void> generatePdf(
               ),
               pw.SizedBox(height: 16),
               pw.Text(
-                "TOTAL: Rp ${total.toStringAsFixed(2)}",
-                style:
-                    pw.TextStyle(fontSize: 16, fontWeight: pw.FontWeight.bold),
-                textAlign: pw.TextAlign.right,
+                "TOTAL: Rp $total", 
+                style: pw.TextStyle(fontWeight: pw.FontWeight.bold, fontSize: 16),
               ),
               pw.Text(
-                "Pembayaran: $paymentMethod",
+                "Pembayaran: $paymentMethod", 
                 style: pw.TextStyle(fontSize: 16),
-                textAlign: pw.TextAlign.right,
               ),
               pw.SizedBox(height: 32),
               pw.Text(
-                "ID Transaksi:",
-                style:
-                    pw.TextStyle(fontSize: 16, fontWeight: pw.FontWeight.bold),
+                "ID Transaksi: ",
+                style: pw.TextStyle(fontSize: 16, fontWeight: pw.FontWeight.bold),
               ),
               pw.Center(
                 child: pw.BarcodeWidget(
@@ -141,25 +122,62 @@ Future<void> generatePdf(
                   height: 80,
                 ),
               ),
+              pw.SizedBox(height: 32),
+              pw.Text(
+                "Alamat: Jl. Contoh No.123, Bandung, Jawa Barat, Indonesia",
+                style: pw.TextStyle(fontSize: 14, color: PdfColors.black),
+              ),
+              pw.SizedBox(height: 16),
+              pw.Row(
+                mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                children: [
+                  pw.Text(
+                    "Tanda Tangan",
+                    style: pw.TextStyle(fontSize: 14, fontWeight: pw.FontWeight.bold),
+                  ),
+                  pw.SizedBox(
+                    width: 100,
+                    height: 40,
+                    child: pw.Container(
+                      decoration: pw.BoxDecoration(
+                        border: pw.Border.all(color: PdfColors.black),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              pw.SizedBox(height: 32),
+              pw.Text(
+                "Terima Kasih atas kepercayaan Anda!",
+                style: pw.TextStyle(fontSize: 14, color: PdfColors.grey),
+              ),
             ],
           ),
         ],
       ),
     );
 
-    final bytes = await pdf.save();
+    final output = await getExternalStorageDirectory();
+    final file = File("${output!.path}/Invoice_$transactionId.pdf");
+    await file.writeAsBytes(await pdf.save());
 
-    // Logika penyimpanan
-    final directory = await getTemporaryDirectory();
-    final file = File('${directory.path}/invoice_ego_gym.pdf');
-    await file.writeAsBytes(bytes);
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text("PDF berhasil disimpan: ${file.path}")),
+      SnackBar(
+        content: Text("PDF berhasil dibuat di ${file.path}"),
+        action: SnackBarAction(
+          label: "Buka",
+          onPressed: () {
+            OpenFile.open(file.path);
+          },
+        ),
+      ),
     );
-    OpenFile.open(file.path);
+
+    print("PDF saved to: ${output.path}/Invoice_$transactionId.pdf");
   } catch (e) {
+    print("Error generating PDF: $e");
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text("Gagal membuat PDF: $e")),
+      const SnackBar(content: Text('Gagal membuat PDF.')),
     );
   }
 }

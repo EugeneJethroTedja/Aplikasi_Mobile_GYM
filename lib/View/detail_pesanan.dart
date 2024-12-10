@@ -23,82 +23,87 @@ class DetailPesananPage extends StatelessWidget {
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          _buildDetailCard(
-            context,
-            'Detail Trainer',
-            'Lihat Trainer Anda',
-            'assets/images/trainer.jpg',
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => TrainerPage(),
-                ),
-              );
-            },
+          _buildInfoCard(
+            context: context,
+            image: const AssetImage('assets/images/trainer.jpg'),
+            title: 'Detail Trainer',
+            subtitle: 'Lihat Trainer Anda',
+            routeName: '/histori',
           ),
           const SizedBox(height: 16),
-          _buildDetailCard(
-            context,
-            'Detail Alat',
-            'Lihat Alat yang Anda Pesan',
-            'assets/images/alat.jpg',
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => AlatPage(),
-                ),
-              );
-            },
+          _buildInfoCard(
+            context: context,
+            image: const AssetImage('assets/images/alat.jpg'),
+            title: 'Detail Alat',
+            subtitle: 'Lihat Alat yang Anda Pesan',
+            routeName: '/history_alat',
           ),
           const SizedBox(height: 16),
-          _buildDetailCard(
-            context,
-            'Detail Kelas',
-            'Lihat Kelas yang Anda Ikuti',
-            'assets/images/kelas.jpeg',
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => KelasPage(),
-                ),
-              );
-            },
+          _buildInfoCard(
+            context: context,
+            image: const AssetImage('assets/images/kelas.jpeg'),
+            title: 'Detail Kelas',
+            subtitle: 'Lihat Kelas yang Anda Ikuti',
+            routeName: '/history_kelas',
           ),
         ],
       ),
     );
   }
 
-  Widget _buildDetailCard(
-    BuildContext context,
-    String title,
-    String subtitle,
-    String imageUrl,
-    {VoidCallback? onTap}
-  ) {
-    return Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: ListTile(
-        leading: ClipRRect(
-          borderRadius: BorderRadius.circular(8),
-          child: Image.asset(
-            imageUrl,
-            width: 60,
-            height: 60,
-            fit: BoxFit.cover,
+  Widget _buildInfoCard({
+    required BuildContext context,
+    required ImageProvider image,
+    required String title,
+    required String subtitle,
+    required String routeName,
+  }) {
+    return GestureDetector(
+      onTap: () => Navigator.of(context).pushNamed(routeName),
+      child: Card(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        child: ListTile(
+          leading: ClipRRect(
+            borderRadius: BorderRadius.circular(8),
+            child: Image(
+              image: image,
+              width: 60,
+              height: 60,
+              fit: BoxFit.cover,
+            ),
           ),
+          title: Text(
+            title,
+            style: const TextStyle(fontWeight: FontWeight.bold),
+          ),
+          subtitle: Text(subtitle),
         ),
-        title: Text(
-          title,
-          style: const TextStyle(fontWeight: FontWeight.bold),
-        ),
-        subtitle: Text(subtitle),
-        // onTap: onTap
-        onTap: onTap,
       ),
+    );
+  }
+}
+
+void main() {
+  runApp(const MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Detail Pesanan',
+      theme: ThemeData(
+        scaffoldBackgroundColor: Colors.black,
+      ),
+      initialRoute: '/',
+      routes: {
+        '/': (context) => const DetailPesananPage(),
+        '/history_trainer': (context) => TrainerPage(),
+        '/history_alat': (context) => AlatPage(),
+        '/history_kelas': (context) => KelasPage(),
+      },
     );
   }
 }

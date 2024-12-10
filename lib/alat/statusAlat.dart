@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
-import 'dart:io'; // Untuk File
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'dart:io';
 import 'alat.dart';
-import 'alat_pdf.dart'; // Import untuk generatePdf()
+import 'alat_pdf.dart';
+import 'daftarAlat.dart';
 
 class StatusScreen extends StatefulWidget {
   final Alat alat;
+  final String dateStr;
 
-  const StatusScreen({super.key, required this.alat});
+  const StatusScreen({super.key, required this.alat, required this.dateStr});
 
   @override
   _StatusScreenState createState() => _StatusScreenState();
@@ -14,11 +18,78 @@ class StatusScreen extends StatefulWidget {
 
 class _StatusScreenState extends State<StatusScreen> {
   String status = 'pending';
+  late List<List<String>> soldProducts;
+  String paymentMethod = '';
+  bool isLoading = true;
+  // String dateStr = '';
 
-  // Simulasi produk yang dijual (bisa dimodifikasi sesuai kebutuhan)
-  final List<List<String>> soldProducts = [
-    ["Treadmill", "Alat Jogging", "2", "Rp 89.000,00"],
-  ];
+  @override
+  void initState() {
+    super.initState();
+    soldProducts = [
+      [
+        widget.alat.nameAlat,
+        '1',
+        widget.alat.stok.toString(),
+        'Rp ${widget.alat.feeAlat.toStringAsFixed(0)}',
+      ],
+    ];
+    fetchPaymentMethod();
+  }
+
+  Future<void> fetchPaymentMethod() async {
+    try {
+      final response = await http.get(
+        Uri.parse('http://10.0.2.2:8000/api/pemesanan/show/${widget.dateStr}'),
+      );
+
+      print("Response: ${response.body}");
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+
+        print("Response JSON: $data");
+
+        if (data.containsKey('data') && data['data'] is List && data['data'].isNotEmpty) {
+          var orderData = data['data'][0];  
+
+          // Prioritaskan digital_payment terlebih dahulu
+          if (orderData.containsKey('digital_payment') && orderData['digital_payment'] != null && orderData['digital_payment'] != '-' && orderData['digital_payment'] != '') {
+            setState(() {
+              paymentMethod = orderData['digital_payment'];
+              isLoading = false;
+            });
+          } else if (orderData.containsKey('bank_payment') && orderData['bank_payment'] != null) {
+            setState(() {
+              paymentMethod = orderData['bank_payment'];
+              isLoading = false;
+            });
+          } else {
+            setState(() {
+              paymentMethod = 'Metode pembayaran tidak ditemukan';
+              isLoading = false;
+            });
+          }
+        } else {
+          setState(() {
+            isLoading = false;
+            paymentMethod = 'Data pemesanan tidak ditemukan';
+          });
+        }
+      } else {
+        setState(() {
+          isLoading = false;
+          paymentMethod = 'Metode pembayaran tidak ditemukan ya';
+        });
+      }
+    } catch (e) {
+      print("Error fetching payment method: $e");
+      setState(() {
+        isLoading = false;
+        paymentMethod = 'Error saat mengambil data';
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -32,8 +103,15 @@ class _StatusScreenState extends State<StatusScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            Image.asset(
+              'assets/images/LOGO.png',
+              width: 350,
+              height: 100,
+              fit: BoxFit.contain,
+            ),
+            const SizedBox(height: 16),
             Card(
-              color: const Color.fromARGB(255, 252, 241, 230),
+              color: const Color.fromARGB(255, 255, 255, 255),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(16.0),
               ),
@@ -41,24 +119,15 @@ class _StatusScreenState extends State<StatusScreen> {
                 padding: const EdgeInsets.all(16.0),
                 child: Row(
                   children: [
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(8.0),
-                      child: Image.asset(
-                        'assets/images/LOGO.png',
-                        width: 40,
-                        height: 40,
-                        fit: BoxFit.cover,
+                    Expanded(
+                      child: Text(
+                        'Status: $status',
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18,
+                        ),
                       ),
                     ),
-                    const SizedBox(width: 16),
-                    Text(
-                      'Status: $status',
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18,
-                      ),
-                    ),
-                    const Spacer(),
                     status == 'pending'
                         ? IconButton(
                             icon: const Icon(Icons.refresh),
@@ -73,19 +142,20 @@ class _StatusScreenState extends State<StatusScreen> {
                               backgroundColor:
                                   const Color.fromARGB(255, 158, 95, 0),
                               padding: const EdgeInsets.symmetric(
-                                  horizontal: 24.0, vertical: 12.0),
+                                  horizontal: 16.0, vertical: 8.0),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(8.0),
                               ),
                             ),
                             onPressed: () async {
+                              print('Products: $soldProducts');
                               await generatePdf(
                                 context,
-                                soldProducts, // Produk yang dijual
-                                "123456789", // ID Transaksi
-                                "Shopeepay", // Metode pembayaran
-                                97900, // Total harga
-                                'assets/images/LOGO.png', // Path logo
+                                soldProducts,
+                                widget.alat.id.toString(),
+                                paymentMethod,
+                                widget.alat.feeAlat,
+                                'assets/images/LOGO.png',
                               );
                             },
                             child: const Text(
