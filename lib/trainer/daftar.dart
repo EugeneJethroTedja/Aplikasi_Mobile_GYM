@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'trainer.dart';
 import 'status.dart';
 import 'package:qr_flutter/qr_flutter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class DaftarScreen extends StatefulWidget {
   final Trainer trainer;
@@ -19,12 +20,14 @@ class _DaftarScreenState extends State<DaftarScreen> {
 
   Future<void> submitOrder() async {
     try {
+      final prefs = await SharedPreferences.getInstance();
+      final loggedInUserId = prefs.getInt('userId');
       final now = DateTime.now();
       final dateStr = "${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}";
 
       final orderData = {
-        'id_layanan': 6,
-        'id_pelanggan': 13,
+        'id_layanan': 4,
+        'id_pelanggan': loggedInUserId,
         'biaya_pesanan': widget.trainer.fee,
         'tanggal_pesanan': dateStr,
         'digital_payment': selectedDigitalPayment ?? '-',
@@ -251,11 +254,11 @@ class QRGeneratorScreen extends StatelessWidget {
   Future<void> submitTransaction(BuildContext context) async {
     try {
       final now = DateTime.now();
-      final dateStr = "${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}";
+      final dateStr1 = "${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}";
 
       final transactionData = {
         'id_pemesanan': 9,
-        'tanggal_transaksi': dateStr,
+        'tanggal_transaksi': dateStr1,
         'total_tagihan': trainer.fee,
       };
 

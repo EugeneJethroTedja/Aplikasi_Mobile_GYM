@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'alat_detail.dart';
 
 class Alat {
+  final int id;
   final String nameAlat;
   final String deskripsi;
   final int stok;
@@ -11,6 +12,7 @@ class Alat {
   final String imageUrl;
 
   Alat({
+    required this.id,
     required this.nameAlat,
     required this.deskripsi,
     required this.stok,
@@ -20,7 +22,8 @@ class Alat {
 
   factory Alat.fromJson(Map<String, dynamic> json) {
     return Alat(
-      nameAlat: json['namaAlat'] ?? '',
+      id: json['id_alat'] ?? '',
+      nameAlat: json['nameAlat'] ?? '',
       deskripsi: json['deskripsi'] ?? '',
       stok: json['stok'] ?? '',
       feeAlat: json['feeAlat'] ?? '',
@@ -90,7 +93,8 @@ class _AlatScreenState extends State<AlatScreen> {
               padding: const EdgeInsets.all(16.0),
               child: alats.isEmpty
                   ? const Center(
-                      child: Text('Tidak ada alat tersedia', style: TextStyle(color: Colors.white)),
+                      child: Text('Tidak ada alat tersedia',
+                          style: TextStyle(color: Colors.white)),
                     )
                   : ListView.builder(
                       itemCount: alats.length,
@@ -100,7 +104,8 @@ class _AlatScreenState extends State<AlatScreen> {
                           onTap: () => Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => AlatDetailScreen(alat: alat),
+                              builder: (context) =>
+                                  AlatDetailScreen(alat: alat),
                             ),
                           ),
                           child: Card(
@@ -142,7 +147,8 @@ class _AlatScreenState extends State<AlatScreen> {
                                   ),
                                   const SizedBox(height: 8),
                                   Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
                                     children: [
                                       Text(
                                         'Stok Terkini: ${alat.stok}',
@@ -168,16 +174,19 @@ class _AlatScreenState extends State<AlatScreen> {
                                       Spacer(),
                                       ElevatedButton(
                                         style: ElevatedButton.styleFrom(
-                                          backgroundColor: const Color.fromARGB(255, 158, 95, 0),
+                                          backgroundColor: const Color.fromARGB(
+                                              255, 158, 95, 0),
                                           shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(8.0),
+                                            borderRadius:
+                                                BorderRadius.circular(8.0),
                                           ),
                                         ),
                                         onPressed: () {
                                           Navigator.push(
                                             context,
                                             MaterialPageRoute(
-                                              builder: (context) => AlatDetailScreen(alat: alat),
+                                              builder: (context) =>
+                                                  AlatDetailScreen(alat: alat),
                                             ),
                                           );
                                         },

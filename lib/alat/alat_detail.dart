@@ -57,7 +57,7 @@ class AlatDetailScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 16),
                   Column(
-                    crossAxisAlignment: CrossAxisAlignment.start, // Rata kiri untuk stok dan harga
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
                         'Stok Terkini  : ${alat.stok}',
@@ -74,7 +74,6 @@ class AlatDetailScreen extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      // Button untuk Chat
                       ElevatedButton.icon(
                         style: ElevatedButton.styleFrom(
                           backgroundColor:
@@ -84,7 +83,6 @@ class AlatDetailScreen extends StatelessWidget {
                           ),
                         ),
                         onPressed: () {
-                          // Navigasi ke halaman Chat
                           Navigator.push(
                             context,
                             MaterialPageRoute(
@@ -96,7 +94,6 @@ class AlatDetailScreen extends StatelessWidget {
                         icon: const Icon(Icons.chat, color: Colors.white),
                         label: const Text('Chat', style: TextStyle(color: Colors.white)),
                       ),
-                      // Button untuk Pesan
                       ElevatedButton(
                         style: ElevatedButton.styleFrom(
                           backgroundColor:
@@ -106,7 +103,6 @@ class AlatDetailScreen extends StatelessWidget {
                           ),
                         ),
                         onPressed: () {
-                          // Navigasi ke halaman Daftar
                           Navigator.push(
                             context,
                             MaterialPageRoute(
