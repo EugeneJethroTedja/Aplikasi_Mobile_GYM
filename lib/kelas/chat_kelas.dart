@@ -41,6 +41,8 @@ class _ChatScreenState extends State<ChatScreen> {
         padding: const EdgeInsets.all(16.0),
         children: [
           buildMessageBubble(
+              kelas.nameKelas,
+
               widget.kelas.name,
               "Selamat Pagi/Siang/Sore/Malam ada yang bisa saya bantu?",
               true,
@@ -48,6 +50,8 @@ class _ChatScreenState extends State<ChatScreen> {
           buildMessageBubble("Putra", "Saya ingin mendaftar kelas kak, caranya bagaimana ya?",
               false, 'assets/images/user.png'),
           buildMessageBubble(
+              kelas.nameKelas,
+
               widget.kelas.name,
               "Kakak bisa langsung pencet daftar saja untuk mendapatkan kelas buruan keburu kehabisan.",
               true,
@@ -88,7 +92,7 @@ class _ChatScreenState extends State<ChatScreen> {
         mainAxisAlignment:
             isSender ? MainAxisAlignment.start : MainAxisAlignment.end,
         children: [
-          if (isSender) // Avatar hanya untuk pengirim
+          if (isSender) 
             ClipRRect(
               borderRadius: BorderRadius.circular(8.0),
               child: Image.asset(
@@ -98,7 +102,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 fit: BoxFit.cover,
               ),
             ),
-          if (!isSender) const SizedBox(width: 8.0), // Tambahkan spasi di sisi kiri pesan
+          if (!isSender) const SizedBox(width: 8.0),
           Flexible(
             child: Container(
               padding: const EdgeInsets.all(12.0),
@@ -121,7 +125,7 @@ class _ChatScreenState extends State<ChatScreen> {
               ),
             ),
           ),
-          if (!isSender) // Avatar hanya untuk penerima
+          if (!isSender) 
             ClipRRect(
               borderRadius: BorderRadius.circular(8.0),
               child: Image.asset(

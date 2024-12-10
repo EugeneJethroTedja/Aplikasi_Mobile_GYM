@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 import 'trainer.dart';
 import 'status.dart';
 import 'package:qr_flutter/qr_flutter.dart';
@@ -8,6 +9,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class DaftarScreen extends StatefulWidget {
   final Trainer trainer;
+
   const DaftarScreen({super.key, required this.trainer});
 
   @override
@@ -22,9 +24,17 @@ class _DaftarScreenState extends State<DaftarScreen> {
     try {
       final prefs = await SharedPreferences.getInstance();
       final loggedInUserId = prefs.getInt('userId');
+
+      if (loggedInUserId == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Anda harus login terlebih dahulu.')),
+        );
+        return;
+      }
       final now = DateTime.now();
       final dateStr =
-          "${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}";
+          "${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')} ${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}:${now.second.toString().padLeft(2, '0')}";
+      await prefs.setString('dateStr', dateStr);
 
       final orderData = {
         'id_layanan': 4,
@@ -53,7 +63,10 @@ class _DaftarScreenState extends State<DaftarScreen> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => QRGeneratorScreen(trainer: widget.trainer),
+            builder: (context) => QRGeneratorScreen(
+              trainer: widget.trainer,
+              dateStr: dateStr,
+            ),
           ),
         );
       } else {
@@ -78,11 +91,7 @@ class _DaftarScreenState extends State<DaftarScreen> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color(0xFF9E5F00),
-        title: const Text(
-          'Pesanan',
-          style: TextStyle(color: Colors.white),
-        ),
-        iconTheme: const IconThemeData(color: Colors.black),
+        title: const Text('Pesanan', style: TextStyle(color: Colors.white)),
       ),
       backgroundColor: Colors.black,
       body: Padding(
@@ -261,44 +270,74 @@ class _DaftarScreenState extends State<DaftarScreen> {
 
 class QRGeneratorScreen extends StatelessWidget {
   final Trainer trainer;
+  final String dateStr;
 
-  const QRGeneratorScreen({super.key, required this.trainer});
+  const QRGeneratorScreen({Key? key, required this.trainer, required this.dateStr}) : super(key: key);
+
+  Future<int?> fetchOrderIdByDate(String dateStr) async {
+    try {
+      final response = await http.get(
+        Uri.parse('http://10.0.2.2:8000/api/pemesanan/show/$dateStr'),
+      );
+
+      if (response.statusCode == 200) {
+        final responseData = json.decode(response.body);
+        if (responseData['data'] != null && responseData['data'].isNotEmpty) {
+          final orderId = responseData['data'][0]['id_pemesanan'];
+          return orderId;
+        } else {
+          print('No orders found for this date.');
+          return null;
+        }
+      } else {
+        print('Failed to fetch orders: ${response.body}');
+        return null;
+      }
+    } catch (e) {
+      print('Error fetching order data: $e');
+      return null;
+    }
+  }
 
   Future<void> submitTransaction(BuildContext context) async {
     try {
-      final now = DateTime.now();
-      final dateStr =
-          "${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}";
+      final orderId = await fetchOrderIdByDate(dateStr);
 
-      final transactionData = {
-        'id_pemesanan': 9,
-        'tanggal_transaksi': dateStr,
-        'total_tagihan': trainer.fee,
-      };
+      if (orderId != null) {
+        final transactionData = {
+          'id_pemesanan': orderId,
+          'tanggal_transaksi': dateStr,
+          'total_tagihan': trainer.fee,
+        };
 
-      final response = await http.post(
-        Uri.parse('http://10.0.2.2:8000/api/transaksi/create'),
-        headers: {'Content-Type': 'application/json'},
-        body: json.encode(transactionData),
-      );
-
-      if (response.statusCode == 201) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Transaksi berhasil!')),
+        final response = await http.post(
+          Uri.parse('http://10.0.2.2:8000/api/transaksi/create'),
+          headers: {'Content-Type': 'application/json'},
+          body: json.encode(transactionData),
         );
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => StatusScreen(trainer: trainer),
-          ),
-        );
+
+        if (response.statusCode == 201) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Transaksi berhasil!')),
+          );
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => StatusScreen(trainer: trainer, dateStr: dateStr),
+            ),
+          );
+        } else {
+          final responseData = json.decode(response.body);
+          print('Error response: $responseData');
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+                content: Text(
+                    'Gagal menyimpan transaksi: ${responseData['message']}')),
+          );
+        }
       } else {
-        final responseData = json.decode(response.body);
-        print('Error response: $responseData');
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-              content: Text(
-                  'Gagal menyimpan transaksi: ${responseData['message']}')),
+          const SnackBar(content: Text('Gagal mendapatkan ID pemesanan.')),
         );
       }
     } catch (e) {
