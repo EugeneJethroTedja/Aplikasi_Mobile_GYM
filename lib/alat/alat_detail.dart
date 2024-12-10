@@ -3,10 +3,30 @@ import 'daftarAlat.dart';
 import 'alat.dart';
 import 'chatAlat.dart';
 
-class AlatDetailScreen extends StatelessWidget {
+class AlatDetailScreen extends StatefulWidget {
   final Alat alat;
 
   const AlatDetailScreen({super.key, required this.alat});
+
+  @override
+  _AlatDetailScreenState createState() => _AlatDetailScreenState();
+}
+
+class _AlatDetailScreenState extends State<AlatDetailScreen> {
+  int _selectedIndex = 1;
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+    if (index == 0) {
+      Navigator.of(context).pushNamed('/detail_pesanan');
+    } else if (index == 1) {
+      Navigator.of(context).pushNamed('/home');
+    } else if (index == 2) {
+      Navigator.of(context).pushNamed('/profile');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -36,7 +56,7 @@ class AlatDetailScreen extends StatelessWidget {
                   ClipRRect(
                     borderRadius: BorderRadius.circular(16.0),
                     child: Image.asset(
-                      alat.imageUrl,
+                      widget.alat.imageUrl,
                       width: double.infinity,
                       height: 200,
                       fit: BoxFit.cover,
@@ -44,7 +64,7 @@ class AlatDetailScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    alat.nameAlat,
+                    widget.alat.nameAlat,
                     style: const TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 24,
@@ -52,7 +72,7 @@ class AlatDetailScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Deskripsi: ${alat.deskripsi}',
+                    'Deskripsi: ${widget.alat.deskripsi}',
                     style: const TextStyle(fontSize: 16),
                   ),
                   const SizedBox(height: 16),
@@ -60,12 +80,12 @@ class AlatDetailScreen extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Stok Terkini  : ${alat.stok}',
+                        'Stok Terkini  : ${widget.alat.stok}',
                         style: const TextStyle(fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        'Harga         : ${alat.feeAlat}',
+                        'Harga         : ${widget.alat.feeAlat}',
                         style: const TextStyle(fontWeight: FontWeight.bold),
                       ),
                     ],
@@ -86,8 +106,7 @@ class AlatDetailScreen extends StatelessWidget {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) =>
-                                  ChatScreen(alat: alat),
+                              builder: (context) => ChatScreen(alat: widget.alat),
                             ),
                           );
                         },
@@ -107,7 +126,7 @@ class AlatDetailScreen extends StatelessWidget {
                             context,
                             MaterialPageRoute(
                               builder: (context) =>
-                                  DaftarScreen(alat: alat),
+                                  DaftarScreen(alat: widget.alat),
                             ),
                           );
                         },
@@ -120,6 +139,27 @@ class AlatDetailScreen extends StatelessWidget {
             ),
           ),
         ),
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: const Color.fromARGB(255, 158, 95, 0),
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.list, color: Colors.black),
+            label: 'Pesanan',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home, color: Colors.black),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person, color: Colors.black),
+            label: 'Profile',
+          ),
+        ],
+        currentIndex: _selectedIndex,
+        selectedItemColor: Colors.black,
+        unselectedItemColor: Colors.black54,
+        onTap: _onItemTapped,
       ),
     );
   }

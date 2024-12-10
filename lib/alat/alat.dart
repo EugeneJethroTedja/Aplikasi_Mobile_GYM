@@ -25,8 +25,8 @@ class Alat {
       id: json['id_alat'] ?? '',
       nameAlat: json['nameAlat'] ?? '',
       deskripsi: json['deskripsi'] ?? '',
-      stok: json['stok'] ?? '',
-      feeAlat: json['feeAlat'] ?? '',
+      stok: json['stok'] ?? 0,
+      feeAlat: json['feeAlat'] ?? 0,
       imageUrl: json['imageUrl'] ?? 'assets/images/treadmill.jpg',
     );
   }
@@ -42,6 +42,7 @@ class AlatScreen extends StatefulWidget {
 class _AlatScreenState extends State<AlatScreen> {
   List<Alat> alats = [];
   bool isLoading = true;
+  int _selectedIndex = 1;
 
   @override
   void initState() {
@@ -75,6 +76,19 @@ class _AlatScreenState extends State<AlatScreen> {
         isLoading = false;
         alats = [];
       });
+    }
+  }
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+    if (index == 0) {
+      Navigator.of(context).pushNamed('/detail_pesanan');
+    } else if (index == 1) {
+      Navigator.of(context).pushNamed('/home');
+    } else if (index == 2) {
+      Navigator.of(context).pushNamed('/profile');
     }
   }
 
@@ -205,6 +219,27 @@ class _AlatScreenState extends State<AlatScreen> {
                       },
                     ),
             ),
+      bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: const Color.fromARGB(255, 158, 95, 0),
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.list, color: Colors.black),
+            label: 'Pesanan',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home, color: Colors.black),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person, color: Colors.black),
+            label: 'Profile',
+          ),
+        ],
+        currentIndex: _selectedIndex,
+        selectedItemColor: Colors.black,
+        unselectedItemColor: Colors.black54,
+        onTap: _onItemTapped,
+      ),
     );
   }
 }
