@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'alat_detail.dart';
 
 class Alat {
+  final int id;
   final String nameAlat;
   final String deskripsi;
   final int stok;
@@ -11,6 +12,7 @@ class Alat {
   final String imageUrl;
 
   Alat({
+    required this.id,
     required this.nameAlat,
     required this.deskripsi,
     required this.stok,
@@ -20,6 +22,7 @@ class Alat {
 
   factory Alat.fromJson(Map<String, dynamic> json) {
     return Alat(
+      id: json['id_alat'] ?? '',
       nameAlat: json['nameAlat'] ?? '',
       deskripsi: json['deskripsi'] ?? '',
       stok: json['stok'] ?? 0,
@@ -115,7 +118,8 @@ class _AlatScreenState extends State<AlatScreen> {
                           onTap: () => Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => AlatDetailScreen(alat: alat),
+                              builder: (context) =>
+                                  AlatDetailScreen(alat: alat),
                             ),
                           ),
                           child: Card(
@@ -174,6 +178,35 @@ class _AlatScreenState extends State<AlatScreen> {
                                           fontSize: 14,
                                           fontWeight: FontWeight.bold,
                                           color: Colors.black,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Row(
+                                    children: [
+                                      Spacer(),
+                                      ElevatedButton(
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: const Color.fromARGB(
+                                              255, 158, 95, 0),
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(8.0),
+                                          ),
+                                        ),
+                                        onPressed: () {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  AlatDetailScreen(alat: alat),
+                                            ),
+                                          );
+                                        },
+                                        child: const Text(
+                                          'Pesan Sekarang',
+                                          style: TextStyle(color: Colors.white),
                                         ),
                                       ),
                                     ],
