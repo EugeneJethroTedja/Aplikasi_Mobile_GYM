@@ -4,29 +4,34 @@ import 'package:http/http.dart' as http;
 import 'kelas_detail.dart';
 
 class Kelas {
-  final String name;
+  final int id; 
+  final String nameKelas;
   final String trainer;
-  final int duration;
-  final String day;
-  final int fee;
+  final int durationKelas;
+  final String dayKelas;
+  final int feeKelas;
   final String imageUrl;
 
   Kelas({
-    required this.name,
+    required this.id,
+    required this.nameKelas,
     required this.trainer,
-    required this.duration,
-    required this.day,
-    required this.fee,
+    required this.durationKelas,
+    required this.dayKelas,
+    required this.feeKelas,
     required this.imageUrl,
   });
 
   factory Kelas.fromJson(Map<String, dynamic> json) {
     return Kelas(
-      name: json['name'] ?? '',
-      trainer: json['trainer']['name'] ?? '',
-      duration: int.tryParse(json['duration'].toString()) ?? 0,
-      day: json['day'] ?? '',
-      fee: int.tryParse(json['fee'].toString()) ?? 0,
+      id: json['id_kelas'] ?? 0,
+      nameKelas: json['name'] ?? '',
+      trainer: json['trainer'] != null
+          ? (json['trainer']['nama_trainer'] ?? '') 
+          : '', 
+      durationKelas: int.tryParse(json['duration'].toString()) ?? 0,
+      dayKelas: json['day'] ?? '',
+      feeKelas: int.tryParse(json['fee'].toString()) ?? 0,
       imageUrl: json['imageUrl'] ?? 'assets/images/default_image.png',
     );
   }
@@ -44,9 +49,17 @@ class _KelasScreenState extends State<KelasScreen> {
   bool isLoading = true;
   int _selectedIndex = 1;
 
+  @override
+  void initState() {
+    super.initState();
+    fetchKelases();
+  }
+
   Future<void> fetchKelases() async {
     try {
-      final response = await http.get(Uri.parse('http://10.0.2.2:8000/api/kelas/'));
+      final response = await http.get(
+        Uri.parse('http://10.0.2.2:8000/api/kelas/'),
+      );
 
       if (response.statusCode == 200) {
         List<dynamic> kelasesJson = json.decode(response.body);
@@ -84,23 +97,15 @@ class _KelasScreenState extends State<KelasScreen> {
   }
 
   @override
-  void initState() {
-    super.initState();
-    fetchKelases();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Color.fromARGB(255, 158, 95, 0),
+        backgroundColor: const Color.fromARGB(255, 158, 95, 0),
         title: const Text(
           'Kelas',
           style: TextStyle(color: Colors.white),
         ),
-        iconTheme: const IconThemeData(
-          color: Colors.black,
-        ),
+        iconTheme: const IconThemeData(color: Colors.black),
       ),
       backgroundColor: Colors.black,
       body: isLoading
@@ -123,7 +128,8 @@ class _KelasScreenState extends State<KelasScreen> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => KelasDetailScreen(kelas: kelas),
+                                builder: (context) =>
+                                    KelasDetailScreen(kelas: kelas),
                               ),
                             );
                           },
@@ -153,7 +159,7 @@ class _KelasScreenState extends State<KelasScreen> {
                                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                     children: [
                                       Text(
-                                        kelas.name,
+                                        kelas.nameKelas,
                                         style: const TextStyle(
                                           fontWeight: FontWeight.bold,
                                           fontSize: 16,
@@ -162,7 +168,7 @@ class _KelasScreenState extends State<KelasScreen> {
                                       ),
                                       ElevatedButton(
                                         style: ElevatedButton.styleFrom(
-                                          backgroundColor: Color.fromARGB(255, 158, 95, 0),
+                                          backgroundColor: const Color.fromARGB(255, 158, 95, 0),
                                           shape: RoundedRectangleBorder(
                                             borderRadius: BorderRadius.circular(20),
                                           ),
@@ -171,7 +177,8 @@ class _KelasScreenState extends State<KelasScreen> {
                                           Navigator.push(
                                             context,
                                             MaterialPageRoute(
-                                              builder: (context) => KelasDetailScreen(kelas: kelas),
+                                              builder: (context) =>
+                                                  KelasDetailScreen(kelas: kelas),
                                             ),
                                           );
                                         },

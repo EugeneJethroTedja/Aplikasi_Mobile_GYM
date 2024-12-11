@@ -2,19 +2,24 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Trainer {
+  final int idHistori;
   final String name;
   final String specialty;
   final String date;
-  final int price;
+  final String jenis;
+  final double price;
   final String imagePath;
   int? review;
 
   Trainer({
+    required this.idHistori,
     required this.name,
     required this.specialty,
     required this.date,
+    required this.jenis,
     required this.price,
     required this.imagePath,
     this.review,
@@ -22,10 +27,12 @@ class Trainer {
 
   factory Trainer.fromJson(Map<String, dynamic> json) {
     return Trainer(
-      name: json['nama_trainer'] ?? '',
+      idHistori: json['id_histori'],
+      name: json['nama'] ?? '',
       specialty: json['spesialis'] ?? '',
       date: json['tanggal'] ?? '',
-      price: json['biaya'] ?? 0,
+      jenis: json['jenis'] ?? '',
+      price: (json['harga'] ?? 0).toDouble(),
       imagePath: json['imageUrl'] ?? 'assets/images/Trainer/default.png',
       review: json['review'] != null ? int.tryParse(json['review'].toString()) : null,
     );
@@ -33,91 +40,249 @@ class Trainer {
 
   Map<String, dynamic> toJson() {
     return {
-      "nama_trainer": name,
+      "id_histori": idHistori,
+      "nama": name,
       "spesialis": specialty,
       "tanggal": date,
-      "biaya": price,
+      "jenis": jenis,
+      "harga": price,
       "imageUrl": imagePath,
       "review": review,
     };
   }
 }
 
+
+Future<void> createHistory(int loggedInUserId, int transactionId) async {
+    try {
+      final response = await http.post(
+        Uri.parse('http://10.0.2.2:8000/api/histori/create'),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({
+          'review': 0,
+          'id_transaksi': transactionId,
+          'id_pelanggan': loggedInUserId,
+        }),
+      );
+
+      if (response.statusCode == 201) {
+        debugPrint('History created successfully.');
+      } else {
+        debugPrint(
+            'Failed to create history: ${response.statusCode}, Response: ${response.body}');
+      }
+    } catch (e) {
+      debugPrint('Error creating history: $e');
+    }
+  }
+
+  Future<void> loadHistoryData() async {
+    final prefs = await SharedPreferences.getInstance();
+    final orderId = prefs.getInt('orderId');
+    final transactionId = prefs.getInt('transactionId');
+    final trainerId = prefs.getInt('trainerId');
+    final loggedInUserId = prefs.getInt('userId');
+    print(orderId);
+    print(transactionId);
+    print(trainerId);
+    print(loggedInUserId);
+    if (loggedInUserId != null &&
+        orderId != null &&
+        transactionId != null &&
+        trainerId != null) {
+      print('Order ID: $orderId');
+      print('Transaction ID: $transactionId');
+      print('Trainer ID: $trainerId');
+      print('User ID: $loggedInUserId');
+
+      await createHistory(loggedInUserId, transactionId);
+    } else {
+      print('Data tidak ditemukan');
+    }
+  }
+
 class TrainerPage extends StatefulWidget {
-  const TrainerPage({super.key});
+  const TrainerPage({Key? key}) : super(key: key);
 
   @override
   State<TrainerPage> createState() => _TrainerPageState();
 }
 
+class TrainerSummary {
+  final String name;
+  final double fee;
+  final String transactionDate;
+  final String imageUrl;
+
+  TrainerSummary(
+      {required this.name, required this.fee, required this.transactionDate, required this.imageUrl});
+
+  // Factory method untuk membuat TrainerSummary dari data JSON
+  factory TrainerSummary.fromJson(Map<String, dynamic> json) {
+    return TrainerSummary(
+      name: json['pelanggan']['nama_pelanggan'] ?? 'Nama Tidak Tersedia',
+      fee: json['transaksi']['total_tagihan']?.toDouble() ?? 0.0,
+      transactionDate: json['transaksi']['tanggal_transaksi'] ?? 'Tanggal Tidak Tersedia',
+      imageUrl: json['pelanggan']['profile_picture'] ?? 'foto tidak ditemukan',
+    );
+  }
+}
+
 class _TrainerPageState extends State<TrainerPage> {
-  List<Trainer> trainers = [];
+  List<TrainerSummary> trainers = [];
   bool isLoading = true;
 
   @override
   void initState() {
     super.initState();
     fetchTrainers();
+    loadHistoryData();
+  }
+
+  Future<void> createHistory(int loggedInUserId, int transactionId) async {
+    try {
+      final response = await http.post(
+        Uri.parse('http://10.0.2.2:8000/api/histori/create'),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({
+          'review': 0,
+          'id_transaksi': transactionId,
+          'id_pelanggan': loggedInUserId,
+        }),
+      );
+
+      if (response.statusCode == 201) {
+        debugPrint('History created successfully.');
+        fetchTrainers();
+      } else {
+        debugPrint(
+            'Failed to create history: ${response.statusCode}, Response: ${response.body}');
+      }
+    } catch (e) {
+      debugPrint('Error creating history: $e');
+    }
+  }
+
+  Future<void> loadHistoryData() async {
+    final prefs = await SharedPreferences.getInstance();
+    final orderId = prefs.getInt('orderId');
+    final transactionId = prefs.getInt('transactionId');
+    final trainerId = prefs.getInt('trainerId');
+    final loggedInUserId = prefs.getInt('userId');
+
+    if (loggedInUserId != null &&
+        orderId != null &&
+        transactionId != null &&
+        trainerId != null) {
+      print('Order ID: $orderId');
+      print('Transaction ID: $transactionId');
+      print('Trainer ID: $trainerId');
+      print('User ID: $loggedInUserId');
+
+      await createHistory(loggedInUserId, transactionId);
+    } else {
+      print('Data tidak ditemukan');
+    }
+
   }
 
   Future<void> fetchTrainers() async {
     try {
-      final response = await http.get(Uri.parse('http://10.0.2.2:8000/api/history_trainer/'));
+      final response =
+          await http.get(Uri.parse('http://10.0.2.2:8000/api/histori/'));
       if (response.statusCode == 200) {
         List<dynamic> data = json.decode(response.body);
+        print(response.body); // Debugging untuk melihat respons
+
         setState(() {
-          trainers = data.map((json) => Trainer.fromJson(json)).toList();
-          isLoading = false;
+          // Hanya memetakan data yang diperlukan
+          trainers = data.map((json) {
+            return TrainerSummary.fromJson(json);
+          }).toList();
         });
       } else {
-        setState(() {
-          isLoading = false;
-        });
+        debugPrint('Failed to load trainers: ${response.statusCode}');
       }
     } catch (e) {
+      debugPrint('Error fetching trainers: $e');
+    } finally {
       setState(() {
         isLoading = false;
       });
-      print("Error: $e");
     }
   }
 
-  // void updateTrainerReview(String trainerName, int review) {
-  //   setState(() {
-  //     // Cari trainer berdasarkan nama
-  //     final trainer = trainers.firstWhere(
-  //       (t) => t['name'] == trainerName,
-  //       orElse: () => null,
-  //     );
-      
-  //     if (trainer != null) {
-  //       trainer['review'] = review; // Update nilai review
-  //     }
-  //   });
-  // }
+  Future<void> updateTrainerReviewOnServer(int idTransaksi, int review) async {
+    try {
+      final response = await http.put(
+        Uri.parse('http://10.0.2.2:8000/api/histori/update/$idTransaksi'),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({'review': review}), // Kirim hanya review
+      );
 
-
-  void updateTrainerReview(String trainerName, int review) {
-    setState(() {
-      final trainer = trainers.firstWhere((t) => t.name == trainerName);
-      // final trainer = trainers.firstWhere((t) => t.name == trainerName, orElse: () => null);
-      if (trainer.review == null) {
-        trainer.review = review;
+      if (response.statusCode == 200) {
+        debugPrint('Review updated successfully.');
+      } else {
+        debugPrint(
+            'Failed to update review: ${response.statusCode}, Response: ${response.body}');
       }
-    });
+    } catch (e) {
+      debugPrint('Error updating review: $e');
+    }
   }
 
-  // void updateTrainerReview(String trainerName, int review) {
-  //   setState(() {
-  //     final trainer = trainers.firstWhere((t) => t.name == trainerName, orElse: () => null);
-  //     if (trainer != null) {
-  //       trainer.review = review;
-  //     }
-  //   });
-  // }
+  void updateTrainerReview(int idHistori, int review) async {
+    try {
+      // Temukan idTransaksi berdasarkan idHistori
+      final idTransaksi = await getIdTransaksiByHistori(idHistori);
+
+      // Cek apakah idTransaksi ditemukan
+      if (idTransaksi == 0) {
+        debugPrint('Transaksi not found for idHistori: $idHistori');
+        return;
+      }
+
+      // Kirim permintaan untuk memperbarui review ke server
+      await updateTrainerReviewOnServer(idTransaksi, review);
+
+      // Jika server berhasil mengupdate, Anda bisa memperbarui UI secara lokal
+      // Misalnya, jika Anda ingin menampilkan perubahan, Anda bisa melakukannya di sini
+
+      setState(() {
+        // Jika Anda perlu memperbarui UI setelah review berhasil diupdate,
+        // Anda bisa mengubah nilai review secara langsung di trainer yang sesuai.
+        // Misalnya, Anda bisa menggunakan metode untuk mengupdate nilai review dalam daftar trainers.
+      });
+    } catch (e) {
+      debugPrint('Error updating review: $e');
+    }
+  }
+
+  // Fungsi untuk mendapatkan idTransaksi berdasarkan idHistori
+  Future<int> getIdTransaksiByHistori(int idHistori) async {
+    try {
+      final response = await http
+          .get(Uri.parse('http://10.0.2.2:8000/api/transaksi/$idHistori'));
+
+      if (response.statusCode == 200) {
+        var data = json.decode(response.body);
+        return data['id_transaksi']; // Mengembalikan id_transaksi
+      } else {
+        debugPrint('Failed to fetch idTransaksi: ${response.statusCode}');
+        return 0; // Kembalikan 0 jika tidak ditemukan
+      }
+    } catch (e) {
+      debugPrint('Error fetching idTransaksi: $e');
+      return 0; // Kembalikan 0 jika terjadi kesalahan
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    // Filter trainers untuk hanya menampilkan data dengan jenis 'trainer'
+    List<Trainer> filteredTrainers =
+        trainers.where((trainer) => trainer.jenis == 'trainer').toList();
+
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
@@ -130,27 +295,69 @@ class _TrainerPageState extends State<TrainerPage> {
       ),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
-          : trainers.isEmpty
+          : filteredTrainers.isEmpty
               ? const Center(
                   child: Text(
                     'Tidak ada trainer tersedia',
                     style: TextStyle(color: Colors.white),
                   ),
                 )
-              : SingleChildScrollView(
-                  child: Column(
-                    children: trainers.map((trainer) {
-                      return _buildTrainerCard(
-                        trainer,
-                        onReviewUpdate: (rating) {
-                          updateTrainerReview(trainer.name, rating);
-                        },
-                      );
-                    }).toList(),
-                  ),
+              : ListView.builder(
+                  itemCount: filteredTrainers.length,
+                  itemBuilder: (context, index) {
+                    final trainer = filteredTrainers[index];
+                    return _buildTrainerCard(
+                      trainer,
+                      onReviewUpdate: (rating) {
+                        updateTrainerReview(trainer.idHistori, rating);
+                      },
+                    );
+                  },
                 ),
     );
   }
+
+
+  // @override
+  // Widget build(BuildContext context) {
+
+  //   // utk filter trainers untuk hanya menampilkan data dengan jenis 'trainer' SAJa
+  // List<Trainer> filteredTrainers =
+  //     trainers.where((trainer) => trainer.jenis == 'trainer').toList();
+
+  //   return Scaffold(
+  //     backgroundColor: Colors.black,
+  //     appBar: AppBar(
+  //       backgroundColor: const Color.fromARGB(255, 158, 95, 0),
+  //       title: const Text('Trainer Anda'),
+  //       leading: IconButton(
+  //         icon: const Icon(Icons.arrow_back),
+  //         onPressed: () => Navigator.pop(context),
+  //       ),
+  //     ),
+  //     body: isLoading
+  //         ? const Center(child: CircularProgressIndicator())
+  //         : filteredTrainers.isEmpty
+  //             ? const Center(
+  //                 child: Text(
+  //                   'Tidak ada trainer tersedia',
+  //                   style: TextStyle(color: Colors.white),
+  //                 ),
+  //               )
+  //             : ListView.builder(
+  //                 itemCount: trainers.length,
+  //                 itemBuilder: (context, index) {
+  //                   final trainer = trainers[index];
+  //                   return _buildTrainerCard(
+  //                     trainer,
+  //                     onReviewUpdate: (rating) {
+  //                       updateTrainerReview(trainer.idHistori, rating);
+  //                     },
+  //                   );
+  //                 },
+  //               ),
+  //   );
+  // }
 
   Widget _buildTrainerCard(Trainer trainer, {required Function(int) onReviewUpdate}) {
     String formattedPrice = NumberFormat('#,###', 'id_ID').format(trainer.price);
@@ -170,7 +377,7 @@ class _TrainerPageState extends State<TrainerPage> {
                 ClipRRect(
                   borderRadius: BorderRadius.circular(16),
                   child: Image.asset(
-                    trainer.imagePath,
+                    'assets/images/default_trainer.png', // Gambar default jika tidak ada gambar trainer
                     width: 110,
                     height: 110,
                     fit: BoxFit.cover,
@@ -182,7 +389,7 @@ class _TrainerPageState extends State<TrainerPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        trainer.name,
+                        trainerSummary.name,
                         style: const TextStyle(
                           fontSize: 21,
                           fontWeight: FontWeight.bold,
@@ -190,60 +397,24 @@ class _TrainerPageState extends State<TrainerPage> {
                         ),
                       ),
                       Text(
-                        "Spesialisasi: ${trainer.specialty}",
+                        "Tanggal Transaksi: ${trainerSummary.transactionDate}",
                         style: const TextStyle(
                           fontSize: 14,
+                          fontWeight: FontWeight.w600,
                           color: Colors.black87,
                         ),
                       ),
                       Text(
-                        "Tanggal: ${trainer.date}",
-                        style: const TextStyle(fontSize: 14, color: Colors.black87),
-                      ),
-                      Text(
                         "Harga: Rp. $formattedPrice",
-                        style: const TextStyle(fontSize: 14, color: Colors.black87),
-                      ),
-                      if (trainer.review != null)
-                        Text(
-                          "Review: ${trainer.review}/5",
-                          style: const TextStyle(fontSize: 14, color: Colors.black87),
+                        style: const TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.black87,
                         ),
+                      ),
                     ],
                   ),
                 ),
-              ],
-            ),
-            const Divider(thickness: 1.2, color: Colors.black54),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                if (trainer.review != null)
-                  Row(
-                    children: const [
-                      Icon(Icons.check_circle, color: Colors.green, size: 18),
-                      SizedBox(width: 5),
-                      Text(
-                        "Selesai",
-                        style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
-                      ),
-                    ],
-                  )
-                else
-                  ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => ReviewPage(
-                            trainer: trainer,
-                            onReviewSubmitted: onReviewUpdate,
-                          ),
-                        ),
-                      );
-                    },
-                    child: const Text('Review'),
-                  ),
               ],
             ),
           ],
@@ -253,38 +424,159 @@ class _TrainerPageState extends State<TrainerPage> {
   }
 }
 
-class ReviewPage extends StatelessWidget {
-  final Trainer trainer;
+class ReviewPage extends StatefulWidget {
+  final TrainerSummary trainerSummary; // Ubah ini menjadi TrainerSummary
   final Function(int) onReviewSubmitted;
 
-  const ReviewPage({Key? key, required this.trainer, required this.onReviewSubmitted}) : super(key: key);
+  const ReviewPage(
+      {Key? key, required this.trainerSummary, required this.onReviewSubmitted})
+      : super(key: key);
+
+  @override
+  _ReviewPageState createState() => _ReviewPageState();
+}
+
+class _ReviewPageState extends State<ReviewPage> {
+  int selectedRating = 0;
 
   @override
   Widget build(BuildContext context) {
-    int selectedRating = 0;
-
     return Scaffold(
+      backgroundColor: Colors.black,
       appBar: AppBar(
+        backgroundColor: const Color.fromARGB(255, 158, 95, 0),
         title: const Text("Review Trainer"),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
       ),
       body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text("Rating untuk ${trainer.name}"),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: List.generate(5, (index) {
-              return IconButton(
-                onPressed: () {
-                  selectedRating = index + 1;
-                  onReviewSubmitted(selectedRating);
-                  Navigator.pop(context);
-                },
-                icon: Icon(
-                  Icons.star,
-                  color: index < selectedRating ? Colors.amber : Colors.grey,
-                ),
-              );
-            }),
+          Card(
+            color: Colors.white,
+            margin: const EdgeInsets.symmetric(horizontal: 14, vertical: 20),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(12, 12, 12, 12),
+              child: Column(
+                children: [
+                  Row(
+                    children: [
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(16),
+                        child: Image.asset(
+                          widget.trainerSummary.imageUrl,
+                          width: 130,
+                          height: 130,
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                      const SizedBox(width: 19),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              widget.trainerSummary.name,
+                              style: const TextStyle(
+                                fontSize: 21,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              "Spesialis: ${widget.trainerSummary.name}",
+                              style: const TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.black87,
+                              ),
+                            ),
+                            Text(
+                              "Tanggal  : ${widget.trainerSummary.transactionDate}",
+                              style: const TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.black87,
+                              ),
+                            ),
+                            Text(
+                              "Harga     : Rp. ${widget.trainerSummary.fee}",
+                              style: const TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.black87,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 5),
+                  const Divider(thickness: 1.5, color: Colors.black38),
+                  const SizedBox(height: 8),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        "Rating: ",
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.black,
+                        ),
+                      ),
+                      Row(
+                        children: List.generate(5, (index) {
+                          return IconButton(
+                            onPressed: () {
+                              setState(() {
+                                selectedRating = index + 1;
+                              });
+                            },
+                            icon: Icon(
+                              Icons.star,
+                              color: index < selectedRating
+                                  ? Colors.amber
+                                  : Colors.grey,
+                            ),
+                          );
+                        }),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  ElevatedButton(
+                    onPressed: () {
+                      widget.onReviewSubmitted(selectedRating);
+                      Navigator.pop(context);
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color.fromARGB(255, 207, 129, 12),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                    child: const Text(
+                      'Kirim',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
         ],
       ),

@@ -28,7 +28,7 @@ dev_dependencies:
   camera: ^0.11.0+1
   image_picker: ^0.8.7+3
   qr_flutter: ^4.1.0
-  intl: ^0.17.0
+  intl: ^0.18.0
 
 flutter:
   uses-material-design: true
@@ -69,8 +69,4 @@ flutter:
     - assets/images/Kelas/body-combat.png
     - assets/images/Kelas/muay-thai.png
     - assets/images/Kelas/upper-chest.png
-    - assets/images/kelasaerobik.jpg
-    - assets/images/kelaslegday.jpg
-    - assets/images/kelassixpack.jpeg
-    - assets/images/kelasupperchest.webp
     - assets/images/bangunangym.webp

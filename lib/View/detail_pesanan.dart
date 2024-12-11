@@ -28,7 +28,7 @@ class DetailPesananPage extends StatelessWidget {
             image: const AssetImage('assets/images/trainer.jpg'),
             title: 'Detail Trainer',
             subtitle: 'Lihat Trainer Anda',
-            routeName: '/history_trainer',
+            routeName: '/histori',
           ),
           const SizedBox(height: 16),
           _buildInfoCard(

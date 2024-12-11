@@ -6,8 +6,9 @@ import 'trainer_pdf.dart'; // Import untuk generatePdf()
 
 class StatusScreen extends StatefulWidget {
   final Trainer trainer;
+  final String dateStr;
 
-  const StatusScreen({super.key, required this.trainer});
+  const StatusScreen({super.key, required this.trainer, required this.dateStr});
 
   @override
   _StatusScreenState createState() => _StatusScreenState();
@@ -24,10 +25,10 @@ class _StatusScreenState extends State<StatusScreen> {
     super.initState();
     soldProducts = [
       [
-        widget.trainer.name, 
-        '1', 
-        widget.trainer.duration.toString(), 
-        'Rp ${widget.trainer.fee.toStringAsFixed(0)}', 
+        widget.trainer.name,
+        '1',
+        widget.trainer.duration.toString(),
+        'Rp ${widget.trainer.fee.toStringAsFixed(0)}',
       ],
     ];
     fetchPaymentMethod();
@@ -36,7 +37,7 @@ class _StatusScreenState extends State<StatusScreen> {
   Future<void> fetchPaymentMethod() async {
     try {
       final response = await http.get(
-        Uri.parse('http://10.0.2.2:8000/api/pemesanan/show/13'),
+        Uri.parse('http://10.0.2.2:8000/api/pemesanan/show/${widget.dateStr}'),
       );
 
       print("Response: ${response.body}");
@@ -44,33 +45,55 @@ class _StatusScreenState extends State<StatusScreen> {
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
 
-        // Cek apakah 'data' berisi 'bank_payment'
-        if (data.containsKey('data') && data['data'].containsKey('bank_payment')) {
-          setState(() {
-            paymentMethod = data['data']['bank_payment'];
-            isLoading = false;
-          });
+        print("Response JSON: $data");
+
+        if (data.containsKey('data') &&
+            data['data'] is List &&
+            data['data'].isNotEmpty) {
+          var orderData = data['data'][0];
+
+          // Cek prioritas metode pembayaran
+          if (orderData.containsKey('digital_payment') &&
+              orderData['digital_payment'] != null &&
+              orderData['digital_payment'].toString().trim().isNotEmpty &&
+              orderData['digital_payment'] != '-') {
+            setState(() {
+              paymentMethod = orderData['digital_payment'];
+              isLoading = false;
+            });
+          } else if (orderData.containsKey('bank_payment') &&
+              orderData['bank_payment'] != null &&
+              orderData['bank_payment'].toString().trim().isNotEmpty) {
+            setState(() {
+              paymentMethod = orderData['bank_payment'];
+              isLoading = false;
+            });
+          } else {
+            setState(() {
+              paymentMethod = 'Metode pembayaran tidak ditemukan';
+              isLoading = false;
+            });
+          }
         } else {
           setState(() {
+            paymentMethod = 'Data pemesanan tidak ditemukan';
             isLoading = false;
-            paymentMethod = 'Metode pembayaran tidak ditemukan';
           });
         }
       } else {
         setState(() {
+          paymentMethod = 'Gagal mengambil metode pembayaran';
           isLoading = false;
-          paymentMethod = 'Metode pembayaran tidak ditemukan';
         });
       }
     } catch (e) {
       print("Error fetching payment method: $e");
       setState(() {
-        isLoading = false;
         paymentMethod = 'Error saat mengambil data';
+        isLoading = false;
       });
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -88,11 +111,11 @@ class _StatusScreenState extends State<StatusScreen> {
               'assets/images/LOGO.png',
               width: 350,
               height: 100,
-              fit: BoxFit.contain, // Menampilkan gambar secara proporsional
+              fit: BoxFit.contain,
             ),
             const SizedBox(height: 16),
             isLoading
-                ? CircularProgressIndicator() // Menampilkan indikator loading jika data belum ada
+                ? const CircularProgressIndicator()
                 : Card(
                     color: const Color.fromARGB(255, 252, 241, 230),
                     shape: RoundedRectangleBorder(
@@ -102,7 +125,6 @@ class _StatusScreenState extends State<StatusScreen> {
                       padding: const EdgeInsets.all(16.0),
                       child: Row(
                         children: [
-                          // Teks status
                           Expanded(
                             child: Text(
                               'Status: $status',
@@ -112,7 +134,6 @@ class _StatusScreenState extends State<StatusScreen> {
                               ),
                             ),
                           ),
-                          // Ikon atau tombol tergantung status
                           status == 'pending'
                               ? IconButton(
                                   icon: const Icon(Icons.refresh),
@@ -124,34 +145,34 @@ class _StatusScreenState extends State<StatusScreen> {
                                 )
                               : ElevatedButton(
                                   style: ElevatedButton.styleFrom(
-                                    backgroundColor: const Color.fromARGB(255, 158, 95, 0),
-                                    padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                                    backgroundColor:
+                                        const Color.fromARGB(255, 158, 95, 0),
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 16.0, vertical: 8.0),
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(8.0),
                                     ),
                                   ),
                                   onPressed: () async {
-                                    // Mengambil data dari trainer
-                                    String transactionId = "123456789"; // ID transaksi, bisa dinamis
-                                    int totalPrice = widget.trainer.fee; // Total biaya sesuai biaya trainer
-
-                                    // Menunggu paymentMethod tersedia
+                                    print('Products: $soldProducts');
                                     if (paymentMethod.isNotEmpty) {
                                       await generatePdf(
                                         context,
-                                        soldProducts,           // Produk yang dijual
-                                        transactionId,          // ID Transaksi
-                                        paymentMethod,          // Metode pembayaran
-                                        totalPrice,             // Total harga
-                                        'assets/images/LOGO.png', // Path logo
+                                        soldProducts,
+                                        widget.trainer.id.toString(),
+                                        paymentMethod,
+                                        widget.trainer.fee,
+                                        'assets/images/LOGO.png',
                                       );
                                     } else {
-                                      print('Payment method is not available yet.');
+                                      print(
+                                          'Payment method is not available yet.');
                                     }
                                   },
                                   child: const Text(
                                     'Cetak PDF',
-                                    style: TextStyle(color: Colors.white, fontSize: 16),
+                                    style: TextStyle(
+                                        color: Colors.white, fontSize: 16),
                                   ),
                                 ),
                         ],

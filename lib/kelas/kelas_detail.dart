@@ -32,7 +32,7 @@ class _KelasDetailScreenState extends State<KelasDetailScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Color.fromARGB(255, 158, 95, 0),
+        backgroundColor: const Color.fromARGB(255, 158, 95, 0),
         title: const Text('Back', style: TextStyle(color: Colors.white)),
         iconTheme: const IconThemeData(
           color: Color.fromARGB(255, 0, 0, 0),
@@ -42,14 +42,10 @@ class _KelasDetailScreenState extends State<KelasDetailScreen> {
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Center(
-          child: Container(
-            decoration: BoxDecoration(
-              color: const Color.fromARGB(255, 255, 255, 255),
+          child: Card(
+            color: const Color.fromARGB(255, 252, 255, 255),
+            shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(16.0),
-              border: Border.all(
-                color: Colors.white, // Warna border biru
-                width: 2.0,
-              ),
             ),
             child: Padding(
               padding: const EdgeInsets.all(16.0),
@@ -67,50 +63,43 @@ class _KelasDetailScreenState extends State<KelasDetailScreen> {
                     ),
                   ),
                   const SizedBox(height: 16),
+                  
                   Text(
-                    widget.kelas.name,
+                    widget.kelas.nameKelas,
+
                     style: const TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 24,
                     ),
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 16),
+                  
+                  // Detail Kelas
                   Text(
-                    'Trainer: ${widget.kelas.trainer}',
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                    ),
+
+                    'Trainer  : ${widget.kelas.trainer}',
+                    style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
                   Text(
-                    'Durasi : ${widget.kelas.duration}',
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                    ),
+                    'Durasi   : ${widget.kelas.durationKelas}',
+                    style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
                   Text(
-                    'Hari    : ${widget.kelas.day}',
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                    ),
+                    'Hari     : ${widget.kelas.dayKelas}',
+                    style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
                   Text(
-                    'Harga : ${widget.kelas.fee}',
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                    ),
+                    'Harga    : ${widget.kelas.feeKelas}',
+                    style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 16),
+                  
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       ElevatedButton.icon(
                         style: ElevatedButton.styleFrom(
-                          backgroundColor:
-                              const Color.fromARGB(255, 158, 95, 0),
+                          backgroundColor: const Color.fromARGB(255, 158, 95, 0),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(8.0),
                           ),
@@ -125,12 +114,15 @@ class _KelasDetailScreenState extends State<KelasDetailScreen> {
                           );
                         },
                         icon: const Icon(Icons.chat, color: Colors.white),
-                        label: const Text('Pesan', style: TextStyle(color: Colors.white)),
+                        label: const Text(
+                          'Chat',
+                          style: TextStyle(color: Colors.white),
+                        ),
                       ),
+
                       ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          backgroundColor:
-                              const Color.fromARGB(255, 158, 95, 0),
+                          backgroundColor: const Color.fromARGB(255, 158, 95, 0),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(8.0),
                           ),
@@ -144,7 +136,10 @@ class _KelasDetailScreenState extends State<KelasDetailScreen> {
                             ),
                           );
                         },
-                        child: const Text('Daftar', style: TextStyle(color: Colors.white)),
+                        child: const Text(
+                          'DAFTAR',
+                          style: TextStyle(color: Colors.white),
+                        ),
                       ),
                     ],
                   ),

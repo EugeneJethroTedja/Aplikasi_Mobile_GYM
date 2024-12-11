@@ -10,6 +10,7 @@ import 'package:sembilan_nih/list/list_trainer.dart';
 import 'package:sembilan_nih/list/list_alat.dart';
 import 'package:sembilan_nih/list/list_kelas.dart';
 
+
 void main() {
   runApp(const MyApp());
 }
@@ -30,7 +31,7 @@ class MyApp extends StatelessWidget {
         '/trainer': (context) => const TrainerScreen(),
         '/alat': (context) => const AlatScreen(),
         '/kelas': (context) => const KelasScreen(),
-        '/history_trainer': (context) => const TrainerPage(),
+        '/histori': (context) => const TrainerPage(),
         '/history_alat': (context) => const AlatPage(),
         '/history_kelas': (context) => const KelasPage(),
       },
