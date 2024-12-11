@@ -280,8 +280,7 @@ class _TrainerPageState extends State<TrainerPage> {
   @override
   Widget build(BuildContext context) {
     // Filter trainers untuk hanya menampilkan data dengan jenis 'trainer'
-    List<Trainer> filteredTrainers =
-        trainers.where((trainer) => trainer.jenis == 'trainer').toList();
+    List<Trainer> filteredTrainers = trainers.where((trainer) => trainer.jenis == 'trainer').toList();
 
     return Scaffold(
       backgroundColor: Colors.black,

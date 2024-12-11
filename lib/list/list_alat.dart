@@ -107,18 +107,14 @@ class _AlatPageState extends State<AlatPage> {
 
   void updateAlatReview(int idHistori, int review) async {
     try {
-      // Temukan alat berdasarkan `idHistori`
       final alat = trainers.firstWhere((t) => t.idHistori == idHistori);
 
-      // Simpan nilai asli untuk rollback jika gagal
       final originalReview = alat.review;
 
-      // Perbarui UI secara lokal
       setState(() {
         alat.review = review;
       });
 
-      // Kirim permintaan ke server
       await updateAlatReviewOnServer(idHistori, review);
     } catch (e) {
       debugPrint('Error updating review: $e');
@@ -127,7 +123,6 @@ class _AlatPageState extends State<AlatPage> {
 
   @override
   Widget build(BuildContext context) {
-    // Filter trainers untuk hanya menampilkan data dengan jenis 'trainer'
     List<Alat> filteredAlats =
         trainers.where((trainer) => trainer.jenis == 'alat').toList();
 
