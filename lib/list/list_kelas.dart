@@ -8,6 +8,7 @@ class Kelas {
   final String name;
   final String specialty;
   final String date;
+  final String jenis;
   final double price;
   final String imagePath;
   int? review;
@@ -17,6 +18,7 @@ class Kelas {
     required this.name,
     required this.specialty,
     required this.date,
+    required this.jenis,
     required this.price,
     required this.imagePath,
     this.review,
@@ -28,6 +30,7 @@ class Kelas {
       name: json['nama'] ?? '',
       specialty: json['spesialis'] ?? '',
       date: json['tanggal'] ?? '',
+      jenis: json['jenis'] ?? '',
       price: (json['harga'] ?? 0).toDouble(),
       imagePath: json['imageUrl'] ?? 'assets/images/Kelas/default.png',
       review: json['review'] != null ? int.tryParse(json['review'].toString()) : null,
@@ -123,44 +126,45 @@ class _KelasPageState extends State<KelasPage> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.black,
-      appBar: AppBar(
-        backgroundColor: const Color.fromARGB(255, 158, 95, 0),
-        title: const Text('Kelas Anda'),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => Navigator.pop(context),
-        ),
+Widget build(BuildContext context) {
+  // Filter trainers untuk hanya menampilkan data dengan jenis 'trainer'
+  List<Kelas> filteredKelas =
+      trainers.where((kelas) => kelas.jenis == 'kelas').toList();
+
+  return Scaffold(
+    backgroundColor: Colors.black,
+    appBar: AppBar(
+      backgroundColor: const Color.fromARGB(255, 158, 95, 0),
+      title: const Text('Kelas Anda'),
+      leading: IconButton(
+        icon: const Icon(Icons.arrow_back),
+        onPressed: () => Navigator.pop(context),
       ),
-      body: isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : trainers.isEmpty
-              ? const Center(
-                  child: Text(
-                    'Tidak ada kelas tersedia',
-                    style: TextStyle(color: Colors.white),
-                  ),
-                )
-              : ListView.builder(
-                  itemCount: trainers.length,
-                  itemBuilder: (context, index) {
-                    final kelas = trainers[index];
-                    return _buildKelasCard(
-                      kelas,
-                      onReviewUpdate: (rating) {
-                        // updateKelasReview(kelas.name, rating);
-                        // updateKelasReview(kelas.idHistori, kelas.name, rating);
-                        updateKelasReview(kelas.idHistori, rating);
-
-
-                      },
-                    );
-                  },
+    ),
+    body: isLoading
+        ? const Center(child: CircularProgressIndicator())
+        : filteredKelas.isEmpty
+            ? const Center(
+                child: Text(
+                  'Tidak ada trainer tersedia',
+                  style: TextStyle(color: Colors.white),
                 ),
-    );
-  }
+              )
+            : ListView.builder(
+                itemCount: filteredKelas.length,
+                itemBuilder: (context, index) {
+                  final trainer = filteredKelas[index];
+                  return _buildKelasCard(
+                    trainer,
+                    onReviewUpdate: (rating) {
+                      updateKelasReview(trainer.idHistori, rating);
+                    },
+                  );
+                },
+              ),
+  );
+}
+
 
   Widget _buildKelasCard(Kelas kelas, {required Function(int) onReviewUpdate}) {
     String formattedPrice = NumberFormat('#,###', 'id_ID').format(kelas.price);
@@ -200,7 +204,7 @@ class _KelasPageState extends State<KelasPage> {
                         ),
                       ),
                       Text(
-                        "Spesialisasi: ${kelas.specialty}",
+                        "Trainer  : ${kelas.specialty}",
                         style: const TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,

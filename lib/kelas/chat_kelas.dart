@@ -41,18 +41,14 @@ class _ChatScreenState extends State<ChatScreen> {
         padding: const EdgeInsets.all(16.0),
         children: [
           buildMessageBubble(
-              kelas.nameKelas,
-
-              widget.kelas.name,
+              widget.kelas.nameKelas,
               "Selamat Pagi/Siang/Sore/Malam ada yang bisa saya bantu?",
               true,
               widget.kelas.imageUrl),
           buildMessageBubble("Putra", "Saya ingin mendaftar kelas kak, caranya bagaimana ya?",
               false, 'assets/images/user.png'),
           buildMessageBubble(
-              kelas.nameKelas,
-
-              widget.kelas.name,
+              widget.kelas.nameKelas,
               "Kakak bisa langsung pencet daftar saja untuk mendapatkan kelas buruan keburu kehabisan.",
               true,
               widget.kelas.imageUrl),

@@ -65,8 +65,7 @@ class _KelasDetailScreenState extends State<KelasDetailScreen> {
                   const SizedBox(height: 16),
                   
                   Text(
-                    kelas.nameKelas,
-                    widget.kelas.name,
+                    widget.kelas.nameKelas,
 
                     style: const TextStyle(
                       fontWeight: FontWeight.bold,
@@ -78,19 +77,19 @@ class _KelasDetailScreenState extends State<KelasDetailScreen> {
                   // Detail Kelas
                   Text(
 
-                    'Trainer  : ${kelas.trainer}',
+                    'Trainer  : ${widget.kelas.trainer}',
                     style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
                   Text(
-                    'Durasi   : ${kelas.durationKelas}',
+                    'Durasi   : ${widget.kelas.durationKelas}',
                     style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
                   Text(
-                    'Hari     : ${kelas.dayKelas}',
+                    'Hari     : ${widget.kelas.dayKelas}',
                     style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
                   Text(
-                    'Harga    : ${kelas.feeKelas}',
+                    'Harga    : ${widget.kelas.feeKelas}',
                     style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 16),

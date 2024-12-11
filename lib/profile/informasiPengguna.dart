@@ -9,8 +9,7 @@ class InformasiPenggunaScreen extends StatefulWidget {
   const InformasiPenggunaScreen({Key? key, this.userId}) : super(key: key);
 
   @override
-  State<InformasiPenggunaScreen> createState() =>
-      _InformasiPenggunaScreenState();
+  State<InformasiPenggunaScreen> createState() => _InformasiPenggunaScreenState();
 }
 
 class _InformasiPenggunaScreenState extends State<InformasiPenggunaScreen> {
@@ -23,44 +22,56 @@ class _InformasiPenggunaScreenState extends State<InformasiPenggunaScreen> {
     validateAndFetchUserData();
   }
 
-Future<void> validateAndFetchUserData() async {
-  try {
-    final prefs = await SharedPreferences.getInstance();
-    final loggedInUserId = prefs.getInt('userId');
+  Future<void> validateAndFetchUserData() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final loggedInUserId = prefs.getInt('userId');
 
-    if (loggedInUserId == null) {
-      throw Exception('ID pengguna tidak ditemukan di session.');
-    }
+      if (loggedInUserId == null) {
+        throw Exception('ID pengguna tidak ditemukan di session.');
+      }
 
-    if (widget.userId != null && widget.userId != loggedInUserId) {
-      throw Exception('Akses ditolak. ID tidak sesuai.');
-    }
+      if (widget.userId != null && widget.userId != loggedInUserId) {
+        throw Exception('Akses ditolak. ID tidak sesuai.');
+      }
 
-    final userId = widget.userId ?? loggedInUserId;
-    final response = await http.get(
-      Uri.parse('http://10.0.2.2:8000/api/pelanggan/$userId'),
-    );
+      final userId = widget.userId ?? loggedInUserId;
+      final response = await http.get(
+        Uri.parse('http://10.0.2.2:8000/api/pelanggan/$userId'),
+      );
 
-    if (response.statusCode == 200) {
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body)['data'];
+        
+        final profilePicture = data['profile_picture'];
+        data['profile_picture'] =
+            profilePicture != null && !profilePicture.startsWith('storage/')
+                ? 'storage/$profilePicture'
+                : profilePicture;
+
+        debugPrint('Profile picture URL: ${data['profile_picture']}');
+
+        setState(() {
+          userData = data;
+          isLoading = false;
+        });
+      } else {
+        throw Exception('Gagal mengambil data pengguna');
+      }
+    } catch (e) {
+      debugPrint('Error di validateAndFetchUserData: $e');
       setState(() {
-        userData = json.decode(response.body)['data'];
+        userData = {'error': e.toString()};
         isLoading = false;
       });
-    } else {
-      throw Exception('Gagal mengambil data pengguna');
     }
-  } catch (e) {
-    setState(() {
-      userData = {'error': e.toString()};
-      isLoading = false;
-    });
   }
-}
 
   @override
   Widget build(BuildContext context) {
     if (isLoading) {
       return const Scaffold(
+        backgroundColor: Colors.black,
         body: Center(child: CircularProgressIndicator()),
       );
     }
@@ -113,10 +124,39 @@ Future<void> validateAndFetchUserData() async {
                   ),
                 ),
                 const SizedBox(height: 20),
-                const CircleAvatar(
+                CircleAvatar(
                   radius: 45,
-                  backgroundColor: Colors.red,
-                  child: Icon(Icons.person, size: 45, color: Colors.white),
+                  backgroundColor: Colors.grey[300],
+                  child: userData?['profile_picture'] != null
+                      ? ClipOval(
+                          child: Image.network(
+                            'http://10.0.2.2:8000/uploads/profile_pictures/${userData?['profile_picture']?.split('/').last}',
+                            width: 90,
+                            height: 90,
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) {
+                              debugPrint('Error loading image: $error');
+                              return const Icon(
+                                Icons.person,
+                                size: 45,
+                                color: Colors.white,
+                              );
+                            },
+                            loadingBuilder: (context, child, loadingProgress) {
+                              if (loadingProgress == null) return child;
+                              return const Center(
+                                child: CircularProgressIndicator(
+                                  color: Colors.white,
+                                ),
+                              );
+                            },
+                          ),
+                        )
+                      : const Icon(
+                          Icons.person,
+                          size: 45,
+                          color: Colors.white,
+                        ),
                 ),
                 const SizedBox(height: 12),
                 Text(
