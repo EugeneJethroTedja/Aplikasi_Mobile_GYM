@@ -8,6 +8,7 @@ class Alat {
   final String name;
   final String specialty;
   final String date;
+  final String jenis;
   final double price;
   final String imagePath;
   int? review;
@@ -17,6 +18,7 @@ class Alat {
     required this.name,
     required this.specialty,
     required this.date,
+    required this.jenis,
     required this.price,
     required this.imagePath,
     this.review,
@@ -28,6 +30,7 @@ class Alat {
       name: json['nama'] ?? '',
       specialty: json['spesialis'] ?? '',
       date: json['tanggal'] ?? '',
+      jenis: json['jenis'] ?? '',
       price: (json['harga'] ?? 0).toDouble(),
       imagePath: json['imageUrl'] ?? 'assets/images/Alat/default.png',
       review: json['review'] != null ? int.tryParse(json['review'].toString()) : null,
@@ -124,11 +127,15 @@ class _AlatPageState extends State<AlatPage> {
 
   @override
   Widget build(BuildContext context) {
+    // Filter trainers untuk hanya menampilkan data dengan jenis 'trainer'
+    List<Alat> filteredAlats =
+        trainers.where((trainer) => trainer.jenis == 'alat').toList();
+
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
         backgroundColor: const Color.fromARGB(255, 158, 95, 0),
-        title: const Text('Alat Anda'),
+        title: const Text('Trainer Anda'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () => Navigator.pop(context),
@@ -136,27 +143,64 @@ class _AlatPageState extends State<AlatPage> {
       ),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
-          : trainers.isEmpty
+          : filteredAlats.isEmpty
               ? const Center(
                   child: Text(
-                    'Tidak ada alat tersedia',
+                    'Tidak ada trainer tersedia',
                     style: TextStyle(color: Colors.white),
                   ),
                 )
               : ListView.builder(
-                  itemCount: trainers.length,
+                  itemCount: filteredAlats.length,
                   itemBuilder: (context, index) {
-                    final alat = trainers[index];
+                    final trainer = filteredAlats[index];
                     return _buildAlatCard(
-                      alat,
+                      trainer,
                       onReviewUpdate: (rating) {
-                        updateAlatReview(alat.idHistori, rating);
+                        updateAlatReview(trainer.idHistori, rating);
                       },
                     );
                   },
                 ),
     );
   }
+
+
+  // @override
+  // Widget build(BuildContext context) {
+  //   return Scaffold(
+  //     backgroundColor: Colors.black,
+  //     appBar: AppBar(
+  //       backgroundColor: const Color.fromARGB(255, 158, 95, 0),
+  //       title: const Text('Alat Anda'),
+  //       leading: IconButton(
+  //         icon: const Icon(Icons.arrow_back),
+  //         onPressed: () => Navigator.pop(context),
+  //       ),
+  //     ),
+  //     body: isLoading
+  //         ? const Center(child: CircularProgressIndicator())
+  //         : trainers.isEmpty
+  //             ? const Center(
+  //                 child: Text(
+  //                   'Tidak ada alat tersedia',
+  //                   style: TextStyle(color: Colors.white),
+  //                 ),
+  //               )
+  //             : ListView.builder(
+  //                 itemCount: trainers.length,
+  //                 itemBuilder: (context, index) {
+  //                   final alat = trainers[index];
+  //                   return _buildAlatCard(
+  //                     alat,
+  //                     onReviewUpdate: (rating) {
+  //                       updateAlatReview(alat.idHistori, rating);
+  //                     },
+  //                   );
+  //                 },
+  //               ),
+  //   );
+  // }
 
   Widget _buildAlatCard(Alat alat, {required Function(int) onReviewUpdate}) {
     String formattedPrice = NumberFormat('#,###', 'id_ID').format(alat.price);

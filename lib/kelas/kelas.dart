@@ -133,12 +133,12 @@ class _KelasScreenState extends State<KelasScreen> {
                               ),
                             );
                           },
-                          child: Card(
-                            color: Colors.white,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(16.0),
+                          child: Container(
+                            margin: const EdgeInsets.only(bottom: 16),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(16),
                             ),
-                            margin: const EdgeInsets.symmetric(vertical: 8.0),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -155,9 +155,8 @@ class _KelasScreenState extends State<KelasScreen> {
                                 ),
                                 Padding(
                                   padding: const EdgeInsets.all(16.0),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                     children: [
                                       Text(
                                         kelas.nameKelas,
@@ -167,26 +166,26 @@ class _KelasScreenState extends State<KelasScreen> {
                                           color: Colors.black,
                                         ),
                                       ),
-                                      const SizedBox(height: 8),
-                                      Text(
-                                        'Trainner: ${kelas.trainer}',
-                                        style: const TextStyle(
-                                            color: Colors.black),
-                                      ),
-                                      Text(
-                                        'Durasi: ${kelas.durationKelas} menit',
-                                        style: const TextStyle(
-                                            color: Colors.black),
-                                      ),
-                                      Text(
-                                        'Hari: ${kelas.dayKelas}',
-                                        style: const TextStyle(
-                                            color: Colors.black),
-                                      ),
-                                      Text(
-                                        'Biaya: Rp ${kelas.feeKelas}',
-                                        style: const TextStyle(
-                                            color: Colors.black),
+                                      ElevatedButton(
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: const Color.fromARGB(255, 158, 95, 0),
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(20),
+                                          ),
+                                        ),
+                                        onPressed: () {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  KelasDetailScreen(kelas: kelas),
+                                            ),
+                                          );
+                                        },
+                                        child: const Text(
+                                          'Detail Kelas',
+                                          style: TextStyle(color: Colors.white),
+                                        ),
                                       ),
                                     ],
                                   ),

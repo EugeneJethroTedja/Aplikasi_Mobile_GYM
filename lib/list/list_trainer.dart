@@ -2,8 +2,104 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
-import 'package:sembilan_nih/trainer/trainer.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+class Trainer {
+  final int idHistori;
+  final String name;
+  final String specialty;
+  final String date;
+  final String jenis;
+  final double price;
+  final String imagePath;
+  int? review;
+
+  Trainer({
+    required this.idHistori,
+    required this.name,
+    required this.specialty,
+    required this.date,
+    required this.jenis,
+    required this.price,
+    required this.imagePath,
+    this.review,
+  });
+
+  factory Trainer.fromJson(Map<String, dynamic> json) {
+    return Trainer(
+      idHistori: json['id_histori'],
+      name: json['nama'] ?? '',
+      specialty: json['spesialis'] ?? '',
+      date: json['tanggal'] ?? '',
+      jenis: json['jenis'] ?? '',
+      price: (json['harga'] ?? 0).toDouble(),
+      imagePath: json['imageUrl'] ?? 'assets/images/Trainer/default.png',
+      review: json['review'] != null ? int.tryParse(json['review'].toString()) : null,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      "id_histori": idHistori,
+      "nama": name,
+      "spesialis": specialty,
+      "tanggal": date,
+      "jenis": jenis,
+      "harga": price,
+      "imageUrl": imagePath,
+      "review": review,
+    };
+  }
+}
+
+
+Future<void> createHistory(int loggedInUserId, int transactionId) async {
+    try {
+      final response = await http.post(
+        Uri.parse('http://10.0.2.2:8000/api/histori/create'),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({
+          'review': 0,
+          'id_transaksi': transactionId,
+          'id_pelanggan': loggedInUserId,
+        }),
+      );
+
+      if (response.statusCode == 201) {
+        debugPrint('History created successfully.');
+      } else {
+        debugPrint(
+            'Failed to create history: ${response.statusCode}, Response: ${response.body}');
+      }
+    } catch (e) {
+      debugPrint('Error creating history: $e');
+    }
+  }
+
+  Future<void> loadHistoryData() async {
+    final prefs = await SharedPreferences.getInstance();
+    final orderId = prefs.getInt('orderId');
+    final transactionId = prefs.getInt('transactionId');
+    final trainerId = prefs.getInt('trainerId');
+    final loggedInUserId = prefs.getInt('userId');
+    print(orderId);
+    print(transactionId);
+    print(trainerId);
+    print(loggedInUserId);
+    if (loggedInUserId != null &&
+        orderId != null &&
+        transactionId != null &&
+        trainerId != null) {
+      print('Order ID: $orderId');
+      print('Transaction ID: $transactionId');
+      print('Trainer ID: $trainerId');
+      print('User ID: $loggedInUserId');
+
+      await createHistory(loggedInUserId, transactionId);
+    } else {
+      print('Data tidak ditemukan');
+    }
+  }
 
 class TrainerPage extends StatefulWidget {
   const TrainerPage({Key? key}) : super(key: key);
@@ -87,6 +183,7 @@ class _TrainerPageState extends State<TrainerPage> {
     } else {
       print('Data tidak ditemukan');
     }
+
   }
 
   Future<void> fetchTrainers() async {
@@ -182,6 +279,10 @@ class _TrainerPageState extends State<TrainerPage> {
 
   @override
   Widget build(BuildContext context) {
+    // Filter trainers untuk hanya menampilkan data dengan jenis 'trainer'
+    List<Trainer> filteredTrainers =
+        trainers.where((trainer) => trainer.jenis == 'trainer').toList();
+
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
@@ -194,7 +295,7 @@ class _TrainerPageState extends State<TrainerPage> {
       ),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
-          : trainers.isEmpty
+          : filteredTrainers.isEmpty
               ? const Center(
                   child: Text(
                     'Tidak ada trainer tersedia',
@@ -202,21 +303,64 @@ class _TrainerPageState extends State<TrainerPage> {
                   ),
                 )
               : ListView.builder(
-                  itemCount: trainers.length,
+                  itemCount: filteredTrainers.length,
                   itemBuilder: (context, index) {
-                    final trainerSummary =
-                        trainers[index]; // Pastikan ini adalah TrainerSummary
+                    final trainer = filteredTrainers[index];
                     return _buildTrainerCard(
-                        trainerSummary); // Kirim TrainerSummary, bukan Trainer
+                      trainer,
+                      onReviewUpdate: (rating) {
+                        updateTrainerReview(trainer.idHistori, rating);
+                      },
+                    );
                   },
                 ),
     );
   }
 
-  Widget _buildTrainerCard(TrainerSummary trainerSummary) {
-    // Format biaya agar lebih mudah dibaca (misal: 10.000 -> 10.000)
-    String formattedPrice =
-        NumberFormat('#,###', 'id_ID').format(trainerSummary.fee);
+
+  // @override
+  // Widget build(BuildContext context) {
+
+  //   // utk filter trainers untuk hanya menampilkan data dengan jenis 'trainer' SAJa
+  // List<Trainer> filteredTrainers =
+  //     trainers.where((trainer) => trainer.jenis == 'trainer').toList();
+
+  //   return Scaffold(
+  //     backgroundColor: Colors.black,
+  //     appBar: AppBar(
+  //       backgroundColor: const Color.fromARGB(255, 158, 95, 0),
+  //       title: const Text('Trainer Anda'),
+  //       leading: IconButton(
+  //         icon: const Icon(Icons.arrow_back),
+  //         onPressed: () => Navigator.pop(context),
+  //       ),
+  //     ),
+  //     body: isLoading
+  //         ? const Center(child: CircularProgressIndicator())
+  //         : filteredTrainers.isEmpty
+  //             ? const Center(
+  //                 child: Text(
+  //                   'Tidak ada trainer tersedia',
+  //                   style: TextStyle(color: Colors.white),
+  //                 ),
+  //               )
+  //             : ListView.builder(
+  //                 itemCount: trainers.length,
+  //                 itemBuilder: (context, index) {
+  //                   final trainer = trainers[index];
+  //                   return _buildTrainerCard(
+  //                     trainer,
+  //                     onReviewUpdate: (rating) {
+  //                       updateTrainerReview(trainer.idHistori, rating);
+  //                     },
+  //                   );
+  //                 },
+  //               ),
+  //   );
+  // }
+
+  Widget _buildTrainerCard(Trainer trainer, {required Function(int) onReviewUpdate}) {
+    String formattedPrice = NumberFormat('#,###', 'id_ID').format(trainer.price);
 
     return Card(
       color: Colors.white,

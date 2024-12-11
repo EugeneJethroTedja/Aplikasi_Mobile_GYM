@@ -41,14 +41,25 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
       );
 
       if (response.statusCode == 200) {
+        final data = json.decode(response.body)['data'];
+        // Tambahkan "storage/" ke profile_picture jika perlu
+        final profilePicture = data['profile_picture'];
+        data['profile_picture'] =
+            profilePicture != null && !profilePicture.startsWith('storage/')
+                ? 'storage/$profilePicture'
+                : profilePicture;
+
+        debugPrint('Profile picture URL: ${data['profile_picture']}');
+        
         setState(() {
-          userData = json.decode(response.body)['data'];
+          userData = data;
           isLoading = false;
         });
       } else {
         throw Exception('Gagal mengambil data pengguna');
       }
     } catch (e) {
+      debugPrint('Error di validateAndFetchUserData: $e');
       setState(() {
         userData = {'error': e.toString()};
         isLoading = false;
@@ -57,48 +68,43 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   }
 
   Future<void> _updatePassword() async {
-  try {
-    // Ambil ID pengguna dari SharedPreferences
-    final prefs = await SharedPreferences.getInstance();
-    final userId = prefs.getInt('userId');
-    if (userId == null) {
-      throw Exception('ID pengguna tidak ditemukan.');
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final userId = prefs.getInt('userId');
+      if (userId == null) {
+        throw Exception('ID pengguna tidak ditemukan.');
+      }
+
+      final url = Uri.parse('http://10.0.2.2:8000/api/pelanggan/update-password/$userId');
+      debugPrint('URL: $url');
+
+      final body = {
+        'old_password': _oldPasswordController.text,
+        'new_password': _newPasswordController.text,
+        'new_password_confirmation': _confirmPasswordController.text,
+      };
+      debugPrint('Body: ${json.encode(body)}');
+
+      final response = await http.put(
+        url,
+        body: json.encode(body),
+        headers: {'Content-Type': 'application/json'},
+      );
+
+      debugPrint('Response Status: ${response.statusCode}');
+      debugPrint('Response Body: ${response.body}');
+
+      if (response.statusCode == 200) {
+        _showMessage('Password berhasil diperbarui');
+      } else {
+        final responseData = json.decode(response.body);
+        _showMessage(responseData['message'] ?? 'Gagal memperbarui password');
+      }
+    } catch (e) {
+      debugPrint('Error: $e');
+      _showMessage('Error: $e');
     }
-
-    // URL API
-    final url = Uri.parse('http://10.0.2.2:8000/api/pelanggan/update-password/$userId');
-    debugPrint('URL: $url');
-
-    // Data yang akan dikirim
-    final body = {
-      'old_password': _oldPasswordController.text,
-      'new_password': _newPasswordController.text,
-      'new_password_confirmation': _confirmPasswordController.text, // Tambahkan ini
-    };
-    debugPrint('Body: ${json.encode(body)}');
-
-    // Kirim permintaan PUT
-    final response = await http.put(
-      url,
-      body: json.encode(body),
-      headers: {'Content-Type': 'application/json'},
-    );
-
-    // Log respons
-    debugPrint('Response Status: ${response.statusCode}');
-    debugPrint('Response Body: ${response.body}');
-
-    if (response.statusCode == 200) {
-      _showMessage('Password berhasil diperbarui');
-    } else {
-      final responseData = json.decode(response.body);
-      _showMessage(responseData['message'] ?? 'Gagal memperbarui password');
-    }
-  } catch (e) {
-    debugPrint('Error: $e');
-    _showMessage('Error: $e');
   }
-}
 
   void _showMessage(String message) {
     showDialog(
@@ -169,10 +175,39 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                   ),
                 ),
                 const SizedBox(height: 20),
-                const CircleAvatar(
+                CircleAvatar(
                   radius: 45,
-                  backgroundColor: Colors.red,
-                  child: Icon(Icons.person, size: 45, color: Colors.white),
+                  backgroundColor: Colors.grey[300],
+                  child: userData?['profile_picture'] != null
+                      ? ClipOval(
+                          child: Image.network(
+                            'http://10.0.2.2:8000/uploads/profile_pictures/${userData?['profile_picture']?.split('/').last}',
+                            width: 90,
+                            height: 90,
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) {
+                              debugPrint('Error loading image: $error');
+                              return const Icon(
+                                Icons.person,
+                                size: 45,
+                                color: Colors.white,
+                              );
+                            },
+                            loadingBuilder: (context, child, loadingProgress) {
+                              if (loadingProgress == null) return child;
+                              return const Center(
+                                child: CircularProgressIndicator(
+                                  color: Colors.white,
+                                ),
+                              );
+                            },
+                          ),
+                        )
+                      : const Icon(
+                          Icons.person,
+                          size: 45,
+                          color: Colors.white,
+                        ),
                 ),
                 const SizedBox(height: 12),
                 Text(
